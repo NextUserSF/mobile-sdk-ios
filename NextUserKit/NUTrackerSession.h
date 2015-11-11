@@ -10,9 +10,6 @@
 
 @interface NUTrackerSession : NSObject
 
-// DEV environment only
-@property (nonatomic, readonly) NSString *baseURLPath;
-
 @property (nonatomic, readonly) NSString *sessionCookie;
 @property (nonatomic, readonly) NSString *deviceCookie; // gets serialized when retrieved from server
 

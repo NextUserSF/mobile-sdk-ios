@@ -7,6 +7,7 @@
 //
 
 #import "NUTrackerSession.h"
+#import "NUAPIPathGenerator.h"
 #import "AFNetworking.h"
 #import "SSKeychain.h"
 
@@ -17,9 +18,6 @@
 
 #define kKeychainServiceName @"com.nextuser.nextuserkit"
 
-#define END_POINT_DEV @"https://track-dev.nextuser.com"
-#define END_POINT_PROD @"https://track.nextuser.com/"
-
 
 @implementation NUTrackerSession
 
@@ -28,7 +26,6 @@
 - (id)init
 {
     if (self = [super init]) {
-        _baseURLPath = END_POINT_DEV;
         
         // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
@@ -45,12 +42,14 @@
         _setupRequestInProgress = YES;
         
         NSString *currentDeviceCookie = [self serializedDeviceCookie];
-        NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie];
         
-        NSLog(@"Fire HTTP request to start the session: %@", path);
+        NSDictionary *parameters = nil;
+        NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie URLParameters:&parameters];
+        
+        NSLog(@"Fire HTTP request to start the session. Path: %@, Parameters: %@", path, parameters);
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager GET:path
-          parameters:nil
+          parameters:parameters
              success:^(AFHTTPRequestOperation *operation, id responseObject) {
                  
                  NSLog(@"Setup tracker response: %@", responseObject);
@@ -84,12 +83,19 @@
 
 #pragma mark - Private API
 
-- (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie
+- (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie URLParameters:(NSDictionary **)URLParameters
 {
     // e.g. https://track-dev.nextuser.com/sdk.js?tid=internal_tests
-    NSString *path = [_baseURLPath stringByAppendingString:@"/sdk.js?tid=internal_tests"];
+    NSString *path = [NUAPIPathGenerator pathWithAPIName:@"sdk.js"];
+    
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"tid"] = @"internal_tests";
     if (deviceCookie) {
-        path = [path stringByAppendingFormat:@"&dc=%@", deviceCookie];
+        parameters[@"dc"] = deviceCookie;
+    }
+    
+    if (URLParameters != NULL) {
+         *URLParameters = parameters;
     }
     
     return path;
