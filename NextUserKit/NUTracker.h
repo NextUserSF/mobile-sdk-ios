@@ -12,6 +12,6 @@
 
 + (NUTracker *)sharedTracker;
 
-- (void)trackScreenWithName:(NSString *)screenName;
+@property (nonatomic, readonly) BOOL isReady;
 
 @end

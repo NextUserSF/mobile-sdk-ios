@@ -14,7 +14,4 @@ FOUNDATION_EXPORT double NextUserKitVersionNumber;
 //! Project version string for NextUserKit.
 FOUNDATION_EXPORT const unsigned char NextUserKitVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <NextUserKit/PublicHeader.h>
-
-
 #import <NextUserKit/NUTracker.h>

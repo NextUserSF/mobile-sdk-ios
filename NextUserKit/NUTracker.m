@@ -7,10 +7,14 @@
 //
 
 #import "NUTracker.h"
-#import "AFNetworking.h"
+#import "NUTrackerSession.h"
 
-//https://track-dev.nextuser.com/sdk.js?tid=internal_tests&dc=1
 
+@interface NUTracker ()
+
+@property (nonatomic) NUTrackerSession *session;
+
+@end
 
 @implementation NUTracker
 
@@ -27,20 +31,23 @@
     return instance;
 }
 
-#pragma mark - Tracking
-
- - (void)trackScreenWithName:(NSString *)screenName
+- (instancetype)init
 {
-    NSLog(@"This is log from framework. Try making HTTP request with AFNetworking");
+    if (self = [super init]) {
+        
+        _session = [[NUTrackerSession alloc] init];
+        [_session startWithCompletion:^(NSError *error) {
+            if (error == nil) {
+                if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
+                    _isReady = YES;
+                }
+            } else {
+                NSLog(@"Error initializing tracker: %@", error);
+            }
+        }];
+    }
     
-    NSString *path = @"https://track-dev.nextuser.com/sdk.js?tid=internal_tests&dc=1";
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"JSON: %@", responseObject);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
+    return self;
 }
 
 @end
