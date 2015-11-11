@@ -15,6 +15,9 @@
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
 
+#define END_POINT_DEV @"https://track-dev.nextuser.com"
+#define END_POINT_PROD @"https://track.nextuser.com/"
+
 
 @implementation NUTrackerSession
 
@@ -23,7 +26,7 @@
 - (id)init
 {
     if (self = [super init]) {
-        _baseURLPath = @"https://track-dev.nextuser.com/sdk.js?tid=internal_tests";
+        _baseURLPath = END_POINT_DEV;
     }
     
     return self;
@@ -39,7 +42,7 @@
         NSString *currentDeviceCookie = [self serializedDeviceCookie];
         NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie];
         
-        NSLog(@"Fire HTTP request to start the session");
+        NSLog(@"Fire HTTP request to start the session: %@", path);
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager GET:path
           parameters:nil
@@ -78,7 +81,8 @@
 
 - (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie
 {
-    NSString *path = _baseURLPath;
+    // e.g. https://track-dev.nextuser.com/sdk.js?tid=internal_tests
+    NSString *path = [_baseURLPath stringByAppendingString:@"/sdk.js?tid=internal_tests"];
     if (deviceCookie) {
         path = [path stringByAppendingFormat:@"&dc=%@", deviceCookie];
     }
