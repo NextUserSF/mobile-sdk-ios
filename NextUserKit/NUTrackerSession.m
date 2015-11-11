@@ -8,12 +8,14 @@
 
 #import "NUTrackerSession.h"
 #import "AFNetworking.h"
+#import "SSKeychain.h"
 
-#define kDeviceCookieSerializationKey @"nu_device_cookie"
-#define kSessionCookieSerializationKey @"nu_session_cookie"
+#define kDeviceCookieSerializationKey @"nu_device_ide"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
+
+#define kKeychainServiceName @"com.nextuser.nextuserkit"
 
 #define END_POINT_DEV @"https://track-dev.nextuser.com"
 #define END_POINT_PROD @"https://track.nextuser.com/"
@@ -27,6 +29,9 @@
 {
     if (self = [super init]) {
         _baseURLPath = END_POINT_DEV;
+        
+        // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
+        [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
     
     return self;
@@ -94,21 +99,33 @@
 
 - (NSString *)serializedDeviceCookie
 {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kDeviceCookieSerializationKey];
+    NSError *error = nil;
+    NSString *password = [SSKeychain passwordForService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    if (error != nil) {
+        NSLog(@"Error while fetching device identifier from keychain. %@", error);
+    }
+    
+    return password;
 }
 
 - (void)serializeDeviceCookie:(NSString *)deviceCookie
 {
     NSAssert(deviceCookie, @"deviceCookie can not be nil");
     
-    [[NSUserDefaults standardUserDefaults] setObject:deviceCookie forKey:kDeviceCookieSerializationKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSError *error = nil;
+    [SSKeychain setPassword:deviceCookie forService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    if (error != nil) {
+        NSLog(@"Error while setting device identifier in keychain. %@", error);
+    }
 }
 
 - (void)clearSerializedDeviceCookie
 {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDeviceCookieSerializationKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSError *error = nil;
+    [SSKeychain deletePasswordForService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    if (error != nil) {
+        NSLog(@"Error while deleting device identifier from keychain. %@", error);
+    }
 }
 
 @end
