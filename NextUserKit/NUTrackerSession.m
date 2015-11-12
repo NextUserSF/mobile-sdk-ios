@@ -103,10 +103,20 @@
 
 #pragma mark - Serialization
 
+- (NSString *)keychainSerivceName
+{
+    NSString *serviceName = kKeychainServiceName;
+    
+    NSString *appID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+    serviceName = [serviceName stringByAppendingFormat:@"_%@", appID];
+    
+    return serviceName;
+}
+
 - (NSString *)serializedDeviceCookie
 {
     NSError *error = nil;
-    NSString *password = [SSKeychain passwordForService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    NSString *password = [SSKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         NSLog(@"Error while fetching device identifier from keychain. %@", error);
     }
@@ -119,7 +129,7 @@
     NSAssert(deviceCookie, @"deviceCookie can not be nil");
     
     NSError *error = nil;
-    [SSKeychain setPassword:deviceCookie forService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         NSLog(@"Error while setting device identifier in keychain. %@", error);
     }
@@ -128,7 +138,7 @@
 - (void)clearSerializedDeviceCookie
 {
     NSError *error = nil;
-    [SSKeychain deletePasswordForService:kKeychainServiceName account:kDeviceCookieSerializationKey error:&error];
+    [SSKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         NSLog(@"Error while deleting device identifier from keychain. %@", error);
     }
