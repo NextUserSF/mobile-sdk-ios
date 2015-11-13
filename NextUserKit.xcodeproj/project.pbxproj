@@ -99,6 +99,7 @@
 		318BFF5B1BECF8A400B2AA2A /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
 		318BFF731BECFE4D00B2AA2A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		318BFF751BECFE5300B2AA2A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFNetworkingNameMapper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +202,7 @@
 		318BFF481BECF8A400B2AA2A /* AFNetworking */ = {
 			isa = PBXGroup;
 			children = (
+				31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */,
 				318BFF491BECF8A400B2AA2A /* AFHTTPRequestOperation.h */,
 				318BFF4A1BECF8A400B2AA2A /* AFHTTPRequestOperation.m */,
 				318BFF4B1BECF8A400B2AA2A /* AFHTTPRequestOperationManager.h */,
