@@ -15,6 +15,10 @@
 
 @interface NUTracker ()
 
+// redefinition of public properties to be r&w (needed for KVO)
+@property (nonatomic) BOOL isReady;
+@property (nonatomic) NSError *initializationError;
+
 @property (nonatomic) NUTrackerSession *session;
 
 @end
@@ -42,10 +46,11 @@
         [_session startWithCompletion:^(NSError *error) {
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                    _isReady = YES;
+                    self.isReady = YES;
                 }
             } else {
                 NSLog(@"Error initializing tracker: %@", error);
+                self.initializationError = error;
             }
         }];
     }
@@ -55,17 +60,17 @@
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
+    NSLog(@"Track screen with name: %@", screenName);
+
     [self trackScreenWithName:screenName completion:NULL];
 }
 
 #pragma mark - Private
 
-#pragma mark -
+#pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
 {
-    NSLog(@"Track screen with name: %@", screenName);
-    
     NSMutableDictionary *parameters = nil;
     NSString *path = [self trackScreen:screenName URLParameters:&parameters];
     [_session updateParametersWithDefaults:parameters];
@@ -76,14 +81,20 @@
       parameters:parameters
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
              
-             NSLog(@"Track screen response: %@", responseObject);
+             NSLog(@"Track screen response");
+             NSLog(@"%@", operation.request.URL);
+             NSLog(@"%@", responseObject);
+             
              if (completion != NULL) {
                  completion(nil);
              }
              
          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              
-             NSLog(@"Track screen error: %@", error);
+             NSLog(@"Track screen");
+             NSLog(@"%@", operation.request.URL);
+             NSLog(@"%@", error);
+
              if (completion != NULL) {
                  completion(error);
              }

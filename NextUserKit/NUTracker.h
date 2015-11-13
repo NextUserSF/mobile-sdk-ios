@@ -13,6 +13,7 @@
 + (NUTracker *)sharedTracker;
 
 @property (nonatomic, readonly) BOOL isReady;
+@property (nonatomic, readonly) NSError *initializationError;
 
 - (void)trackScreenWithName:(NSString *)screenName;
 
