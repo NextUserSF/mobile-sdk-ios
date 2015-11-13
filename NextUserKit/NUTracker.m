@@ -67,13 +67,28 @@
 
 #pragma mark - Private
 
+- (void)updateParametersWithDefaults:(NSMutableDictionary *)parameters
+{
+    if ([self isValidSession]) {
+        
+        NSString *deviceCookieURLValue = [NSString stringWithFormat:@"...%@", _session.deviceCookie];
+        parameters[@"nutm_s"] = deviceCookieURLValue;
+        parameters[@"nutm_sc"] = _session.sessionCookie;
+    }
+}
+
+- (BOOL)isValidSession
+{
+    return _session.deviceCookie != nil && _session.sessionCookie != nil;
+}
+
 #pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
 {
     NSMutableDictionary *parameters = nil;
     NSString *path = [self trackScreen:screenName URLParameters:&parameters];
-    [_session updateParametersWithDefaults:parameters];
+    [self updateParametersWithDefaults:parameters];
     
     NSLog(@"Fire HTTP request to track screen. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
