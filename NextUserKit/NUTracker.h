@@ -14,4 +14,6 @@
 
 @property (nonatomic, readonly) BOOL isReady;
 
+- (void)trackScreenWithName:(NSString *)screenName;
+
 @end

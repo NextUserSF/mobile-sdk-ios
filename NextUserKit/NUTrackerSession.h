@@ -22,4 +22,6 @@
 // YES if request to start the session is being made already and not yet finished
 @property (nonatomic, readonly) BOOL setupRequestInProgress;
 
+- (void)updateParametersWithDefaults:(NSMutableDictionary *)parameters;
+
 @end

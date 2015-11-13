@@ -81,7 +81,20 @@
     }
 }
 
+- (void)updateParametersWithDefaults:(NSMutableDictionary *)parameters
+{
+    if ([self isValidSession]) {
+        parameters[kDeviceCookieJSONKey] = _deviceCookie;
+        parameters[kSessionCookieJSONKey] = _sessionCookie;
+    }
+}
+
 #pragma mark - Private API
+
+- (BOOL)isValidSession
+{
+    return _deviceCookie != nil && _sessionCookie != nil;
+}
 
 - (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie URLParameters:(NSDictionary **)URLParameters
 {
