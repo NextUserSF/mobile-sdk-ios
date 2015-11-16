@@ -29,14 +29,21 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Session start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackScreenWithName:@"testScreenName" completion:^(NSError *error) {
+    [tracker startWithCompletion:^(NSError *error) {
         if (error == nil) {
-            XCTAssert(YES);
+            [tracker trackScreenWithName:@"testScreenName" completion:^(NSError *error) {
+                if (error == nil) {
+                    XCTAssert(YES);
+                } else {
+                    XCTFail(@"Track screen failed with error: %@", error);
+                }
+                
+                [expectation fulfill];
+            }];
         } else {
-            XCTFail(@"Track screen failed with error: %@", error);
+            NSLog(@"Session start error: %@", error);
+            XCTAssert(NO, @"Error starting session");
         }
-        
-        [expectation fulfill];
     }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {

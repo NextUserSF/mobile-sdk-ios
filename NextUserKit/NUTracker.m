@@ -10,14 +10,13 @@
 #import "NUTrackerSession.h"
 #import "NUAPIPathGenerator.h"
 #import "NUTracker+Tests.h"
+#import "NUDDLog.h"
 #import "AFNetworking.h"
-
 
 @interface NUTracker ()
 
 // redefinition of public properties to be r&w (needed for KVO)
 @property (nonatomic) BOOL isReady;
-@property (nonatomic) NSError *initializationError;
 
 @property (nonatomic) NUTrackerSession *session;
 
@@ -42,26 +41,77 @@
 {
     if (self = [super init]) {
         
-        _session = [[NUTrackerSession alloc] init];
-        [_session startWithCompletion:^(NSError *error) {
-            if (error == nil) {
-                if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                    self.isReady = YES;
-                }
-            } else {
-                NSLog(@"Error initializing tracker: %@", error);
-                self.initializationError = error;
-            }
-        }];
+        // setup logger
+        [DDLog addLogger:[DDASLLogger sharedInstance]];
+        [DDLog addLogger:[DDTTYLogger sharedInstance]];
     }
     
     return self;
 }
 
+#pragma mark - Initialization
+
+- (void)startWithCompletion:(void (^)(NSError *error))completion
+{
+    _session = [[NUTrackerSession alloc] init];
+    [_session startWithCompletion:^(NSError *error) {
+        if (error == nil) {
+            if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
+                self.isReady = YES;
+            } else {
+                DDLogError(@"Missing cookies in session initialization response");
+                error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
+            }
+        } else {
+            DDLogError(@"Error initializing tracker: %@", error);
+        }
+        
+        if (completion != NULL) {
+            completion(error);
+        }
+    }];
+}
+
+#pragma mark - Configuration
+
+- (void)setLogLevel:(NULogLevel)logLevel
+{
+    DDLogLevel level = DDLogLevelOff;
+    switch (logLevel) {
+        case NULogLevelOff: level = DDLogLevelOff; break;
+        case NULogLevelError: level = DDLogLevelError; break;
+        case NULogLevelWarning: level = DDLogLevelWarning; break;
+        case NULogLevelInfo: level = DDLogLevelInfo; break;
+        case NULogLevelDebug: level = DDLogLevelDebug; break;
+        case NULogLevelVerbose: level = DDLogLevelVerbose; break;
+        case NULogLevelAll: level = DDLogLevelAll; break;
+    }
+    
+    [NUDDLog setLogLevel:level];
+}
+
+- (NULogLevel)logLevel
+{
+    DDLogLevel logLevel = [NUDDLog logLevel];
+    NULogLevel level = NULogLevelOff;
+    switch (logLevel) {
+        case DDLogLevelOff: level = NULogLevelOff; break;
+        case DDLogLevelError: level = NULogLevelError; break;
+        case DDLogLevelWarning: level = NULogLevelWarning; break;
+        case DDLogLevelInfo: level = NULogLevelInfo; break;
+        case DDLogLevelDebug: level = NULogLevelDebug; break;
+        case DDLogLevelVerbose: level = NULogLevelVerbose; break;
+        case DDLogLevelAll: level = NULogLevelAll; break;
+    }
+    
+    return level;
+}
+
+#pragma mark - Track
+
 - (void)trackScreenWithName:(NSString *)screenName
 {
-    NSLog(@"Track screen with name: %@", screenName);
-
+    DDLogInfo(@"Track screen with name: %@", screenName);
     [self trackScreenWithName:screenName completion:NULL];
 }
 
@@ -90,15 +140,15 @@
     NSString *path = [self trackScreen:screenName URLParameters:&parameters];
     [self updateParametersWithDefaults:parameters];
     
-    NSLog(@"Fire HTTP request to track screen. Path: %@, Parameters: %@", path, parameters);
+    DDLogInfo(@"Fire HTTP request to track screen. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:path
       parameters:parameters
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
              
-             NSLog(@"Track screen response");
-             NSLog(@"%@", operation.request.URL);
-             NSLog(@"%@", responseObject);
+             DDLogInfo(@"Track screen response");
+             DDLogInfo(@"%@", operation.request.URL);
+             DDLogInfo(@"%@", responseObject);
              
              if (completion != NULL) {
                  completion(nil);
@@ -106,9 +156,9 @@
              
          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              
-             NSLog(@"Track screen");
-             NSLog(@"%@", operation.request.URL);
-             NSLog(@"%@", error);
+             DDLogError(@"Track screen error");
+             DDLogError(@"%@", operation.request.URL);
+             DDLogError(@"%@", error);
 
              if (completion != NULL) {
                  completion(error);
