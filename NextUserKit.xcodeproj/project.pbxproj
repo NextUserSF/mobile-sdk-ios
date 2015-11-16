@@ -185,11 +185,9 @@
 			children = (
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
-				31614FB51BF3808000F0535D /* NUAPIPathGenerator.h */,
-				31614FB61BF3808000F0535D /* NUAPIPathGenerator.m */,
-				3198D5881BF9E4BA006E88D1 /* NUDDLog.h */,
-				3198D5891BF9E4BA006E88D1 /* NUDDLog.m */,
-				31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */,
+				31F2752C1BFA044000D0D755 /* ServerAPI */,
+				31F2752B1BF9FC9B00D0D755 /* Logger */,
+				31F2752D1BFA056400D0D755 /* TestsCategory */,
 			);
 			name = Private;
 			sourceTree = "<group>";
@@ -231,8 +229,8 @@
 				318BFF431BECF6AA00B2AA2A /* NUTracker.h */,
 				318BFF441BECF6AA00B2AA2A /* NUTracker.m */,
 				312029C71BF221F200B7CCC6 /* Private */,
-				318BFF271BECF49B00B2AA2A /* Info.plist */,
 				318BFF471BECF8A400B2AA2A /* lib_3rdParty */,
+				318BFF271BECF49B00B2AA2A /* Info.plist */,
 			);
 			path = NextUserKit;
 			sourceTree = "<group>";
@@ -334,6 +332,32 @@
 				3198D56C1BF9CC21006E88D1 /* DDMultiFormatter.m */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		31F2752B1BF9FC9B00D0D755 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				3198D5881BF9E4BA006E88D1 /* NUDDLog.h */,
+				3198D5891BF9E4BA006E88D1 /* NUDDLog.m */,
+			);
+			name = Logger;
+			sourceTree = "<group>";
+		};
+		31F2752C1BFA044000D0D755 /* ServerAPI */ = {
+			isa = PBXGroup;
+			children = (
+				31614FB51BF3808000F0535D /* NUAPIPathGenerator.h */,
+				31614FB61BF3808000F0535D /* NUAPIPathGenerator.m */,
+			);
+			name = ServerAPI;
+			sourceTree = "<group>";
+		};
+		31F2752D1BFA056400D0D755 /* TestsCategory */ = {
+			isa = PBXGroup;
+			children = (
+				31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */,
+			);
+			name = TestsCategory;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
