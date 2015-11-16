@@ -15,9 +15,6 @@
 
 @interface NUTracker ()
 
-// redefinition of public properties to be r&w (needed for KVO)
-@property (nonatomic) BOOL isReady;
-
 @property (nonatomic) NUTrackerSession *session;
 
 @end
@@ -57,7 +54,7 @@
     [_session startWithCompletion:^(NSError *error) {
         if (error == nil) {
             if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                self.isReady = YES;
+                _isReady = YES;
             } else {
                 DDLogError(@"Missing cookies in session initialization response");
                 error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
