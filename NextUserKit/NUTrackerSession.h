@@ -20,6 +20,6 @@
 // starts session (triggers call to fetch device & session cookies)
 - (void)startWithCompletion:(void(^)(NSError *error))completion;
 // YES if request to start the session is being made already and not yet finished
-@property (nonatomic, readonly) BOOL setupRequestInProgress;
+@property (nonatomic, readonly) BOOL startupRequestInProgress;
 
 @end

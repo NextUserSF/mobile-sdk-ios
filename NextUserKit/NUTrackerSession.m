@@ -38,9 +38,9 @@
 - (void)startWithCompletion:(void(^)(NSError *error))completion
 {
     DDLogInfo(@"Start tracker session");
-    if (!_setupRequestInProgress) {
+    if (!_startupRequestInProgress) {
         
-        _setupRequestInProgress = YES;
+        _startupRequestInProgress = YES;
         
         NSString *currentDeviceCookie = [self serializedDeviceCookie];
         
@@ -54,7 +54,7 @@
              success:^(AFHTTPRequestOperation *operation, id responseObject) {
                  
                  DDLogInfo(@"Setup tracker response: %@", responseObject);
-                 _setupRequestInProgress = NO;
+                 _startupRequestInProgress = NO;
 
                  _deviceCookie = responseObject[kDeviceCookieJSONKey];
                  _sessionCookie = responseObject[kSessionCookieJSONKey];
@@ -71,7 +71,7 @@
              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                  
                  DDLogError(@"Setup tracker error: %@", error);
-                 _setupRequestInProgress = NO;
+                 _startupRequestInProgress = NO;
                  
                  if (completion != NULL) {
                      completion(error);
