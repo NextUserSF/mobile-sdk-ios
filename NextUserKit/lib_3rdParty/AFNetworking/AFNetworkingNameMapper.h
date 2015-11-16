@@ -47,3 +47,15 @@
 #define AFStreamingMultipartFormData                            nu_AFStreamingMultipartFormData
 #define AFQueryStringPair                                       nu_AFQueryStringPair
 #define AFQueryStringPairsFromKeyAndValue                       nu_AFQueryStringPairsFromKeyAndValue
+#define AFNetworkingTaskDidFinishErrorKey                       nu_AFNetworkingTaskDidFinishErrorKey
+#define AFNetworkingTaskDidFinishResponseSerializerKey          nu_AFNetworkingTaskDidFinishResponseSerializerKey
+#define AFNetworkingTaskDidFinishAssetPathKey                   nu_AFNetworkingTaskDidFinishAssetPathKey
+#define AFNetworkingTaskDidFinishSerializedResponseKey          nu_AFNetworkingTaskDidFinishSerializedResponseKey
+#define AFNetworkingTaskDidFinishResponseDataKey                nu_AFNetworkingTaskDidFinishResponseDataKey
+#define AFNetworkingTaskDidStartNotification                    nu_AFNetworkingTaskDidStartNotification
+#define AFNetworkingTaskDidFinishNotification                   nu_AFNetworkingTaskDidFinishNotification
+#define AFNetworkingOperationFailingURLRequestErrorKey          nu_AFNetworkingOperationFailingURLRequestErrorKey
+#define kAFUploadStream3GSuggestedDelay                         nu_kAFUploadStream3GSuggestedDelay
+#define kAFUploadStream3GSuggestedPacketSize                    nu_kAFUploadStream3GSuggestedPacketSize
+#define AFUploadStream3GSuggestedPacketSize                     nu_AFUploadStream3GSuggestedPacketSize
+
