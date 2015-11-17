@@ -135,10 +135,10 @@
     return [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
 }
 
-- (void)trackMultipleActions:(NSArray *)actions
+- (void)trackActions:(NSArray *)actions
 {
     DDLogInfo(@"Track multiple actions: %@", actions);
-    [self trackMultipleActions:actions completion:NULL];
+    [self trackActions:actions completion:NULL];
 }
 
 #pragma mark - Private
@@ -218,10 +218,10 @@
 
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
 {
-    [self trackMultipleActions:@[[NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
+    [self trackActions:@[[NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
 }
 
-- (void)trackMultipleActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
+- (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
 {
     // max 10 actions are allowed
     if (actions.count > 10) {

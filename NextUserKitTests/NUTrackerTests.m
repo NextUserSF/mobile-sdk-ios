@@ -197,7 +197,7 @@
                                  [NUTrackerTests randomActionInfo],
                                  [NUTrackerTests randomActionInfo]];
             
-            [tracker trackMultipleActions:actions completion:^(NSError *error) {
+            [tracker trackActions:actions completion:^(NSError *error) {
                 
                 if (error == nil) {
                     XCTAssert(YES);

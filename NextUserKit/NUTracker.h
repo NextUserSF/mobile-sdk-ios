@@ -52,9 +52,9 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  
  Usage:
  First, collect all actions you would like to track and put them into an array (use +actionInfoWithName:parameters: method).
- Then call -trackMultipleActions: with that array.
+ Then call -trackActions: with that array.
 */
 + (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
-- (void)trackMultipleActions:(NSArray *)actions;
+- (void)trackActions:(NSArray *)actions;
 
 @end
