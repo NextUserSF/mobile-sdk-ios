@@ -37,7 +37,6 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        
         // setup logger
         [DDLog addLogger:[DDASLLogger sharedInstance]];
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
@@ -50,23 +49,27 @@
 
 - (void)startWithCompletion:(void (^)(NSError *error))completion
 {
-    _session = [[NUTrackerSession alloc] init];
-    [_session startWithCompletion:^(NSError *error) {
-        if (error == nil) {
-            if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                _isReady = YES;
+    if (!_session.startupRequestInProgress) {
+        _session = [[NUTrackerSession alloc] init];
+        [_session startWithCompletion:^(NSError *error) {
+            if (error == nil) {
+                if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
+                    _isReady = YES;
+                } else {
+                    DDLogError(@"Missing cookies in session initialization response");
+                    error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
+                }
             } else {
-                DDLogError(@"Missing cookies in session initialization response");
-                error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
+                DDLogError(@"Error initializing tracker: %@", error);
             }
-        } else {
-            DDLogError(@"Error initializing tracker: %@", error);
-        }
-        
-        if (completion != NULL) {
-            completion(error);
-        }
-    }];
+            
+            if (completion != NULL) {
+                completion(error);
+            }
+        }];
+    } else {
+        DDLogWarn(@"Startup session request already in progress");
+    }
 }
 
 #pragma mark - Configuration
@@ -112,40 +115,61 @@
     [self trackScreenWithName:screenName completion:NULL];
 }
 
-#pragma mark - Private
-
-- (void)updateParametersWithDefaults:(NSMutableDictionary *)parameters
+- (void)trackActionWithName:(NSString *)actionName
 {
-    if ([self isValidSession]) {
-        
-        NSString *deviceCookieURLValue = [NSString stringWithFormat:@"...%@", _session.deviceCookie];
-        parameters[@"nutm_s"] = deviceCookieURLValue;
-        parameters[@"nutm_sc"] = _session.sessionCookie;
-    }
+    DDLogInfo(@"Track action with name: %@", actionName);
+    [self trackActionWithName:actionName parameters:nil];
 }
+
+- (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+{
+    DDLogInfo(@"Track action with name: %@, parameters", actionName, actionParameters);
+    [self trackActionWithName:actionName parameters:actionParameters completion:NULL];
+}
+
+#pragma mark - Private
 
 - (BOOL)isValidSession
 {
     return _session.deviceCookie != nil && _session.sessionCookie != nil;
 }
 
-#pragma mark - Track Screen
+#pragma mark - Track
 
-- (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
+- (NSString *)trackRequestPathWithURLParameters:(NSMutableDictionary **)URLParameters
 {
-    NSMutableDictionary *parameters = nil;
-    NSString *path = [self trackScreen:screenName URLParameters:&parameters];
-    [self updateParametersWithDefaults:parameters];
+    // e.g. __nutm.gif?tid=wid+username&pv0=www.google.com
+    NSString *path = [NUAPIPathGenerator pathWithAPIName:@"__nutm.gif"];
     
-    DDLogInfo(@"Fire HTTP request to track screen. Path: %@, Parameters: %@", path, parameters);
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    // add default parameters
+    if ([self isValidSession]) {
+        NSString *deviceCookieURLValue = [NSString stringWithFormat:@"...%@", _session.deviceCookie];
+        parameters[@"nutm_s"] = deviceCookieURLValue;
+        parameters[@"nutm_sc"] = _session.sessionCookie;
+    }
+    parameters[@"tid"] = @"internal_tests";
+    
+    if (URLParameters != NULL) {
+        *URLParameters = parameters;
+    }
+    
+    return path;
+}
+
+- (void)sendGETRequestWithPath:(NSString *)path
+                    parameters:(NSDictionary *)parameters
+                    completion:(void(^)(NSError *error))completion
+{
+    DDLogInfo(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:path
       parameters:parameters
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
              
-             DDLogInfo(@"Track screen response");
-             DDLogInfo(@"%@", operation.request.URL);
-             DDLogInfo(@"%@", responseObject);
+             DDLogInfo(@"HTTP GET request response");
+             DDLogInfo(@"URL: %@", operation.request.URL);
+             DDLogInfo(@"Response: %@", responseObject);
              
              if (completion != NULL) {
                  completion(nil);
@@ -153,30 +177,97 @@
              
          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              
-             DDLogError(@"Track screen error");
+             DDLogError(@"HTTP GET request error");
              DDLogError(@"%@", operation.request.URL);
              DDLogError(@"%@", error);
-
+             
              if (completion != NULL) {
                  completion(error);
              }
          }];
 }
 
-- (NSString *)trackScreen:(NSString *)screenName URLParameters:(NSMutableDictionary **)URLParameters
+#pragma mark -
+
+- (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
 {
-    // e.g. __nutm.gif?tid=wid+username&pv0=www.google.com
-    NSString *path = [NUAPIPathGenerator pathWithAPIName:@"__nutm.gif"];
+    NSMutableDictionary *parameters = nil;
+    NSString *path = [self trackRequestPathWithURLParameters:&parameters];
     
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[@"tid"] = @"internal_tests";
+    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&pv0=http%3A//dev1_dot_nextuser_dot_com/%23%21/2/analytics/dashboard
     parameters[@"pv0"] = screenName;
+
+    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+}
+
+- (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
+{
+    NSMutableDictionary *parameters = nil;
+    NSString *path = [self trackRequestPathWithURLParameters:&parameters];
     
-    if (URLParameters != NULL) {
-        *URLParameters = parameters;
+    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3
+    parameters[@"a0"] = [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+    
+    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+}
+
+#pragma mark -
+
++ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+{
+    NSString *actionValue = actionName;
+    if (actionParameters.count > 0) {
+        NSString *actionParametersString = [NUTracker trackActionParametersStringWithActionParameters:actionParameters];
+        if (actionParametersString.length > 0) {
+            actionValue = [actionValue stringByAppendingFormat:@",%@", actionParametersString];
+        }
     }
     
-    return path;
+    return actionValue;
+}
+
++ (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters
+{
+    NSMutableString *parametersString = [NSMutableString stringWithString:@""];
+    
+    // max 10 parameters are allowed
+    if (actionParameters.count > 10) {
+        actionParameters = [actionParameters subarrayWithRange:NSMakeRange(0, 10)];
+    }
+    
+    // first, truncate trailing NSNull(s) of the input array
+    // e.g.
+    // [A, B, NSNull, NSNull, C, D, NSNull, NSNull, NSNull, NSNull]
+    // -->
+    // [A, B, NSNull, NSNull, C, D]
+    BOOL hasAtLeastOneNonNullValue = NO;
+    NSUInteger lastNonNullIndex = actionParameters.count-1;
+    for (int i=(int)(actionParameters.count-1); i>=0; i--) {
+        id valueAtIndex = actionParameters[i];
+        if (![valueAtIndex isEqual:[NSNull null]]) {
+            lastNonNullIndex = i;
+            hasAtLeastOneNonNullValue = YES;
+            break;
+        }
+    }
+
+    if (hasAtLeastOneNonNullValue) {
+        NSArray *truncatedParameters = [actionParameters subarrayWithRange:NSMakeRange(0, lastNonNullIndex+1)];
+        if (truncatedParameters.count > 0) {
+            for (int i=0; i<truncatedParameters.count; i++) {
+                if (i > 0) { // add comma before adding each parameter except for the first one
+                    [parametersString appendString:@","];
+                }
+                
+                id actionParameter = truncatedParameters[i];
+                if (![actionParameter isEqual:[NSNull null]]) {
+                    [parametersString appendString:actionParameter];
+                }
+            }
+        }
+    }
+    
+    return parametersString;
 }
 
 @end

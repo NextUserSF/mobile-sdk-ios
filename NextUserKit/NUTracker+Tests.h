@@ -10,6 +10,11 @@
 
 @interface NUTracker (Tests)
 
+// track screen tests
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion;
 
+// track action tests
+- (void)trackActionWithName:(NSString *)actionName parameters:(NSDictionary *)actionParameters completion:(void(^)(NSError *error))completion;
++ (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters;
++ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 @end

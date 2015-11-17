@@ -31,5 +31,17 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 
 #pragma mark - Track
 - (void)trackScreenWithName:(NSString *)screenName;
+- (void)trackActionWithName:(NSString *)actionName;
+/*
+ Parameters max count: 10.
+ Parameter index is important. If you want to put some parameter at a specific index, use NSNull value for slots before that index.
+ e.g. 
+ input array of [someValue1, NSNull, someValue3, someValue4, NSNull, NSNull]
+ would put values in corresponding indices [someValue1, [EMPTY], someValue3, someValue4].
+ Rest of the trailing NSNulls are ignored.
+ 
+ This is the same method as one above (trackActionWithName:) except with this method you can send additional parameters.
+ */
+- (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 
 @end
