@@ -29,9 +29,12 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 #pragma mark - Configuration
 @property (nonatomic) NULogLevel logLevel;
 
-#pragma mark - Track
+#pragma mark - Track Screen
 - (void)trackScreenWithName:(NSString *)screenName;
+
+#pragma mark - Track Action
 - (void)trackActionWithName:(NSString *)actionName;
+
 /*
  Parameters max count: 10.
  Parameter index is important. If you want to put some parameter at a specific index, use NSNull value for slots before that index.
@@ -43,5 +46,15 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  This is the same method as one above (trackActionWithName:) except with this method you can send additional parameters.
  */
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
+
+/*
+ Use these two methods combined when sending multiple actions at once.
+ 
+ Usage:
+ First, collect all actions you would like to track and put them into an array (use +actionInfoWithName:parameters: method).
+ Then call -trackMultipleActions: with that array.
+*/
++ (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
+- (void)trackMultipleActions:(NSArray *)actions;
 
 @end

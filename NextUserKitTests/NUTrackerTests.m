@@ -181,4 +181,61 @@
     XCTAssert(actionParametersString == nil);
 }
 
+#pragma mark - Multiple Actions
+
+- (void)testMultipleActions
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
+    
+    NUTracker *tracker = [NUTracker sharedTracker];
+    [tracker startWithCompletion:^(NSError *error) {
+        if (error == nil) {
+            
+            NSArray *actions = @[[NUTrackerTests randomActionInfo],
+                                 [NUTrackerTests randomActionInfo],
+                                 [NUTrackerTests randomActionInfo],
+                                 [NUTrackerTests randomActionInfo],
+                                 [NUTrackerTests randomActionInfo]];
+            
+            [tracker trackMultipleActions:actions completion:^(NSError *error) {
+                
+                if (error == nil) {
+                    XCTAssert(YES);
+                } else {
+                    XCTFail(@"Track screen failed with error: %@", error);
+                }
+                
+                [expectation fulfill];
+            }];
+        } else {
+            NSLog(@"Session start error: %@", error);
+            XCTAssert(NO, @"Error starting session");
+        }
+    }];
+    
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Start session timeout error: %@", error);
+        }
+    }];
+}
+
+- (void)testActionInfoGeneration
+{
+    NSArray *actionParameters = @[@"param1", [NSNull null], @"param3"];
+    NSString *actionName = @"action_name";
+    
+    id actionInfo = [NUTracker actionInfoWithName:actionName parameters:actionParameters];
+    NSString *actionURLEntry = [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+    
+    XCTAssert([actionInfo isEqual:actionURLEntry]);
+}
+
+#pragma mark - Private
+
++ (id)randomActionInfo
+{
+    return [NUTracker trackActionURLEntryWithName:@"dummyActionName" parameters:@[@"parameter1", [NSNull null], @"parameter3", [NSNull null], [NSNull null], @"parameter6"]];
+}
+
 @end

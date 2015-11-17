@@ -107,13 +107,15 @@
     return level;
 }
 
-#pragma mark - Track
+#pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
     DDLogInfo(@"Track screen with name: %@", screenName);
     [self trackScreenWithName:screenName completion:NULL];
 }
+
+#pragma mark - Track Action
 
 - (void)trackActionWithName:(NSString *)actionName
 {
@@ -123,8 +125,20 @@
 
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
-    DDLogInfo(@"Track action with name: %@, parameters", actionName, actionParameters);
+    DDLogInfo(@"Track action with name: %@, parameters: %@", actionName, actionParameters);
     [self trackActionWithName:actionName parameters:actionParameters completion:NULL];
+}
+
++ (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+{
+    DDLogInfo(@"Action info with name: %@, parameters: %@", actionName, actionParameters);
+    return [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+}
+
+- (void)trackMultipleActions:(NSArray *)actions
+{
+    DDLogInfo(@"Track multiple actions: %@", actions);
+    [self trackMultipleActions:actions completion:NULL];
 }
 
 #pragma mark - Private
@@ -134,7 +148,7 @@
     return _session.deviceCookie != nil && _session.sessionCookie != nil;
 }
 
-#pragma mark - Track
+#pragma mark - Track Generic
 
 - (NSString *)trackRequestPathWithURLParameters:(NSMutableDictionary **)URLParameters
 {
@@ -187,7 +201,7 @@
          }];
 }
 
-#pragma mark -
+#pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
 {
@@ -200,13 +214,36 @@
     [self sendGETRequestWithPath:path parameters:parameters completion:completion];
 }
 
+#pragma mark - Track Action
+
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
 {
+    NSMutableDictionary *requestParameters = nil;
+    NSString *requestPath = [self trackRequestPathWithURLParameters:&requestParameters];
+    
+    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3
+    requestParameters[@"a0"] = [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+    
+    [self sendGETRequestWithPath:requestPath parameters:requestParameters completion:completion];
+}
+
+- (void)trackMultipleActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
+{
+    // max 10 actions are allowed
+    if (actions.count > 10) {
+        actions = [actions subarrayWithRange:NSMakeRange(0, 10)];
+    }
+    
     NSMutableDictionary *parameters = nil;
     NSString *path = [self trackRequestPathWithURLParameters:&parameters];
     
-    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3
-    parameters[@"a0"] = [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3&a1=other_action
+    for (int i=0; i<actions.count; i++) {
+        NSString *actionKey = [NSString stringWithFormat:@"a%d", i];
+        NSString *actionValue = actions[i];
+        
+        parameters[actionKey] = actionValue;
+    }
     
     [self sendGETRequestWithPath:path parameters:parameters completion:completion];
 }
