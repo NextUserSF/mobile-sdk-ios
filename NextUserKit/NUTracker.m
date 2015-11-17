@@ -218,13 +218,7 @@
 
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
 {
-    NSMutableDictionary *requestParameters = nil;
-    NSString *requestPath = [self trackRequestPathWithURLParameters:&requestParameters];
-    
-    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3
-    requestParameters[@"a0"] = [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
-    
-    [self sendGETRequestWithPath:requestPath parameters:requestParameters completion:completion];
+    [self trackMultipleActions:@[[NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
 }
 
 - (void)trackMultipleActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
