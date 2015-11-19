@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import <NextUserKit/NextUserKit.h>
-#import "NUAPIPathGenerator.h"
+#import "NUTrackingHTTPRequestHelper.h"
 #import "NUTracker+Tests.h"
 
 @interface NUTrackerTests : XCTestCase
@@ -132,7 +132,7 @@
     NSString *actionName = @"action_name";
     
     id actionInfo = [NUTracker actionInfoWithName:actionName parameters:actionParameters];
-    NSString *actionURLEntry = [NUAPIPathGenerator trackActionURLEntryWithName:actionName parameters:actionParameters];
+    NSString *actionURLEntry = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters];
     
     XCTAssert([actionInfo isEqual:actionURLEntry]);
 }
@@ -141,7 +141,7 @@
 
 + (id)randomActionInfo
 {
-    return [NUAPIPathGenerator trackActionURLEntryWithName:@"dummyActionName" parameters:@[@"parameter1", [NSNull null], @"parameter3", [NSNull null], [NSNull null], @"parameter6"]];
+    return [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:@"dummyActionName" parameters:@[@"parameter1", [NSNull null], @"parameter3", [NSNull null], [NSNull null], @"parameter6"]];
 }
 
 @end

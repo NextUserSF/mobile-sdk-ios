@@ -1,5 +1,5 @@
 //
-//  NUAPIPathGenerator.h
+//  NUTrackingHTTPRequestHelper.h
 //  NextUserKit
 //
 //  Created by Dino on 11/11/15.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface NUAPIPathGenerator : NSObject
+@interface NUTrackingHTTPRequestHelper : NSObject
 
 #pragma mark - Path
 + (NSString *)basePath;

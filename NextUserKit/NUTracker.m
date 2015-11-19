@@ -8,7 +8,7 @@
 
 #import "NUTracker.h"
 #import "NUTrackerSession.h"
-#import "NUAPIPathGenerator.h"
+#import "NUTrackingHTTPRequestHelper.h"
 #import "NUTracker+Tests.h"
 #import "NUDDLog.h"
 #import "AFNetworking.h"
@@ -132,7 +132,7 @@
 + (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
     DDLogInfo(@"Action info with name: %@, parameters: %@", actionName, actionParameters);
-    return [NUAPIPathGenerator trackActionURLEntryWithName:actionName parameters:actionParameters];
+    return [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters];
 }
 
 - (void)trackActions:(NSArray *)actions
@@ -153,7 +153,7 @@
 - (NSString *)trackRequestPathWithURLParameters:(NSMutableDictionary **)URLParameters
 {
     // e.g. __nutm.gif?tid=wid+username&pv0=www.google.com
-    NSString *path = [NUAPIPathGenerator pathWithAPIName:@"__nutm.gif"];
+    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     // add default parameters
@@ -218,7 +218,7 @@
 
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
 {
-    [self trackActions:@[[NUAPIPathGenerator trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
+    [self trackActions:@[[NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
 }
 
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion

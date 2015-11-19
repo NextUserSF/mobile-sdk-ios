@@ -1,17 +1,17 @@
 //
-//  NUAPIPathGenerator.m
+//  NUTrackingHTTPRequestHelper.m
 //  NextUserKit
 //
 //  Created by Dino on 11/11/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import "NUAPIPathGenerator.h"
+#import "NUTrackingHTTPRequestHelper.h"
 
 #define END_POINT_DEV @"https://track-dev.nextuser.com"
 #define END_POINT_PROD @"https://track.nextuser.com"
 
-@implementation NUAPIPathGenerator
+@implementation NUTrackingHTTPRequestHelper
 
 #pragma mark - Public API
 

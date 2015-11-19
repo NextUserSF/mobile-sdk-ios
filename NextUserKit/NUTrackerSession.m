@@ -7,7 +7,7 @@
 //
 
 #import "NUTrackerSession.h"
-#import "NUAPIPathGenerator.h"
+#import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
 #import "AFNetworking.h"
 #import "SSKeychain.h"
@@ -85,7 +85,7 @@
 - (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie URLParameters:(NSDictionary **)URLParameters
 {
     // e.g. https://track-dev.nextuser.com/sdk.js?tid=internal_tests
-    NSString *path = [NUAPIPathGenerator pathWithAPIName:@"sdk.js"];
+    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"sdk.js"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[@"tid"] = @"internal_tests";
