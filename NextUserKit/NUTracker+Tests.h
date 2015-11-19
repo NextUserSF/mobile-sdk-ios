@@ -15,8 +15,6 @@
 
 // track action tests
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSDictionary *)actionParameters completion:(void(^)(NSError *error))completion;
-+ (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters;
-+ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
 
 @end

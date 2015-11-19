@@ -11,7 +11,12 @@
 
 @interface NUAPIPathGenerator : NSObject
 
+#pragma mark - Path
 + (NSString *)basePath;
 + (NSString *)pathWithAPIName:(NSString *)APIName;
+
+#pragma mark - Parameters
++ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
++ (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters;
 
 @end

@@ -132,7 +132,7 @@
 + (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
     DDLogInfo(@"Action info with name: %@, parameters: %@", actionName, actionParameters);
-    return [NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters];
+    return [NUAPIPathGenerator trackActionURLEntryWithName:actionName parameters:actionParameters];
 }
 
 - (void)trackActions:(NSArray *)actions
@@ -218,7 +218,7 @@
 
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters completion:(void(^)(NSError *error))completion
 {
-    [self trackActions:@[[NUTracker trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
+    [self trackActions:@[[NUAPIPathGenerator trackActionURLEntryWithName:actionName parameters:actionParameters]] completion:completion];
 }
 
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion

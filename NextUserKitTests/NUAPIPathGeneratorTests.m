@@ -34,4 +34,100 @@
     XCTAssert(range.location == 0 && range.length == basePath.length);
 }
 
+#pragma mark - Action Parameters
+
+- (void)testActionParametersStringGenerateFromEmpty
+{
+    NSArray *inputArray = @[];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@""]);
+}
+
+- (void)testActionParametersStringGenerateFromAllNulls
+{
+    NSArray *inputArray = @[[NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@""]);
+}
+
+- (void)testActionParametersStringGenerateFromOneNonNullAtFirstIndex
+{
+    NSArray *inputArray = @[@"1_value", [NSNull null], [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@"1_value"]);
+}
+
+- (void)testActionParametersStringGenerateFromOneNonNullAtSecondIndex
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+}
+
+- (void)testActionParametersStringGenerateFromOneNonNullAtThirdIndex
+{
+    NSArray *inputArray = @[[NSNull null], [NSNull null], @"3_value", [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",,3_value"]);
+}
+
+- (void)testActionParametersStringGenerateFromNonNullOverloadArray
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
+                            @"11_value"]; // 10 max
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+}
+
+- (void)testActionParametersStringGenerateFromNullOverloadArray
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null]]; // 10 max
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+}
+
+- (void)testActionParametersStringGenerateFromSmallerArray
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",2_value,,,,,,,9_value"]);
+}
+
+#pragma mark - Action URL value
+
+- (void)testActionURLValueFromNonNullOverloadArray
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionURLEntryWithName:@"actionName0" parameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@"actionName0,,2_value,,,,,,,9_value"]);
+}
+
+- (void)testActionURLValueFromNonNullOverloadArrayAndNilActionName
+{
+    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
+    NSString *actionParametersString = [NUAPIPathGenerator trackActionURLEntryWithName:nil parameters:inputArray];
+    
+    XCTAssert(actionParametersString == nil);
+}
+
+
 @end
