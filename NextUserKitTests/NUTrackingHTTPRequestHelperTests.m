@@ -32,7 +32,7 @@
     
     NSRange range = [generatedAPIPath rangeOfString:basePath];
     
-    // test that base path is at the begining of the generated path
+    // test that base path is at the beginning of the generated path
     XCTAssert(range.location == 0 && range.length == basePath.length);
 }
 
