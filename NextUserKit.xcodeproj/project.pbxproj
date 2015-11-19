@@ -19,7 +19,7 @@
 		31614FAE1BF3508C00F0535D /* SSKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FA81BF3508C00F0535D /* SSKeychainQuery.m */; };
 		31614FB71BF3808000F0535D /* NUTrackingHTTPRequestHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 31614FB51BF3808000F0535D /* NUTrackingHTTPRequestHelper.h */; };
 		31614FB81BF3808000F0535D /* NUTrackingHTTPRequestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */; };
-		31614FBE1BF3880500F0535D /* NUAPIPathGeneratorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FBD1BF3880500F0535D /* NUAPIPathGeneratorTests.m */; };
+		31614FBE1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */; };
 		31614FBF1BF3882900F0535D /* NUTrackingHTTPRequestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */; };
 		316438E41BFC7D1D0092E067 /* NUProduct.h in Headers */ = {isa = PBXBuildFile; fileRef = 316438E21BFC7D1D0092E067 /* NUProduct.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		316438E51BFC7D1D0092E067 /* NUProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E31BFC7D1D0092E067 /* NUProduct.m */; };
@@ -109,7 +109,7 @@
 		31614FA81BF3508C00F0535D /* SSKeychainQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychainQuery.m; sourceTree = "<group>"; };
 		31614FB51BF3808000F0535D /* NUTrackingHTTPRequestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackingHTTPRequestHelper.h; sourceTree = "<group>"; };
 		31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackingHTTPRequestHelper.m; sourceTree = "<group>"; };
-		31614FBD1BF3880500F0535D /* NUAPIPathGeneratorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUAPIPathGeneratorTests.m; sourceTree = "<group>"; };
+		31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackingHTTPRequestHelperTests.m; sourceTree = "<group>"; };
 		316438E21BFC7D1D0092E067 /* NUProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUProduct.h; sourceTree = "<group>"; };
 		316438E31BFC7D1D0092E067 /* NUProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUProduct.m; sourceTree = "<group>"; };
 		316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchaseDetails.h; sourceTree = "<group>"; };
@@ -265,7 +265,7 @@
 			children = (
 				312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */,
 				310DAE251BF337E500422C06 /* NUTrackerSessionTests.m */,
-				31614FBD1BF3880500F0535D /* NUAPIPathGeneratorTests.m */,
+				31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */,
 				31E61C6C1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m */,
 				318BFF331BECF49B00B2AA2A /* Info.plist */,
 				318BFF751BECFE5300B2AA2A /* MobileCoreServices.framework */,
@@ -596,7 +596,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				31E61C6D1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m in Sources */,
-				31614FBE1BF3880500F0535D /* NUAPIPathGeneratorTests.m in Sources */,
+				31614FBE1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m in Sources */,
 				31614FBF1BF3882900F0535D /* NUTrackingHTTPRequestHelper.m in Sources */,
 				31E61C691BFDCDC000AAD12B /* NUObjectPropertyStatusUtils.m in Sources */,
 				31E61C731BFDDE4700AAD12B /* NSString+LGUtils.m in Sources */,
