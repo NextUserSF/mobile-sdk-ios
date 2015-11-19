@@ -7,6 +7,10 @@
 //
 
 #import "NUTrackingHTTPRequestHelper.h"
+#import "NUProduct.h"
+#import "NUPurchaseDetails.h"
+#import "NUObjectPropertyStatusUtils.h"
+#import "NSString+LGUtils.h"
 
 #define END_POINT_DEV @"https://track-dev.nextuser.com"
 #define END_POINT_PROD @"https://track.nextuser.com"
@@ -28,6 +32,8 @@
 }
 
 #pragma mark - Parameters
+
+#pragma mark - Track Action
 
 + (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
@@ -84,6 +90,107 @@
     }
     
     return [parametersString copy];
+}
+
+#pragma mark - Track Purchase
+
++ (NSString *)trackPurchaseParametersStringWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails
+{
+    NSMutableString *parametersString = [NSMutableString stringWithString:@""];
+    
+    [parametersString appendFormat:@"%g", totalAmount];
+    NSString *productsString = [self serializedProducts:products];
+    [parametersString appendFormat:@",%@", productsString];
+    
+    if (purchaseDetails) {
+        NSString *serializedDetails = [self serializedPurchaseDetails:purchaseDetails];
+        [parametersString appendFormat:@",%@", serializedDetails];
+    }
+    
+    return [parametersString copy];
+}
+
++ (NSString *)serializedProducts:(NSArray *)products
+{
+    NSMutableString *productsString = [NSMutableString stringWithString:@""];
+    
+    for (int i=0; i<products.count; i++) {
+        NUProduct *product = products[i];
+        if (i > 0) {
+            [productsString appendString:@","];
+        }
+        
+        NSString *serializedProduct = [self serializedProduct:product];
+        [productsString appendString:serializedProduct];
+    }
+    
+    return [productsString copy];
+}
+
++ (NSString *)serializedProduct:(NUProduct *)product
+{
+    NSMutableString *productString = [NSMutableString stringWithString:@""];
+    [productString appendFormat:@"%@=", [product.name URLEncodedString]];
+    
+    NSMutableArray *keyValuePairs = [NSMutableArray array];
+    if ([NUObjectPropertyStatusUtils isStringValueSet:product.SKU]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"SKU:%@", [product.SKU URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:product.category]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"category:%@", [product.category URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:product.productDescription]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"description:%@", [product.productDescription URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isDoubleValueSet:product.price]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"price:%g", product.price]];
+    }
+    if ([NUObjectPropertyStatusUtils isUnsignedIntegerValueSet:product.quantity]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"quantity:%ld", (unsigned long)product.quantity]];
+    }
+    
+    [productString appendString:[keyValuePairs componentsJoinedByString:@";"]];
+    
+    return [productString copy];
+}
+
++ (NSString *)serializedPurchaseDetails:(NUPurchaseDetails *)purchaseDetails
+{
+    NSMutableString *productString = [NSMutableString stringWithString:@"_="];
+    
+    NSMutableArray *keyValuePairs = [NSMutableArray array];
+    if ([NUObjectPropertyStatusUtils isDoubleValueSet:purchaseDetails.discount]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"discount:%g", purchaseDetails.discount]];
+    }
+    if ([NUObjectPropertyStatusUtils isDoubleValueSet:purchaseDetails.shipping]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"shipping:%g", purchaseDetails.shipping]];
+    }
+    if ([NUObjectPropertyStatusUtils isDoubleValueSet:purchaseDetails.tax]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"tax:%g", purchaseDetails.tax]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.currency]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"currency:%@", [purchaseDetails.currency URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.paymentMethod]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"method:%@", [purchaseDetails.paymentMethod URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.affilation]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"affilation:%@", [purchaseDetails.affilation URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.state]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"state:%@", [purchaseDetails.state URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.city]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"city:%@", [purchaseDetails.city URLEncodedString]]];
+    }
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.zip]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"zip:%@", [purchaseDetails.zip URLEncodedString]]];
+    }
+    [keyValuePairs addObject:[NSString stringWithFormat:@"incomplete:%@", purchaseDetails.incomplete ? @"1" : @"0"]];
+    
+    [productString appendString:[keyValuePairs componentsJoinedByString:@";"]];
+    
+    return [productString copy];
 }
 
 @end

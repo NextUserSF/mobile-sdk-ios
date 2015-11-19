@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class NUProduct;
+@class NUPurchaseDetails;
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
@@ -18,5 +20,10 @@
 #pragma mark - Parameters
 + (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 + (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters;
+#pragma mark -
++ (NSString *)trackPurchaseParametersStringWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails;
++ (NSString *)serializedProducts:(NSArray *)products;
++ (NSString *)serializedProduct:(NUProduct *)product;
++ (NSString *)serializedPurchaseDetails:(NUPurchaseDetails *)purchaseDetails;
 
 @end

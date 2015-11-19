@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class NUPurchaseDetails;
+
 typedef NS_ENUM(NSUInteger, NULogLevel) {
     NULogLevelOff,      // No logs
     NULogLevelError,    // Error logs only
@@ -56,5 +58,11 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 */
 + (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 - (void)trackActions:(NSArray *)actions;
+
+#pragma mark - Track Purchase 
+/*
+ Products - list of NUProduct objects
+ */
+- (void)trackPurchaseWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails;
 
 @end

@@ -141,6 +141,14 @@
     [self trackActions:actions completion:NULL];
 }
 
+#pragma mark - Track Purchase
+
+- (void)trackPurchaseWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails
+{
+    DDLogInfo(@"Track purchase with total amount: %f, products: %@, purchase details: %@", totalAmount, products, purchaseDetails);
+    [self trackPurchaseWithTotalAmount:totalAmount products:products purchaseDetails:purchaseDetails completion:NULL];
+}
+
 #pragma mark - Private
 
 - (BOOL)isValidSession
@@ -242,63 +250,21 @@
     [self sendGETRequestWithPath:path parameters:parameters completion:completion];
 }
 
-#pragma mark -
+#pragma mark - Track Purchase
 
-+ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+- (void)trackPurchaseWithTotalAmount:(double)totalAmount
+                            products:(NSArray *)products
+                     purchaseDetails:(NUPurchaseDetails *)purchaseDetails
+                          completion:(void(^)(NSError *error))completion
 {
-    NSString *actionValue = actionName;
-    if (actionParameters.count > 0) {
-        NSString *actionParametersString = [NUTracker trackActionParametersStringWithActionParameters:actionParameters];
-        if (actionParametersString.length > 0) {
-            actionValue = [actionValue stringByAppendingFormat:@",%@", actionParametersString];
-        }
-    }
+    NSMutableDictionary *parameters = nil;
+    NSString *path = [self trackRequestPathWithURLParameters:&parameters];
     
-    return actionValue;
-}
-
-+ (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters
-{
-    NSMutableString *parametersString = [NSMutableString stringWithString:@""];
+    parameters[@"pu0"] = [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:totalAmount
+                                                                                         products:products
+                                                                                  purchaseDetails:purchaseDetails];
     
-    // max 10 parameters are allowed
-    if (actionParameters.count > 10) {
-        actionParameters = [actionParameters subarrayWithRange:NSMakeRange(0, 10)];
-    }
-    
-    // first, truncate trailing NSNull(s) of the input array
-    // e.g.
-    // [A, B, NSNull, NSNull, C, D, NSNull, NSNull, NSNull, NSNull]
-    // -->
-    // [A, B, NSNull, NSNull, C, D]
-    BOOL hasAtLeastOneNonNullValue = NO;
-    NSUInteger lastNonNullIndex = actionParameters.count-1;
-    for (int i=(int)(actionParameters.count-1); i>=0; i--) {
-        id valueAtIndex = actionParameters[i];
-        if (![valueAtIndex isEqual:[NSNull null]]) {
-            lastNonNullIndex = i;
-            hasAtLeastOneNonNullValue = YES;
-            break;
-        }
-    }
-
-    if (hasAtLeastOneNonNullValue) {
-        NSArray *truncatedParameters = [actionParameters subarrayWithRange:NSMakeRange(0, lastNonNullIndex+1)];
-        if (truncatedParameters.count > 0) {
-            for (int i=0; i<truncatedParameters.count; i++) {
-                if (i > 0) { // add comma before adding each parameter except for the first one
-                    [parametersString appendString:@","];
-                }
-                
-                id actionParameter = truncatedParameters[i];
-                if (![actionParameter isEqual:[NSNull null]]) {
-                    [parametersString appendString:actionParameter];
-                }
-            }
-        }
-    }
-    
-    return parametersString;
+    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
 }
 
 @end
