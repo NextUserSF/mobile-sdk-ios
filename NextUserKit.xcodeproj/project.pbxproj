@@ -109,6 +109,7 @@
 		315A63F01C030BE400ADB2DD /* NUTrackerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackerUtils.h; sourceTree = "<group>"; };
 		315A63F11C030BE400ADB2DD /* NUTrackerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerUtils.m; sourceTree = "<group>"; };
 		315A63F51C0310CD00ADB2DD /* NUTrackerUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerUtilsTests.m; sourceTree = "<group>"; };
+		315A63FB1C032D1B00ADB2DD /* NUTestDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NUTestDefinitions.h; sourceTree = "<group>"; };
 		31614FA31BF3508C00F0535D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SSKeychain.strings; sourceTree = "<group>"; };
 		31614FA51BF3508C00F0535D /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		31614FA61BF3508C00F0535D /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
@@ -270,6 +271,7 @@
 		318BFF301BECF49B00B2AA2A /* NextUserKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				315A63FB1C032D1B00ADB2DD /* NUTestDefinitions.h */,
 				312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */,
 				315A63F51C0310CD00ADB2DD /* NUTrackerUtilsTests.m */,
 				310DAE251BF337E500422C06 /* NUTrackerSessionTests.m */,

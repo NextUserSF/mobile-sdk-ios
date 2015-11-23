@@ -8,8 +8,9 @@
 
 #import <XCTest/XCTest.h>
 #import "NUTracker.h"
-#import "NUTracker+Tests.h"
 #import "NUTrackerUtils.h"
+#import "NUTestDefinitions.h"
+#import "NUTracker+Tests.h"
 
 @interface NUTrackerUtilsTests : XCTestCase
 
@@ -24,8 +25,8 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker startWithCompletion:^(NSError *error) {
-        
+    [tracker startSessionWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
+
         if (error != nil) {
             NSLog(@"Start session error:  %@", error);
         }

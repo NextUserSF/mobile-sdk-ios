@@ -46,11 +46,12 @@
 
 #pragma mark - Initialization
 
-- (void)startWithCompletion:(void (^)(NSError *error))completion
+- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
     if (!_session.startupRequestInProgress) {
         _session = [[NUTrackerSession alloc] init];
-        [_session startWithCompletion:^(NSError *error) {
+        [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
+
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     _isReady = YES;

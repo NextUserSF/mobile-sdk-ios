@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 
 #pragma mark - Initialization
 @property (nonatomic, readonly) BOOL isReady;
-- (void)startWithCompletion:(void(^)(NSError *error))completion;
+- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 
 #pragma mark - Configuration
 @property (nonatomic) NULogLevel logLevel;

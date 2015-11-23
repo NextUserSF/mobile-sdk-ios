@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "NUTrackerSession.h"
+#import "NUTestDefinitions.h"
 
 @interface NUTrackerSessionTests : XCTestCase
 
@@ -22,7 +23,8 @@
     NUTrackerSession *session = [[NUTrackerSession alloc] init];
     [session clearSerializedDeviceCookie];
     
-    [session startWithCompletion:^(NSError *error) {
+    [session startWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
+        
         if (error == nil) {
             XCTAssert(session.deviceCookie != nil && session.sessionCookie != nil, @"deviceCookie & sessionCookie must be set");
         } else {
@@ -46,7 +48,8 @@
     NUTrackerSession *session = [[NUTrackerSession alloc] init];
     NSString *serializedDeviceCookie = [session serializedDeviceCookie];
 
-    [session startWithCompletion:^(NSError *error) {
+    [session startWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
+
         if (error == nil) {
             XCTAssert([session.deviceCookie isEqualToString:serializedDeviceCookie], @"deviceCookie & _firstStartDeviceCookie must match");
         } else {

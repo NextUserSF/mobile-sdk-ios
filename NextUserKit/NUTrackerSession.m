@@ -30,19 +30,18 @@
         
         // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
-        
-        _trackIdentifier = @"internal_tests";
     }
     
     return self;
 }
 
-- (void)startWithCompletion:(void(^)(NSError *error))completion
+- (void)startWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
     DDLogInfo(@"Start tracker session");
     if (!_startupRequestInProgress) {
         
         _startupRequestInProgress = YES;
+        _trackIdentifier = trackIdentifier;
         
         NSString *currentDeviceCookie = [self serializedDeviceCookie];
         
