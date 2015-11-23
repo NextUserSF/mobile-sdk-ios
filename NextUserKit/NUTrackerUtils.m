@@ -20,22 +20,33 @@
                              inSession:(NUTrackerSession *)session
                             completion:(void(^)(NSError *))completion
 {
-    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
+    NSString *path = [self trackingBasePath];
+    NSMutableDictionary *parameters = [self defaultTrackingParametersForSession:session];
+
+    // add track parameters
+    for (id key in trackParameters.allKeys) {
+        parameters[key] = trackParameters[key];
+    }
     
+    [self sendHTTPGETRequestWithPath:path parameters:parameters completion:completion];
+}
+
++ (NSString *)trackingBasePath
+{
+    return [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
+}
+
++ (NSMutableDictionary *)defaultTrackingParametersForSession:(NUTrackerSession *)session
+{
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    // add default parameters
     if ([self isSessionValid:session]) {
         NSString *deviceCookieURLValue = [NSString stringWithFormat:@"...%@", session.deviceCookie];
         parameters[@"nutm_s"] = deviceCookieURLValue;
         parameters[@"nutm_sc"] = session.sessionCookie;
     }
     parameters[@"tid"] = @"internal_tests";
-    // add track parameters
-    for (id key in trackParameters.allKeys) {
-        parameters[key] = trackParameters[key];
-    }
     
-    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+    return parameters;
 }
 
 + (BOOL)isSessionValid:(NUTrackerSession *)session
@@ -43,9 +54,9 @@
     return session.deviceCookie != nil && session.sessionCookie != nil;
 }
 
-+ (void)sendGETRequestWithPath:(NSString *)path
-                    parameters:(NSDictionary *)parameters
-                    completion:(void(^)(NSError *error))completion
++ (void)sendHTTPGETRequestWithPath:(NSString *)path
+                        parameters:(NSDictionary *)parameters
+                        completion:(void(^)(NSError *error))completion
 {
     DDLogInfo(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
