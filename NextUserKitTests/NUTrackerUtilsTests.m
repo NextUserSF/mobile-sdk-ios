@@ -10,7 +10,9 @@
 #import "NUTracker.h"
 #import "NUTrackerUtils.h"
 #import "NUTestDefinitions.h"
+#import "NUTrackerSession.h"
 #import "NUTracker+Tests.h"
+#import "NUTrackerUtils+Tests.h"
 
 @interface NUTrackerUtilsTests : XCTestCase
 
@@ -39,6 +41,28 @@
             NSLog(@"Start session timeout error: %@", error);
         }
     }];
+}
+
+#pragma mark - User Identify
+
+- (void)testTrackIdentifierParameterWithUserIdentification
+{
+    NUTracker *tracker = [NUTracker sharedTracker];
+    NSString *userIdentifier = @"dummyUsername";
+    [tracker identifyUserWithIdentifier:userIdentifier];
+    
+    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:[tracker session]];
+    NSString *expectedString = [NSString stringWithFormat:@"%@+%@", [tracker session].trackIdentifier, [tracker session].userIdentifier];
+    XCTAssert([generatedString isEqualToString:expectedString]);
+}
+
+- (void)testTrackIdentifierParameterWithoutUserIdentification
+{
+    NUTracker *tracker = [NUTracker sharedTracker];
+    
+    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:[tracker session]];
+    NSString *expectedString = [tracker session].trackIdentifier;
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 #pragma mark - Screen Track

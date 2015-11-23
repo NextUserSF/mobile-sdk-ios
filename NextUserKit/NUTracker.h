@@ -31,6 +31,9 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 #pragma mark - Configuration
 @property (nonatomic) NULogLevel logLevel;
 
+#pragma mark - User Identification
+- (void)identifyUserWithIdentifier:(NSString *)userIdentifier;
+
 #pragma mark - Track Screen
 - (void)trackScreenWithName:(NSString *)screenName;
 

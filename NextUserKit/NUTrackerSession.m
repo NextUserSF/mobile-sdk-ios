@@ -41,6 +41,9 @@
     if (!_startupRequestInProgress) {
         
         _startupRequestInProgress = YES;
+
+        _deviceCookie = nil;
+        _sessionCookie = nil;
         _trackIdentifier = trackIdentifier;
         
         NSString *currentDeviceCookie = [self serializedDeviceCookie];

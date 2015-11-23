@@ -39,6 +39,8 @@
         // setup logger
         [DDLog addLogger:[DDASLLogger sharedInstance]];
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        
+        _session = [[NUTrackerSession alloc] init];
     }
     
     return self;
@@ -49,9 +51,7 @@
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
     if (!_session.startupRequestInProgress) {
-        _session = [[NUTrackerSession alloc] init];
         [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
-
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     _isReady = YES;
@@ -105,6 +105,13 @@
     }
     
     return level;
+}
+
+#pragma mark - User Identification
+- (void)identifyUserWithIdentifier:(NSString *)userIdentifier
+{
+    DDLogInfo(@"Identify user with identifer: %@", userIdentifier);
+    _session.userIdentifier = userIdentifier;
 }
 
 #pragma mark - Track Screen
