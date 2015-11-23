@@ -16,9 +16,10 @@
 
 #pragma mark - Track Generic
 
-+ (NSString *)trackRequestPathWithURLParameters:(NSMutableDictionary **)URLParameters inSession:(NUTrackerSession *)session
++ (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
+                             inSession:(NUTrackerSession *)session
+                            completion:(void(^)(NSError *))completion
 {
-    // e.g. __nutm.gif?tid=wid+username&pv0=www.google.com
     NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
@@ -29,12 +30,12 @@
         parameters[@"nutm_sc"] = session.sessionCookie;
     }
     parameters[@"tid"] = @"internal_tests";
-    
-    if (URLParameters != NULL) {
-        *URLParameters = parameters;
+    // add track parameters
+    for (id key in trackParameters.allKeys) {
+        parameters[key] = trackParameters[key];
     }
     
-    return path;
+    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
 }
 
 + (BOOL)isSessionValid:(NUTrackerSession *)session
@@ -76,20 +77,20 @@
 
 + (void)trackScreenWithName:(NSString *)screenName inSession:(NUTrackerSession *)session completion:(void(^)(NSError *error))completion
 {
-    NSMutableDictionary *parameters = nil;
-    NSString *path = [self trackRequestPathWithURLParameters:&parameters inSession:session];
+    NSDictionary *parameters = @{@"pv0" : screenName};
     
-    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&pv0=http%3A//dev1_dot_nextuser_dot_com/%23%21/2/analytics/dashboard
-    parameters[@"pv0"] = screenName;
-    
-    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+    [self sendTrackRequestWithParameters:parameters inSession:session completion:completion];
 }
 
 #pragma mark - Track Action
 
 + (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters inSession:(NUTrackerSession *)session completion:(void(^)(NSError *error))completion
 {
-    [self trackActions:@[[NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters]] inSession:(NUTrackerSession *)session completion:completion];
+    NSArray *actions = @[[NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName
+                                                                       parameters:actionParameters]];
+    [self trackActions:actions
+             inSession:session
+            completion:completion];
 }
 
 + (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
@@ -104,10 +105,7 @@
         actions = [actions subarrayWithRange:NSMakeRange(0, 10)];
     }
     
-    NSMutableDictionary *parameters = nil;
-    NSString *path = [self trackRequestPathWithURLParameters:&parameters inSession:session];
-    
-    // e.g. /__nutm.gif?tid=internal_tests&nutm_s=...1446465312539000051&nutm_sc=1447343964091171821&a0=an_action,,,parameter_number_3&a1=other_action
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:actions.count];
     for (int i=0; i<actions.count; i++) {
         NSString *actionKey = [NSString stringWithFormat:@"a%d", i];
         NSString *actionValue = actions[i];
@@ -115,7 +113,7 @@
         parameters[actionKey] = actionValue;
     }
     
-    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+    [self sendTrackRequestWithParameters:parameters inSession:session completion:completion];
 }
 
 #pragma mark - Track Purchase
@@ -126,14 +124,11 @@
                            inSession:(NUTrackerSession *)session
                           completion:(void(^)(NSError *error))completion
 {
-    NSMutableDictionary *parameters = nil;
-    NSString *path = [self trackRequestPathWithURLParameters:&parameters inSession:session];
-    
-    parameters[@"pu0"] = [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:totalAmount
-                                                                                          products:products
-                                                                                   purchaseDetails:purchaseDetails];
-    
-    [self sendGETRequestWithPath:path parameters:parameters completion:completion];
+    NSDictionary *parameters = @{@"pu0" : [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:totalAmount
+                                                                                                           products:products
+                                                                                                    purchaseDetails:purchaseDetails]};
+
+    [self sendTrackRequestWithParameters:parameters inSession:session completion:completion];
 }
 
 @end
