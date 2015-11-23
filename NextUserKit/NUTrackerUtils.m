@@ -43,15 +43,15 @@
         NSString *deviceCookieURLValue = [NSString stringWithFormat:@"...%@", session.deviceCookie];
         parameters[@"nutm_s"] = deviceCookieURLValue;
         parameters[@"nutm_sc"] = session.sessionCookie;
+        parameters[@"tid"] = session.trackIdentifier;
     }
-    parameters[@"tid"] = @"internal_tests";
     
     return parameters;
 }
 
 + (BOOL)isSessionValid:(NUTrackerSession *)session
 {
-    return session.deviceCookie != nil && session.sessionCookie != nil;
+    return session.deviceCookie != nil && session.sessionCookie != nil && session.trackIdentifier != nil;
 }
 
 + (void)sendHTTPGETRequestWithPath:(NSString *)path

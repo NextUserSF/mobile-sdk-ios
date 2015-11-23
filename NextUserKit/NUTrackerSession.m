@@ -30,6 +30,8 @@
         
         // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
+        
+        _trackIdentifier = @"internal_tests";
     }
     
     return self;

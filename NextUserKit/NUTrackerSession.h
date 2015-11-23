@@ -13,6 +13,8 @@
 @property (nonatomic, readonly) NSString *sessionCookie;
 @property (nonatomic, readonly) NSString *deviceCookie; // gets serialized when retrieved from server
 
+@property (nonatomic, readonly) NSString *trackIdentifier;
+
 // property serialization
 - (NSString *)serializedDeviceCookie;
 - (void)clearSerializedDeviceCookie;
