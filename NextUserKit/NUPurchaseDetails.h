@@ -12,29 +12,18 @@
 
 + (instancetype)details;
 
-@property (nonatomic) double discount;
-@property (nonatomic) double shipping;
+@property (nonatomic) double discount; // amount of discount
+@property (nonatomic) double shipping; // shipping cost
 @property (nonatomic) double tax;
 @property (nonatomic) NSString *currency;
 
-@property (nonatomic) BOOL incomplete;
+@property (nonatomic) BOOL incomplete; // incomplete - purchase not completed (failed, saved for later...)
 @property (nonatomic) NSString *paymentMethod;
-@property (nonatomic) NSString *affilation;
+@property (nonatomic) NSString *affilation; // site's purchase ID or similar
 
+// entered on purchase
 @property (nonatomic) NSString *state;
 @property (nonatomic) NSString *city;
 @property (nonatomic) NSString *zip;
 
 @end
-
-
-//discount - amount of discount, serialized as decimal number with dot: 123.99
-//shipping - shipping cost, serialized as number with dot 432.33
-//tax - tax, serialized as number with dot 432.33
-//currency - string
-//incomplete - purchase not completed (failed, saved for later...), serialized as 1 or 0
-//method - string, method of payment
-//state - string, state (or country) entered on purchase
-//city - string
-//zip - string, zipcode
-//affiliation - string, site's purchase ID or similar
