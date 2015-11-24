@@ -112,6 +112,7 @@
 {
     DDLogInfo(@"Identify user with identifer: %@", userIdentifier);
     _session.userIdentifier = userIdentifier;
+    _session.userIdentifierRegistered = NO;
 }
 
 #pragma mark - Track Screen

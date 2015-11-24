@@ -48,21 +48,82 @@
 - (void)testTrackIdentifierParameterWithUserIdentification
 {
     NUTracker *tracker = [NUTracker sharedTracker];
+    NUTrackerSession *session = [tracker session];
+    
     NSString *userIdentifier = @"dummyUsername";
     [tracker identifyUserWithIdentifier:userIdentifier];
     
-    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:[tracker session]];
-    NSString *expectedString = [NSString stringWithFormat:@"%@+%@", [tracker session].trackIdentifier, [tracker session].userIdentifier];
+    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:session appendUserIdentifier:YES];
+    NSString *expectedString = [NSString stringWithFormat:@"%@+%@", session.trackIdentifier, session.userIdentifier];
     XCTAssert([generatedString isEqualToString:expectedString]);
+    
+    // cleanup
+    [tracker identifyUserWithIdentifier:nil];
 }
 
 - (void)testTrackIdentifierParameterWithoutUserIdentification
 {
     NUTracker *tracker = [NUTracker sharedTracker];
+    NUTrackerSession *session = [tracker session];
+
+    [tracker identifyUserWithIdentifier:nil];
     
-    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:[tracker session]];
-    NSString *expectedString = [tracker session].trackIdentifier;
+    NSString *generatedString = [NUTrackerUtils trackIdentifierParameterForSession:session appendUserIdentifier:YES];
+    NSString *expectedString = session.trackIdentifier;
     XCTAssert([generatedString isEqualToString:expectedString]);
+}
+
+- (void)testThatTrackIdentifierParameterGetsSentOnlyOnFirstRequest
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - user identifier test"];
+    
+    NUTracker *tracker = [NUTracker sharedTracker];
+    NUTrackerSession *session = [tracker session];
+    
+    [tracker identifyUserWithIdentifier:@"dummyUsername"];
+    
+    __block NSDictionary *requestParameters = [NUTrackerUtils defaultTrackingParametersForSession:session includeUserIdentifier:!session.userIdentifierRegistered];
+    __block NSString *generatedTid = requestParameters[@"tid"];
+    __block NSString *expectedTid = [NSString stringWithFormat:@"%@+%@", session.trackIdentifier, session.userIdentifier];
+
+    // on first request after setting user identifier, we want to send user identifier with 'tid' parameter
+    XCTAssert([generatedTid isEqualToString:expectedTid]);
+    
+    [NUTrackerUtils trackScreenWithName:@"testScreenName" inSession:session completion:^(NSError *error) {
+        if (error == nil) {
+        
+            if (session.userIdentifierRegistered) {
+                
+                // all good for the first step
+                // now, check how parameters will be generated for the next request (which must not send user identifier with 'tid' parameter)
+                requestParameters = [NUTrackerUtils defaultTrackingParametersForSession:session includeUserIdentifier:!session.userIdentifierRegistered];
+                generatedTid = requestParameters[@"tid"];
+                expectedTid = session.trackIdentifier;
+                
+                XCTAssert([generatedTid isEqualToString:expectedTid]);
+                
+            } else {
+                
+                XCTFail(@"Track screen request did not register user identifier on first send");
+            }
+            
+            // cleanup
+            [tracker identifyUserWithIdentifier:nil];
+            
+            [expectation fulfill];
+        
+        } else {
+            XCTFail(@"Track screen failed with error: %@", error);
+            
+            [expectation fulfill];
+        }
+    }];
+    
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Expectation timeout - screen test. Error: %@", error);
+        }
+    }];
 }
 
 #pragma mark - Screen Track

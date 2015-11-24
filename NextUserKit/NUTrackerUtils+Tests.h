@@ -12,6 +12,7 @@
 
 @interface NUTrackerUtils (Tests)
 
-+ (NSString *)trackIdentifierParameterForSession:(NUTrackerSession *)session;
++ (NSString *)trackIdentifierParameterForSession:(NUTrackerSession *)session appendUserIdentifier:(BOOL)appendUserIdentifier;
++ (NSMutableDictionary *)defaultTrackingParametersForSession:(NUTrackerSession *)session includeUserIdentifier:(BOOL)includeUserIdentifier;
 
 @end
