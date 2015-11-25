@@ -9,9 +9,9 @@
 #import "NUTrackerUtils.h"
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
+#import "NUHTTPRequestUtils.h"
 #import "NUTrackerUtils+Tests.h"
 #import "NUDDLog.h"
-#import "AFNetworking.h"
 
 @implementation NUTrackerUtils
 
@@ -77,38 +77,6 @@
 
 #pragma mark - Private API
 
-#pragma mark - HTTP Request
-
-+ (void)sendHTTPGETRequestWithPath:(NSString *)path
-                        parameters:(NSDictionary *)parameters
-                        completion:(void(^)(NSError *error))completion
-{
-    DDLogInfo(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:path
-      parameters:parameters
-         success:^(AFHTTPRequestOperation *operation, id responseObject) {
-             
-             DDLogInfo(@"HTTP GET request response");
-             DDLogInfo(@"URL: %@", operation.request.URL);
-             DDLogInfo(@"Response: %@", responseObject);
-             
-             if (completion != NULL) {
-                 completion(nil);
-             }
-             
-         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-             
-             DDLogError(@"HTTP GET request error");
-             DDLogError(@"%@", operation.request.URL);
-             DDLogError(@"%@", error);
-             
-             if (completion != NULL) {
-                 completion(error);
-             }
-         }];
-}
-
 #pragma mark - Track Generic
 
 + (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
@@ -123,7 +91,7 @@
         parameters[key] = trackParameters[key];
     }
     
-    [self sendHTTPGETRequestWithPath:path parameters:parameters completion:^(NSError *error) {
+    [NUHTTPRequestUtils sendHTTPGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
         
         // we want to make sure that request was successful and that we registered user identifier.
         // only if request was successful we will not send user identifier anymore

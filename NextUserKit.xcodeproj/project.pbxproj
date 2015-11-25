@@ -83,6 +83,8 @@
 		3198D58A1BF9E4BA006E88D1 /* NUDDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5881BF9E4BA006E88D1 /* NUDDLog.h */; };
 		3198D58B1BF9E4BA006E88D1 /* NUDDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5891BF9E4BA006E88D1 /* NUDDLog.m */; };
 		31D99FE31BF5D9B400F9400F /* NUTracker+Tests.h in Headers */ = {isa = PBXBuildFile; fileRef = 31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */; };
+		31E23D491C05F12D00BD9A81 /* NUHTTPRequestUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 31E23D471C05F12D00BD9A81 /* NUHTTPRequestUtils.h */; };
+		31E23D4A1C05F12D00BD9A81 /* NUHTTPRequestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E23D481C05F12D00BD9A81 /* NUHTTPRequestUtils.m */; };
 		31E61C651BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 31E61C631BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h */; };
 		31E61C661BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E61C641BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m */; };
 		31E61C691BFDCDC000AAD12B /* NUObjectPropertyStatusUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E61C641BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m */; };
@@ -182,6 +184,8 @@
 		3198D5891BF9E4BA006E88D1 /* NUDDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NUDDLog.m; path = lib_3rdParty/DDLog/NUDDLog.m; sourceTree = "<group>"; };
 		31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFNetworkingNameMapper.h; sourceTree = "<group>"; };
 		31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUTracker+Tests.h"; sourceTree = "<group>"; };
+		31E23D471C05F12D00BD9A81 /* NUHTTPRequestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUHTTPRequestUtils.h; sourceTree = "<group>"; };
+		31E23D481C05F12D00BD9A81 /* NUHTTPRequestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUHTTPRequestUtils.m; sourceTree = "<group>"; };
 		31E61C631BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUObjectPropertyStatusUtils.h; sourceTree = "<group>"; };
 		31E61C641BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUObjectPropertyStatusUtils.m; sourceTree = "<group>"; };
 		31E61C6C1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUObjectPropertyStatusUtilsTests.m; sourceTree = "<group>"; };
@@ -379,6 +383,8 @@
 				31E61C6F1BFDD95100AAD12B /* NSString+LGUtils.m */,
 				31E61C631BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h */,
 				31E61C641BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m */,
+				31E23D471C05F12D00BD9A81 /* NUHTTPRequestUtils.h */,
+				31E23D481C05F12D00BD9A81 /* NUHTTPRequestUtils.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -434,6 +440,7 @@
 				318BFF5E1BECF8A400B2AA2A /* AFHTTPRequestOperationManager.h in Headers */,
 				3198D57C1BF9CC21006E88D1 /* DDLog.h in Headers */,
 				314880441C03433C00895C84 /* NUTrackerUtils+Tests.h in Headers */,
+				31E23D491C05F12D00BD9A81 /* NUHTTPRequestUtils.h in Headers */,
 				3198D58A1BF9E4BA006E88D1 /* NUDDLog.h in Headers */,
 				31E61C651BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h in Headers */,
 				31D99FE31BF5D9B400F9400F /* NUTracker+Tests.h in Headers */,
@@ -588,6 +595,7 @@
 				31614FB81BF3808000F0535D /* NUTrackingHTTPRequestHelper.m in Sources */,
 				318BFF641BECF8A400B2AA2A /* AFNetworkReachabilityManager.m in Sources */,
 				3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */,
+				31E23D4A1C05F12D00BD9A81 /* NUHTTPRequestUtils.m in Sources */,
 				3198D5791BF9CC21006E88D1 /* DDFileLogger.m in Sources */,
 				3198D5841BF9CC21006E88D1 /* DDDispatchQueueLogFormatter.m in Sources */,
 				31614FAC1BF3508C00F0535D /* SSKeychain.m in Sources */,
