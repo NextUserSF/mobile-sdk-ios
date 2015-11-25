@@ -10,8 +10,8 @@
 
 @interface NUHTTPRequestUtils : NSObject
 
-+ (void)sendHTTPGETRequestWithPath:(NSString *)path
-                        parameters:(NSDictionary *)parameters
-                        completion:(void(^)(id responseObject, NSError *error))completion;
++ (void)sendGETRequestWithPath:(NSString *)path
+                    parameters:(NSDictionary *)parameters
+                    completion:(void(^)(id responseObject, NSError *error))completion;
 
 @end

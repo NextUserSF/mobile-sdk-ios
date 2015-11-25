@@ -91,7 +91,7 @@
         parameters[key] = trackParameters[key];
     }
     
-    [NUHTTPRequestUtils sendHTTPGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+    [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
         
         // we want to make sure that request was successful and that we registered user identifier.
         // only if request was successful we will not send user identifier anymore

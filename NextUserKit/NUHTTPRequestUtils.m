@@ -14,9 +14,9 @@
 
 #pragma mark - HTTP Request
 
-+ (void)sendHTTPGETRequestWithPath:(NSString *)path
-                        parameters:(NSDictionary *)parameters
-                        completion:(void (^)(id responseObject, NSError *error))completion
++ (void)sendGETRequestWithPath:(NSString *)path
+                    parameters:(NSDictionary *)parameters
+                    completion:(void (^)(id responseObject, NSError *error))completion
 {
     DDLogInfo(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
