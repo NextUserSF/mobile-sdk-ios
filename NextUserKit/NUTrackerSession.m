@@ -92,7 +92,7 @@
     NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"sdk.js"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[@"tid"] = @"internal_tests";
+    parameters[@"tid"] = _trackIdentifier;
     if (deviceCookie) {
         parameters[@"dc"] = deviceCookie;
     }
