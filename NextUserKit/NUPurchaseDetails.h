@@ -19,7 +19,7 @@
 
 @property (nonatomic) BOOL incomplete; // incomplete - purchase not completed (failed, saved for later...)
 @property (nonatomic) NSString *paymentMethod;
-@property (nonatomic) NSString *affilation; // site's purchase ID or similar
+@property (nonatomic) NSString *affiliation; // site's purchase ID or similar
 
 // entered on purchase
 @property (nonatomic) NSString *state;

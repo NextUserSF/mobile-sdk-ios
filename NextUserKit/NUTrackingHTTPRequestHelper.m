@@ -174,8 +174,8 @@
     if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.paymentMethod]) {
         [keyValuePairs addObject:[NSString stringWithFormat:@"method:%@", [purchaseDetails.paymentMethod URLEncodedString]]];
     }
-    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.affilation]) {
-        [keyValuePairs addObject:[NSString stringWithFormat:@"affilation:%@", [purchaseDetails.affilation URLEncodedString]]];
+    if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.affiliation]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"affiliation:%@", [purchaseDetails.affiliation URLEncodedString]]];
     }
     if ([NUObjectPropertyStatusUtils isStringValueSet:purchaseDetails.state]) {
         [keyValuePairs addObject:[NSString stringWithFormat:@"state:%@", [purchaseDetails.state URLEncodedString]]];

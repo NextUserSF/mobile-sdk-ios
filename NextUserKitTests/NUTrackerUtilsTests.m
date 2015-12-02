@@ -242,7 +242,7 @@
     BOOL incomplete = YES;
     NSString *currency = @"$";
     NSString *paymentMethod = @"MasterCard";
-    NSString *affilation = @"Don't know about this";
+    NSString *affiliation = @"Don't know about this";
     NSString *state = @"Croatia";
     NSString *city = @"Pozega";
     NSString *zip = @"34000";
@@ -254,7 +254,7 @@
     details.currency = currency;
     details.incomplete = incomplete;
     details.paymentMethod = paymentMethod;
-    details.affilation = affilation;
+    details.affiliation = affiliation;
     details.state = state;
     details.city = city;
     details.zip = zip;

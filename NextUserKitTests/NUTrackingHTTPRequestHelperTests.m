@@ -319,7 +319,7 @@
     BOOL incomplete = YES;
     NSString *currency = @"$";
     NSString *paymentMethod = @"MasterCard";
-    NSString *affilation = @"Don't know about this";
+    NSString *affiliation = @"Don't know about this";
     NSString *state = @"Croatia";
     NSString *city = @"Pozega";
     NSString *zip = @"34000";
@@ -331,7 +331,7 @@
     details.currency = currency;
     details.incomplete = incomplete;
     details.paymentMethod = paymentMethod;
-    details.affilation = affilation;
+    details.affiliation = affiliation;
     details.state = state;
     details.city = city;
     details.zip = zip;
@@ -347,8 +347,8 @@
     NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
     XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
     
-    NSString *affilationParameter = [NSString stringWithFormat:@"affilation:%@", [affilation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affilationParameter].location != NSNotFound);
+    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
     
     NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
     XCTAssert([generatedString rangeOfString:stateParameter].location != NSNotFound);
@@ -380,7 +380,7 @@
     BOOL incomplete = YES;
     NSString *currency = @"$";
     NSString *paymentMethod = @"MasterCard";
-    NSString *affilation = @"Don't know about this";
+    NSString *affiliation = @"Don't know about this";
     NSString *state = @"Croatia";
     NSString *city = @"Pozega";
     NSString *zip = @"34000";
@@ -392,7 +392,7 @@
     details.currency = currency;
     details.incomplete = incomplete;
     details.paymentMethod = paymentMethod;
-    details.affilation = affilation;
+    details.affiliation = affiliation;
 //    details.state = state;
     details.city = city;
     details.zip = zip;
@@ -408,8 +408,8 @@
     NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
     XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
     
-    NSString *affilationParameter = [NSString stringWithFormat:@"affilation:%@", [affilation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affilationParameter].location != NSNotFound);
+    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
     
     NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
     XCTAssert([generatedString rangeOfString:stateParameter].location == NSNotFound);
@@ -441,7 +441,7 @@
     BOOL incomplete = YES;
     NSString *currency = @"$";
     NSString *paymentMethod = @"MasterCard";
-    NSString *affilation = @"Don't know about this";
+    NSString *affiliation = @"Don't know about this";
     NSString *state = @"Croatia";
     NSString *city = @"Pozega";
     NSString *zip = @"34000";
@@ -453,7 +453,7 @@
     details.currency = currency;
     details.incomplete = incomplete;
     details.paymentMethod = paymentMethod;
-    details.affilation = affilation;
+    details.affiliation = affiliation;
     details.state = state;
     details.city = city;
     details.zip = zip;
@@ -469,8 +469,8 @@
     NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
     XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
     
-    NSString *affilationParameter = [NSString stringWithFormat:@"affilation:%@", [affilation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affilationParameter].location != NSNotFound);
+    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
     
     NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
     XCTAssert([generatedString rangeOfString:stateParameter].location != NSNotFound);
@@ -520,7 +520,7 @@
     BOOL incomplete = YES;
     NSString *currency = @"$";
     NSString *paymentMethod = @"MasterCard";
-    NSString *affilation = @"Don't know about this";
+    NSString *affiliation = @"Don't know about this";
     NSString *state = @"Croatia";
     NSString *city = @"Pozega";
     NSString *zip = @"34000";
@@ -532,7 +532,7 @@
     details.currency = currency;
     details.incomplete = incomplete;
     details.paymentMethod = paymentMethod;
-    details.affilation = affilation;
+    details.affiliation = affiliation;
     details.state = state;
     details.city = city;
     details.zip = zip;
