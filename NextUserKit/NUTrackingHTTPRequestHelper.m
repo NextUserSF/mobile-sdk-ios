@@ -37,7 +37,7 @@
 
 + (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
-    NSString *actionValue = actionName;
+    NSString *actionValue = [actionName URLEncodedString];
     if (actionParameters.count > 0) {
         NSString *actionParametersString = [self trackActionParametersStringWithActionParameters:actionParameters];
         if (actionParametersString.length > 0) {
@@ -83,7 +83,7 @@
                 
                 id actionParameter = truncatedParameters[i];
                 if (![actionParameter isEqual:[NSNull null]]) {
-                    [parametersString appendString:actionParameter];
+                    [parametersString appendString:[actionParameter URLEncodedString]];
                 }
             }
         }

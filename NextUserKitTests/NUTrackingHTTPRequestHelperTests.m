@@ -111,6 +111,15 @@
     XCTAssert([actionParametersString isEqualToString:@",2_value,,,,,,,9_value"]);
 }
 
+- (void)testActionParametersStringGenerateWithSpacesInParameters
+{
+    NSArray *inputArray = @[[NSNull null], @"2 value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], @"9 value"];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@",2%20value,,,,,,,9%20value"]);
+}
+
 #pragma mark - Action URL value
 
 - (void)testActionURLValueFromNonNullOverloadArray
@@ -120,6 +129,15 @@
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:@"actionName0" parameters:inputArray];
     
     XCTAssert([actionParametersString isEqualToString:@"actionName0,,2_value,,,,,,,9_value"]);
+}
+
+- (void)testActionURLValueWithSpacesInActionNAmeAndParameters
+{
+    NSArray *inputArray = @[[NSNull null], @"2 value", [NSNull null], [NSNull null], [NSNull null],
+                            [NSNull null], [NSNull null], [NSNull null], @"9 value"];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:@"this is action name" parameters:inputArray];
+    
+    XCTAssert([actionParametersString isEqualToString:@"this%20is%20action%20name,,2%20value,,,,,,,9%20value"]);
 }
 
 - (void)testActionURLValueFromNonNullOverloadArrayAndNilActionName
