@@ -10,8 +10,7 @@
 
 @interface NUAction ()
 
-// R+W public property
-@property (nonatomic) NSArray *parameters;
+@property (nonatomic) NSMutableArray *parametersMutable;
 
 @end
 
@@ -19,57 +18,89 @@
 
 + (NUAction *)actionWithName:(NSString *)actionName
 {
-    return [[NUAction alloc] initWithName:actionName];
-}
-
-+ (NUAction *)actionWithName:(NSString *)actionName
-              firstParameter:(NSString *)firstParameter
-             secondParameter:(NSString *)secondParameter
-              thirdParameter:(NSString *)thirdParameter
-             fourthParameter:(NSString *)fourthParameter
-              fifthParameter:(NSString *)fifthParameter
-              sixthParameter:(NSString *)sixthParameter
-            seventhParameter:(NSString *)seventhParameter
-              eightParameter:(NSString *)eightParameter
-              ninthParameter:(NSString *)ninthParameter
-              tenthParameter:(NSString *)tenthParameter
-{
     NUAction *action = [[NUAction alloc] initWithName:actionName];
-    
-    NSMutableArray *parameters = [NSMutableArray arrayWithCapacity:10];
-    [NUAction appendParameter:firstParameter toParametersArray:parameters];
-    [NUAction appendParameter:secondParameter toParametersArray:parameters];
-    [NUAction appendParameter:thirdParameter toParametersArray:parameters];
-    [NUAction appendParameter:fourthParameter toParametersArray:parameters];
-    [NUAction appendParameter:fifthParameter toParametersArray:parameters];
-    [NUAction appendParameter:sixthParameter toParametersArray:parameters];
-    [NUAction appendParameter:seventhParameter toParametersArray:parameters];
-    [NUAction appendParameter:eightParameter toParametersArray:parameters];
-    [NUAction appendParameter:ninthParameter toParametersArray:parameters];
-    [NUAction appendParameter:tenthParameter toParametersArray:parameters];
-    action.parameters = parameters;
     
     return action;
 }
 
-- (id)initWithName:(NSString *)name
+- (id)initWithName:(NSString *)actionName
 {
     if (self = [super init]) {
-        _actionName = [name copy];
+        _actionName = [actionName copy];
+        _parametersMutable = [NSMutableArray arrayWithCapacity:10];
+        for (int i=0; i<10; i++) {
+            [_parametersMutable addObject:[NSNull null]];
+        }
     }
     
     return self;
 }
 
-#pragma mark -
-
-+ (void)appendParameter:(NSString *)parameter toParametersArray:(NSMutableArray *)parameters
+- (void)setFirstParameter:(NSString *)firstParameter
 {
-    if (parameter != nil) {
-        [parameters addObject:parameter];
-    } else {
-        [parameters addObject:[NSNull null]];
+    [self updateParameterAtIndex:0 withValue:firstParameter];
+}
+
+- (void)setSecondParameter:(NSString *)secondParameter
+{
+    [self updateParameterAtIndex:1 withValue:secondParameter];
+}
+
+- (void)setThirdParameter:(NSString *)thirdParameter
+{
+    [self updateParameterAtIndex:2 withValue:thirdParameter];
+}
+
+- (void)setFourthParameter:(NSString *)fourthParameter
+{
+    [self updateParameterAtIndex:3 withValue:fourthParameter];
+}
+
+- (void)setFifthParameter:(NSString *)fifthParameter
+{
+    [self updateParameterAtIndex:4 withValue:fifthParameter];
+}
+
+- (void)setSixthParameter:(NSString *)sixthParameter
+{
+    [self updateParameterAtIndex:5 withValue:sixthParameter];
+}
+
+- (void)setSeventhParameter:(NSString *)seventhParameter
+{
+    [self updateParameterAtIndex:6 withValue:seventhParameter];
+}
+
+- (void)setEightParameter:(NSString *)eightParameter
+{
+    [self updateParameterAtIndex:7 withValue:eightParameter];
+}
+
+- (void)setNinthParameter:(NSString *)ninthParameter
+{
+    [self updateParameterAtIndex:8 withValue:ninthParameter];
+}
+
+- (void)setTenthParameter:(NSString *)tenthParameter
+{
+    [self updateParameterAtIndex:9 withValue:tenthParameter];
+}
+
+- (NSArray *)parameters
+{
+    return [_parametersMutable copy];
+}
+
+#pragma mark - Private API
+
+- (void)updateParameterAtIndex:(NSUInteger)index withValue:(NSString *)value
+{
+    id parameterValue = [NSNull null];
+    if (value != nil && value.length > 0) {
+        parameterValue = value;
     }
+    
+    _parametersMutable[index] = parameterValue;
 }
 
 @end

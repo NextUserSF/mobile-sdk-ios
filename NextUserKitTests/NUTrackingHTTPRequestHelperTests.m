@@ -51,17 +51,7 @@
 
 - (void)testActionSerializationFromAllNullParameters
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:nil
-                                secondParameter:nil
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:nil
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name"]);
@@ -69,17 +59,8 @@
 
 - (void)testActionSerializationFromOneNonNullParameterAtFirstIndex
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:@"1_value"
-                                secondParameter:nil
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:nil
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    action.firstParameter = @"1_value";
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,1_value"]);
@@ -87,17 +68,9 @@
 
 - (void)testActionSerializationFromOneNonNullParamterAtSecondIndex
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:nil
-                                secondParameter:@"2_value"
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:nil
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    action.secondParameter = @"2_value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value"]);
@@ -105,17 +78,9 @@
 
 - (void)testActionSerializationFromOneNonNullParameterAtThirdIndex
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:nil
-                                secondParameter:nil
-                                 thirdParameter:@"3_value"
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:nil
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    action.thirdParameter = @"3_value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,,3_value"]);
@@ -123,17 +88,10 @@
 
 - (void)testActionSerializationWithNullAndNonNullParameters
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:nil
-                                secondParameter:@"2_value"
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:@"9_value"
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    action.secondParameter = @"2_value";
+    action.ninthParameter = @"9_value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9_value"]);
@@ -141,17 +99,10 @@
 
 - (void)testActionSerializationWithSpacesInParameters
 {
-    NUAction *action = [NUAction actionWithName:@"action_name"
-                                 firstParameter:nil
-                                secondParameter:@"2_value"
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:@"9 value"
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    action.secondParameter = @"2_value";
+    action.ninthParameter = @"9 value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9%20value"]);
@@ -159,17 +110,10 @@
 
 - (void)testActionSerializationWithSpacesInActionNameAndParameters
 {
-    NUAction *action = [NUAction actionWithName:@"this is action name"
-                                 firstParameter:nil
-                                secondParameter:@"2 value"
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:@"9 value"
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"this is action name"];
+    action.secondParameter = @"2 value";
+    action.ninthParameter = @"9 value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"this%20is%20action%20name,,2%20value,,,,,,,9%20value"]);
@@ -177,17 +121,10 @@
 
 - (void)testActionSerializationWithNilActionName
 {
-    NUAction *action = [NUAction actionWithName:nil
-                                 firstParameter:nil
-                                secondParameter:@"2_value"
-                                 thirdParameter:nil
-                                fourthParameter:nil
-                                 fifthParameter:nil
-                                 sixthParameter:nil
-                               seventhParameter:nil
-                                 eightParameter:nil
-                                 ninthParameter:@"9_value"
-                                 tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:nil];
+    action.secondParameter = @"2_value";
+    action.ninthParameter = @"9_value";
+    
     NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert(actionParametersString == nil);

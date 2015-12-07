@@ -12,19 +12,18 @@
 
 + (NUAction *)actionWithName:(NSString *)actionName;
 
-+ (NUAction *)actionWithName:(NSString *)actionName
-              firstParameter:(NSString *)firstParameter
-             secondParameter:(NSString *)secondParameter
-              thirdParameter:(NSString *)thirdParameter
-             fourthParameter:(NSString *)fourthParameter
-              fifthParameter:(NSString *)fifthParameter
-              sixthParameter:(NSString *)sixthParameter
-            seventhParameter:(NSString *)seventhParameter
-              eightParameter:(NSString *)eightParameter
-              ninthParameter:(NSString *)ninthParameter
-              tenthParameter:(NSString *)tenthParameter;
-
 @property (nonatomic, readonly) NSString *actionName;
 @property (nonatomic, readonly) NSArray *parameters;
+
+@property (nonatomic) NSString *firstParameter;
+@property (nonatomic) NSString *secondParameter;
+@property (nonatomic) NSString *thirdParameter;
+@property (nonatomic) NSString *fourthParameter;
+@property (nonatomic) NSString *fifthParameter;
+@property (nonatomic) NSString *sixthParameter;
+@property (nonatomic) NSString *seventhParameter;
+@property (nonatomic) NSString *eightParameter;
+@property (nonatomic) NSString *ninthParameter;
+@property (nonatomic) NSString *tenthParameter;
 
 @end

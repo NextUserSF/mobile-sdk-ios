@@ -290,17 +290,12 @@
 
 + (NUAction *)randomAction
 {
-    return [NUAction actionWithName:@"dummyActionName"
-                     firstParameter:@"parameter1"
-                    secondParameter:nil
-                     thirdParameter:@"paramter3"
-                    fourthParameter:nil
-                     fifthParameter:nil
-                     sixthParameter:@"paramter6"
-                   seventhParameter:nil
-                     eightParameter:nil
-                     ninthParameter:nil
-                     tenthParameter:nil];
+    NUAction *action = [NUAction actionWithName:@"dummyActionName"];
+    action.firstParameter = @"parameter1";
+    action.thirdParameter = @"parameter3";
+    action.sixthParameter = @"parameter6";
+    
+    return action;
 }
 
 @end
