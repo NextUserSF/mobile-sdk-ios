@@ -8,8 +8,10 @@
 
 #import "NUTracker.h"
 #import "NUTrackerSession.h"
-#import "NUTrackerUtils.h"
+#import "NUTrackingHTTPRequestHelper.h"
+#import "NUHTTPRequestUtils.h"
 #import "NUTracker+Tests.h"
+#import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 
 @interface NUTracker ()
@@ -120,7 +122,7 @@
 - (void)trackScreenWithName:(NSString *)screenName
 {
     DDLogInfo(@"Track screen with name: %@", screenName);
-    [NUTrackerUtils trackScreenWithName:screenName inSession:_session completion:NULL];
+    [self trackScreenWithName:screenName completion:NULL];
 }
 
 #pragma mark - Track Action
@@ -134,19 +136,21 @@
 - (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
     DDLogInfo(@"Track action with name: %@, parameters: %@", actionName, actionParameters);
-    [NUTrackerUtils trackActionWithName:actionName parameters:actionParameters inSession:_session completion:NULL];
+    NSArray *actions = @[[NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName
+                                                                       parameters:actionParameters]];
+    [self trackActions:actions completion:NULL];
 }
 
 + (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
 {
     DDLogInfo(@"Action info with name: %@, parameters: %@", actionName, actionParameters);
-    return [NUTrackerUtils trackActionURLEntryWithName:actionName parameters:actionParameters];
+    return [self trackActionURLEntryWithName:actionName parameters:actionParameters];
 }
 
 - (void)trackActions:(NSArray *)actions
 {
     DDLogInfo(@"Track multiple actions: %@", actions);
-    [NUTrackerUtils trackActions:actions inSession:_session completion:NULL];
+    [self trackActions:actions completion:NULL];
 }
 
 #pragma mark - Track Purchase
@@ -154,7 +158,123 @@
 - (void)trackPurchaseWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails
 {
     DDLogInfo(@"Track purchase with total amount: %f, products: %@, purchase details: %@", totalAmount, products, purchaseDetails);
-    [NUTrackerUtils trackPurchaseWithTotalAmount:totalAmount products:products purchaseDetails:purchaseDetails inSession:_session completion:NULL];
+    
+    NSDictionary *parameters = @{@"pu0" : [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:totalAmount
+                                                                                                           products:products
+                                                                                                    purchaseDetails:purchaseDetails]};
+    [self sendTrackRequestWithParameters:parameters completion:NULL];
+}
+
+#pragma mark - Private API
+
+#pragma mark -
+
+- (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
+{
+    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackScreenParametersWithScreenName:screenName];
+    [self sendTrackRequestWithParameters:parameters completion:completion];
+}
+
+#pragma mark -
+
++ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+{
+    return [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters];
+}
+
+- (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
+{
+    // max 10 actions are allowed
+    if (actions.count > 10) {
+        actions = [actions subarrayWithRange:NSMakeRange(0, 10)];
+    }
+    
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:actions.count];
+    for (int i=0; i<actions.count; i++) {
+        NSString *actionKey = [NSString stringWithFormat:@"a%d", i];
+        NSString *actionValue = actions[i];
+        
+        parameters[actionKey] = actionValue;
+    }
+    
+    [self sendTrackRequestWithParameters:parameters completion:completion];
+}
+
+#pragma mark - Track Generic
+
+- (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
+                            completion:(void(^)(NSError *error))completion
+{
+    if (![self isSessionValid]) {
+        DDLogWarn(@"Do not send track request, session is not valid.");
+        return;
+    }
+    
+    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
+    NSMutableDictionary *parameters = [self defaultTrackingParameters:!_session.userIdentifierRegistered];
+    
+    // add track parameters
+    for (id key in trackParameters.allKeys) {
+        parameters[key] = trackParameters[key];
+    }
+    
+    [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+        
+        // we want to make sure that request was successful and that we registered user identifier.
+        // only if request was successful we will not send user identifier anymore
+        if (error == nil) {
+            if ([self.class hasSessionValidUserIdentifier:_session]) {
+                _session.userIdentifierRegistered = YES;
+            }
+        }
+        
+        if (completion != NULL) {
+            completion(error);
+        }
+    }];
+}
+
+#pragma mark -
+
+- (NSMutableDictionary *)defaultTrackingParameters:(BOOL)includeUserIdentifier
+{
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    if ([self isSessionValid]) {
+        parameters[@"nutm_s"] = [NUTracker deviceCookieParameterForSession:_session];
+        parameters[@"nutm_sc"] = _session.sessionCookie;
+        parameters[@"tid"] = [NUTracker trackIdentifierParameterForSession:_session appendUserIdentifier:includeUserIdentifier];
+    }
+    
+    return parameters;
+}
+
+- (BOOL)isSessionValid
+{
+    return ![NSString isEmptyString:_session.deviceCookie] &&
+    ![NSString isEmptyString:_session.sessionCookie] &&
+    ![NSString isEmptyString:_session.trackIdentifier];
+}
+
+#pragma mark -
+
++ (NSString *)deviceCookieParameterForSession:(NUTrackerSession *)session
+{
+    return [NSString stringWithFormat:@"...%@", session.deviceCookie];
+}
+
++ (NSString *)trackIdentifierParameterForSession:(NUTrackerSession *)session appendUserIdentifier:(BOOL)appendUserIdentifier
+{
+    NSString *trackIdentifier = session.trackIdentifier;
+    if (appendUserIdentifier && [self hasSessionValidUserIdentifier:session]) {
+        trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", session.userIdentifier];
+    }
+    
+    return trackIdentifier;
+}
+
++ (BOOL)hasSessionValidUserIdentifier:(NUTrackerSession *)session
+{
+    return ![NSString isEmptyString:session.userIdentifier];
 }
 
 @end

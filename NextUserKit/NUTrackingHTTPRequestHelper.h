@@ -17,7 +17,7 @@
 + (NSString *)basePath;
 + (NSString *)pathWithAPIName:(NSString *)APIName;
 
-#pragma mark - Parameters
+#pragma mark - Parameters Serialization
 + (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
 + (NSString *)trackActionParametersStringWithActionParameters:(NSArray *)actionParameters;
 #pragma mark -
@@ -25,5 +25,8 @@
 + (NSString *)serializedProducts:(NSArray *)products;
 + (NSString *)serializedProduct:(NUProduct *)product;
 + (NSString *)serializedPurchaseDetails:(NUPurchaseDetails *)purchaseDetails;
+
+#pragma mark - Track Request URL Parameters
++ (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
 
 @end

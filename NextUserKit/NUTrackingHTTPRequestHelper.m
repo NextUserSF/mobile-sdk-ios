@@ -193,4 +193,12 @@
     return [productString copy];
 }
 
+#pragma mark - Track Request URL Parameters
+
++ (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName
+{
+    NSDictionary *parameters = @{@"pv0" : screenName};
+    return parameters;
+}
+
 @end
