@@ -47,4 +47,9 @@
     return length;
 }
 
++ (BOOL)isEmptyString:(NSString *)input
+{
+    return input == nil || input.length == 0;
+}
+
 @end

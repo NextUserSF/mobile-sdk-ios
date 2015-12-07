@@ -11,6 +11,7 @@
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUHTTPRequestUtils.h"
 #import "NUTrackerUtils+Tests.h"
+#import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 
 @implementation NUTrackerUtils
@@ -83,6 +84,11 @@
                              inSession:(NUTrackerSession *)session
                             completion:(void(^)(NSError *error))completion
 {
+    if (![self isSessionValid:session]) {
+        DDLogWarn(@"Do not send track request, session is not valid.");
+        return;
+    }
+    
     NSString *path = [self trackingBasePath];
     NSMutableDictionary *parameters = [self defaultTrackingParametersForSession:session includeUserIdentifier:!session.userIdentifierRegistered];
     
@@ -130,7 +136,9 @@
 
 + (BOOL)isSessionValid:(NUTrackerSession *)session
 {
-    return session.deviceCookie != nil && session.sessionCookie != nil && session.trackIdentifier != nil;
+    return ![NSString isEmptyString:session.deviceCookie] &&
+    ![NSString isEmptyString:session.sessionCookie] &&
+    ![NSString isEmptyString:session.trackIdentifier];
 }
 
 + (NSString *)deviceCookieParameterForSession:(NUTrackerSession *)session
