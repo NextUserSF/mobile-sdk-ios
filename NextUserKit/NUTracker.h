@@ -44,5 +44,6 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 
 #pragma mark - Track Purchase
 - (void)trackPurchase:(NUPurchase *)purchase;
+- (void)trackPurchases:(NSArray *)purchases;
 
 @end

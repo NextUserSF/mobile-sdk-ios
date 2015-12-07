@@ -20,5 +20,6 @@
 - (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion;
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
 - (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion;
+- (void)trackPurchases:(NSArray *)purchases completion:(void(^)(NSError *error))completion;
 
 @end

@@ -147,6 +147,12 @@
     [self trackPurchase:purchase completion:NULL];
 }
 
+- (void)trackPurchases:(NSArray *)purchases
+{
+    DDLogInfo(@"Track purchases: %@", purchases);
+    [self trackPurchases:purchases completion:NULL];
+}
+
 #pragma mark - Private API
 
 #pragma mark -
@@ -170,7 +176,12 @@
 
 - (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion
 {
-    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases:@[purchase]];
+    [self trackPurchases:@[purchase] completion:completion];
+}
+
+- (void)trackPurchases:(NSArray *)purchases completion:(void(^)(NSError *error))completion
+{
+    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases:purchases];
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
 
