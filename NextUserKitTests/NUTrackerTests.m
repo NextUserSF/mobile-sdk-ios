@@ -15,6 +15,8 @@
 
 @interface NUTrackerTests : XCTestCase
 
+@property (nonatomic) NUTracker *tracker;
+
 @end
 
 @implementation NUTrackerTests
@@ -25,8 +27,8 @@
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
-    NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker startSessionWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
+    _tracker = [NUTracker sharedTracker];
+    [_tracker startSessionWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
         
         if (error != nil) {
             NSLog(@"Start session error:  %@", error);
@@ -41,6 +43,8 @@
         }
     }];
 }
+
+#pragma mark -
 
 - (void)testTrackerSingleton
 {
@@ -157,7 +161,6 @@
     }];
 }
 
-/*
 
 #pragma mark - Action Track
 
@@ -166,7 +169,8 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [NUTrackerUtils trackActionWithName:@"testActionName" parameters:nil inSession:[tracker session] completion:^(NSError *error) {
+    NUAction *action = [NUAction actionWithName:@"testActionName"];
+    [tracker trackAction:action completion:^(NSError *error) {
         if (error == nil) {
             XCTAssert(YES);
         } else {
@@ -190,13 +194,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    NSArray *actions = @[[NUTrackerUtilsTests randomActionInfo],
-                         [NUTrackerUtilsTests randomActionInfo],
-                         [NUTrackerUtilsTests randomActionInfo],
-                         [NUTrackerUtilsTests randomActionInfo],
-                         [NUTrackerUtilsTests randomActionInfo]];
-    [NUTrackerUtils trackActions:actions inSession:[tracker session] completion:^(NSError *error) {
-        
+    NSArray *actions = @[[NUTrackerTests randomAction],
+                         [NUTrackerTests randomAction],
+                         [NUTrackerTests randomAction],
+                         [NUTrackerTests randomAction],
+                         [NUTrackerTests randomAction]];
+    
+    [tracker trackActions:actions completion:^(NSError *error) {
         if (error == nil) {
             XCTAssert(YES);
         } else {
@@ -206,7 +210,6 @@
         [expectation fulfill];
     }];
     
-    
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Expectation timeout - actions test. Error: %@", error);
@@ -214,16 +217,7 @@
     }];
 }
 
-- (void)testActionInfoGeneration
-{
-    NSArray *actionParameters = @[@"param1", [NSNull null], @"param3"];
-    NSString *actionName = @"action_name";
-    
-    id actionInfo = [NUTracker actionInfoWithName:actionName parameters:actionParameters];
-    NSString *actionURLEntry = [NUTrackerUtils trackActionURLEntryWithName:actionName parameters:actionParameters];
-    
-    XCTAssert([actionInfo isEqual:actionURLEntry]);
-}
+/*
 
 #pragma mark - Purchase Track
 
@@ -271,7 +265,7 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [NUTrackerUtils trackPurchaseWithTotalAmount:amount products:@[product1, product2] purchaseDetails:details inSession:[tracker session] completion:^(NSError *error) {
+    [NUTracker trackPurchaseWithTotalAmount:amount products:@[product1, product2] purchaseDetails:details inSession:[tracker session] completion:^(NSError *error) {
         
         if (error == nil) {
             XCTAssert(YES);
@@ -289,12 +283,23 @@
     }];
 }
 
+*/
+
 #pragma mark - Private
 
-+ (id)randomActionInfo
++ (NUAction *)randomAction
 {
-    return [NUTrackerUtils trackActionURLEntryWithName:@"dummyActionName" parameters:@[@"parameter1", [NSNull null], @"parameter3", [NSNull null], [NSNull null], @"parameter6"]];
+    return [NUAction actionWithName:@"dummyActionName"
+                     firstParameter:@"parameter1"
+                    secondParameter:nil
+                     thirdParameter:@"paramter3"
+                    fourthParameter:nil
+                     fifthParameter:nil
+                     sixthParameter:@"paramter6"
+                   seventhParameter:nil
+                     eightParameter:nil
+                     ninthParameter:nil
+                     tenthParameter:nil];
 }
-*/
 
 @end

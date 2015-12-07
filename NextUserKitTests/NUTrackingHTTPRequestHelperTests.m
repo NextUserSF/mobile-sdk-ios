@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import <NextUserKit/NextUserKit.h>
 #import "NUTrackingHTTPRequestHelper.h"
+#import "NUTrackingHTTPRequestHelper+Tests.h"
 #import "NSString+LGUtils.h"
 
 @interface NUTrackingHTTPRequestHelperTests : XCTestCase
@@ -16,6 +17,8 @@
 @end
 
 @implementation NUTrackingHTTPRequestHelperTests
+
+#pragma mark -
 
 - (void)testAPIPathGeneration
 {
@@ -36,115 +39,156 @@
     XCTAssert(range.location == 0 && range.length == basePath.length);
 }
 
-#pragma mark - Action Parameters
+#pragma mark - Action Serialization
 
-- (void)testActionParametersStringGenerateFromEmpty
+- (void)testActionSerializationWithoutParameters
 {
-    NSArray *inputArray = @[];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@""]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name"]);
 }
 
-- (void)testActionParametersStringGenerateFromAllNulls
+- (void)testActionSerializationFromAllNullParameters
 {
-    NSArray *inputArray = @[[NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:nil
+                                secondParameter:nil
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:nil
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@""]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name"]);
 }
 
-- (void)testActionParametersStringGenerateFromOneNonNullAtFirstIndex
+- (void)testActionSerializationFromOneNonNullParameterAtFirstIndex
 {
-    NSArray *inputArray = @[@"1_value", [NSNull null], [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:@"1_value"
+                                secondParameter:nil
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:nil
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@"1_value"]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name,1_value"]);
 }
 
-- (void)testActionParametersStringGenerateFromOneNonNullAtSecondIndex
+- (void)testActionSerializationFromOneNonNullParamterAtSecondIndex
 {
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:nil
+                                secondParameter:@"2_value"
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:nil
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value"]);
 }
 
-- (void)testActionParametersStringGenerateFromOneNonNullAtThirdIndex
+- (void)testActionSerializationFromOneNonNullParameterAtThirdIndex
 {
-    NSArray *inputArray = @[[NSNull null], [NSNull null], @"3_value", [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null]];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:nil
+                                secondParameter:nil
+                                 thirdParameter:@"3_value"
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:nil
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@",,3_value"]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name,,,3_value"]);
 }
 
-- (void)testActionParametersStringGenerateFromNonNullOverloadArray
+- (void)testActionSerializationWithNullAndNonNullParameters
 {
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
-                            @"11_value"]; // 10 max
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:nil
+                                secondParameter:@"2_value"
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:@"9_value"
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9_value"]);
 }
 
-- (void)testActionParametersStringGenerateFromNullOverloadArray
+- (void)testActionSerializationWithSpacesInParameters
 {
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null]]; // 10 max
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"action_name"
+                                 firstParameter:nil
+                                secondParameter:@"2_value"
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:@"9 value"
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
-    XCTAssert([actionParametersString isEqualToString:@",2_value"]);
+    XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9%20value"]);
 }
 
-- (void)testActionParametersStringGenerateFromSmallerArray
+- (void)testActionSerializationWithSpacesInActionNameAndParameters
 {
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
-    
-    XCTAssert([actionParametersString isEqualToString:@",2_value,,,,,,,9_value"]);
-}
-
-- (void)testActionParametersStringGenerateWithSpacesInParameters
-{
-    NSArray *inputArray = @[[NSNull null], @"2 value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], @"9 value"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionParametersStringWithActionParameters:inputArray];
-    
-    XCTAssert([actionParametersString isEqualToString:@",2%20value,,,,,,,9%20value"]);
-}
-
-#pragma mark - Action URL value
-
-- (void)testActionURLValueFromNonNullOverloadArray
-{
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:@"actionName0" parameters:inputArray];
-    
-    XCTAssert([actionParametersString isEqualToString:@"actionName0,,2_value,,,,,,,9_value"]);
-}
-
-- (void)testActionURLValueWithSpacesInActionNAmeAndParameters
-{
-    NSArray *inputArray = @[[NSNull null], @"2 value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], @"9 value"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:@"this is action name" parameters:inputArray];
+    NUAction *action = [NUAction actionWithName:@"this is action name"
+                                 firstParameter:nil
+                                secondParameter:@"2 value"
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:@"9 value"
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert([actionParametersString isEqualToString:@"this%20is%20action%20name,,2%20value,,,,,,,9%20value"]);
 }
 
-- (void)testActionURLValueFromNonNullOverloadArrayAndNilActionName
+- (void)testActionSerializationWithNilActionName
 {
-    NSArray *inputArray = @[[NSNull null], @"2_value", [NSNull null], [NSNull null], [NSNull null],
-                            [NSNull null], [NSNull null], [NSNull null], @"9_value"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:nil parameters:inputArray];
+    NUAction *action = [NUAction actionWithName:nil
+                                 firstParameter:nil
+                                secondParameter:@"2_value"
+                                 thirdParameter:nil
+                                fourthParameter:nil
+                                 fifthParameter:nil
+                                 sixthParameter:nil
+                               seventhParameter:nil
+                                 eightParameter:nil
+                                 ninthParameter:@"9_value"
+                                 tenthParameter:nil];
+    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
     
     XCTAssert(actionParametersString == nil);
 }

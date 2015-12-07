@@ -17,3 +17,4 @@ FOUNDATION_EXPORT const unsigned char NextUserKitVersionString[];
 #import <NextUserKit/NUTracker.h>
 #import <NextUserKit/NUProduct.h>
 #import <NextUserKit/NUPurchaseDetails.h>
+#import <NextUserKit/NUAction.h>

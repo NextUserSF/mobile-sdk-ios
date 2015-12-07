@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class NUPurchaseDetails;
+@class NUAction;
 
 typedef NS_ENUM(NSUInteger, NULogLevel) {
     NULogLevelOff,      // No logs
@@ -38,28 +39,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 - (void)trackScreenWithName:(NSString *)screenName;
 
 #pragma mark - Track Action
-- (void)trackActionWithName:(NSString *)actionName;
-
-/*
- Parameters max count: 10.
- Parameter index is important. If you want to put some parameter at a specific index, use NSNull value for slots before that index.
- e.g. 
- input array of [someValue1, NSNull, someValue3, someValue4, NSNull, NSNull]
- would put values in corresponding indices [someValue1, [EMPTY], someValue3, someValue4].
- Rest of the trailing NSNulls are ignored.
- 
- This is the same method as one above (trackActionWithName:) except with this method you can send additional parameters.
- */
-- (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
-
-/*
- Use these two methods combined when sending multiple actions at once.
- 
- Usage:
- First, collect all actions you would like to track and put them into an array (use +actionInfoWithName:parameters: method).
- Then call -trackActions: with that array.
-*/
-+ (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters;
+- (void)trackAction:(NUAction *)action;
 - (void)trackActions:(NSArray *)actions;
 
 #pragma mark - Track Purchase 

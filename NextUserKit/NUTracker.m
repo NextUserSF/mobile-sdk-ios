@@ -127,29 +127,15 @@
 
 #pragma mark - Track Action
 
-- (void)trackActionWithName:(NSString *)actionName
+- (void)trackAction:(NUAction *)action
 {
-    DDLogInfo(@"Track action with name: %@", actionName);
-    [self trackActionWithName:actionName parameters:nil];
-}
-
-- (void)trackActionWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
-{
-    DDLogInfo(@"Track action with name: %@, parameters: %@", actionName, actionParameters);
-    NSArray *actions = @[[NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName
-                                                                       parameters:actionParameters]];
-    [self trackActions:actions completion:NULL];
-}
-
-+ (id)actionInfoWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
-{
-    DDLogInfo(@"Action info with name: %@, parameters: %@", actionName, actionParameters);
-    return [self trackActionURLEntryWithName:actionName parameters:actionParameters];
+    DDLogInfo(@"Track action: %@", action);
+    [self trackAction:action completion:NULL];
 }
 
 - (void)trackActions:(NSArray *)actions
 {
-    DDLogInfo(@"Track multiple actions: %@", actions);
+    DDLogInfo(@"Track actions: %@", actions);
     [self trackActions:actions completion:NULL];
 }
 
@@ -175,28 +161,14 @@
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
 
-#pragma mark -
-
-+ (NSString *)trackActionURLEntryWithName:(NSString *)actionName parameters:(NSArray *)actionParameters
+- (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion
 {
-    return [NUTrackingHTTPRequestHelper trackActionURLEntryWithName:actionName parameters:actionParameters];
+    [self trackActions:@[action] completion:completion];
 }
 
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
 {
-    // max 10 actions are allowed
-    if (actions.count > 10) {
-        actions = [actions subarrayWithRange:NSMakeRange(0, 10)];
-    }
-    
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:actions.count];
-    for (int i=0; i<actions.count; i++) {
-        NSString *actionKey = [NSString stringWithFormat:@"a%d", i];
-        NSString *actionValue = actions[i];
-        
-        parameters[actionKey] = actionValue;
-    }
-    
+    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackActionsParametersWithActions:actions];
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
 
