@@ -193,7 +193,9 @@
     XCTAssert(actionParametersString == nil);
 }
 
-#pragma mark - Product URL Parameters
+#pragma mark - Purchase Serialization
+
+#pragma mark - Product
 
 //  "product_name=SKU:product_SKU;category:product_category_value;price:98.56;quantity:3;description:This is a product description";
 - (void)testProductSerializationWithAllProperties
@@ -212,7 +214,7 @@
     product.price = price;
     product.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -249,7 +251,7 @@
     product.price = price;
     product.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -286,7 +288,7 @@
     //    product.price = price;
     product.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -323,7 +325,7 @@
     product.price = price;
     //    product.quantity = quantity; <-- defaults to 1 if not set
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -362,16 +364,16 @@
     product2.price = 77.23;
     product2.quantity = 6;
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProducts:@[product1, product2]];
+    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
     
-    NSString *serializedProduct1 = [NUTrackingHTTPRequestHelper serializedProduct:product1];
-    NSString *serializedProduct2 = [NUTrackingHTTPRequestHelper serializedProduct:product2];
+    NSString *serializedProduct1 = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product1];
+    NSString *serializedProduct2 = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product2];
     
     NSString *expectedString = [NSString stringWithFormat:@"%@,%@", serializedProduct1, serializedProduct2];
     XCTAssert([serializedProducts isEqualToString:expectedString]);
 }
 
-#pragma mark - Purchase Details URL Parameters
+#pragma mark - Purchase Details
 
 - (void)testPurchaseDetailsSerializationWithAllProperties
 {
@@ -398,7 +400,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetails:details];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -459,7 +461,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetails:details];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -520,7 +522,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetails:details];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -599,18 +601,23 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:amount products:@[product1, product2] purchaseDetails:details];
+    NUPurchase *purchase = [NUPurchase purchase];
+    purchase.totalAmount = amount;
+    purchase.products = @[product1, product2];
+    purchase.details = details;
+    
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
     
     NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
     XCTAssert([generatedString hasPrefix:prefix]);
     
     XCTAssert([generatedString rangeOfString:@"_="].location != NSNotFound);
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProducts:@[product1, product2]];
+    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
     serializedProducts = [@"," stringByAppendingString:serializedProducts];
     XCTAssert([generatedString rangeOfString:serializedProducts].location != NSNotFound);
     
-    NSString *serializedDetails = [NUTrackingHTTPRequestHelper serializedPurchaseDetails:details];
+    NSString *serializedDetails = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
     XCTAssert([generatedString rangeOfString:serializedDetails].location != NSNotFound);
     
     NSString *serializedDetailsAsParameter = [@"," stringByAppendingString:serializedDetails];
@@ -635,7 +642,12 @@
     product2.price = 77.23;
     product2.quantity = 6;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:amount products:@[product1, product2] purchaseDetails:nil];
+    NUPurchase *purchase = [NUPurchase purchase];
+    purchase.totalAmount = amount;
+    purchase.products = @[product1, product2];
+//    purchase.details = nil;
+    
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
     
     NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -643,7 +655,7 @@
     XCTAssert([generatedString rangeOfString:@"_="].location == NSNotFound);
     XCTAssert([generatedString rangeOfString:@",_="].location == NSNotFound);
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProducts:@[product1, product2]];
+    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
     serializedProducts = [@"," stringByAppendingString:serializedProducts];
     XCTAssert([generatedString rangeOfString:serializedProducts].location != NSNotFound);
 }

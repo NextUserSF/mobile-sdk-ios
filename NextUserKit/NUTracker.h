@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class NUPurchaseDetails;
+@class NUPurchase;
 @class NUAction;
 
 typedef NS_ENUM(NSUInteger, NULogLevel) {
@@ -42,10 +42,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 - (void)trackAction:(NUAction *)action;
 - (void)trackActions:(NSArray *)actions;
 
-#pragma mark - Track Purchase 
-/*
- Products - list of NUProduct objects
- */
-- (void)trackPurchaseWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails;
+#pragma mark - Track Purchase
+- (void)trackPurchase:(NUPurchase *)purchase;
 
 @end

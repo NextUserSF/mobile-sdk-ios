@@ -141,14 +141,10 @@
 
 #pragma mark - Track Purchase
 
-- (void)trackPurchaseWithTotalAmount:(double)totalAmount products:(NSArray *)products purchaseDetails:(NUPurchaseDetails *)purchaseDetails
+- (void)trackPurchase:(NUPurchase *)purchase
 {
-    DDLogInfo(@"Track purchase with total amount: %f, products: %@, purchase details: %@", totalAmount, products, purchaseDetails);
-    
-    NSDictionary *parameters = @{@"pu0" : [NUTrackingHTTPRequestHelper trackPurchaseParametersStringWithTotalAmount:totalAmount
-                                                                                                           products:products
-                                                                                                    purchaseDetails:purchaseDetails]};
-    [self sendTrackRequestWithParameters:parameters completion:NULL];
+    DDLogInfo(@"Track purchase: %@", purchase);
+    [self trackPurchase:purchase completion:NULL];
 }
 
 #pragma mark - Private API
@@ -169,6 +165,12 @@
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
 {
     NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackActionsParametersWithActions:actions];
+    [self sendTrackRequestWithParameters:parameters completion:completion];
+}
+
+- (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion
+{
+    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases:@[purchase]];
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
 

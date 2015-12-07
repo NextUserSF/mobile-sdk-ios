@@ -13,5 +13,9 @@
 @interface NUTrackingHTTPRequestHelper (Tests)
 
 + (NSString *)serializedActionStringFromAction:(NUAction *)action;
++ (NSString *)serializedPurchaseStringWithPurchase:(NUPurchase *)purchase;
++ (NSString *)serializedProductStringWithProduct:(NUProduct *)product;
++ (NSString *)serializedProductsStringWithProducts:(NSArray *)products;
++ (NSString *)serializedPurchaseDetailsStringWithDetails:(NUPurchaseDetails *)purchaseDetails;
 
 @end

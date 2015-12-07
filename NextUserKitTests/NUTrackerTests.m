@@ -217,8 +217,6 @@
     }];
 }
 
-/*
-
 #pragma mark - Purchase Track
 
 - (void)testPurchase
@@ -262,10 +260,15 @@
     details.city = city;
     details.zip = zip;
     
+    NUPurchase *purchase = [NUPurchase purchase];
+    purchase.totalAmount = amount;
+    purchase.products = @[product1, product2];
+    purchase.details = details;
+    
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [NUTracker trackPurchaseWithTotalAmount:amount products:@[product1, product2] purchaseDetails:details inSession:[tracker session] completion:^(NSError *error) {
+    [tracker trackPurchase:purchase completion:^(NSError *error) {
         
         if (error == nil) {
             XCTAssert(YES);
@@ -282,8 +285,6 @@
         }
     }];
 }
-
-*/
 
 #pragma mark - Private
 
