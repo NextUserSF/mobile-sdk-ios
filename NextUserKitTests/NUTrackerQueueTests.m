@@ -17,7 +17,7 @@
 
 @implementation NUTrackerQueueTests
 
-- (void)testTrackReqeustAfterSessionStart
+- (void)testTrackRequestAfterSessionStart
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
 
@@ -44,7 +44,7 @@
     }];
 }
 
-- (void)testMultipleTrackReqeustAfterSessionStart
+- (void)testMultipleTrackRequestAfterSessionStart
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
