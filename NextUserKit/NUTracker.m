@@ -234,7 +234,7 @@
             }
         }];
     } else {
-        DDLogWarn(@"Ignore track request sending, session not vaid");
+        DDLogWarn(@"Ignore track request sending, session not valid");
     }
 }
 
