@@ -12,6 +12,7 @@
 		3107FB6C1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h in Headers */ = {isa = PBXBuildFile; fileRef = 3107FB6A1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h */; };
 		3107FB701C15BCC300AC030B /* NUPurchase.h in Headers */ = {isa = PBXBuildFile; fileRef = 3107FB6E1C15BCC300AC030B /* NUPurchase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3107FB711C15BCC300AC030B /* NUPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3107FB6F1C15BCC300AC030B /* NUPurchase.m */; };
+		3107FB7C1C17362500AC030B /* NUTrackerQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3107FB7B1C17362500AC030B /* NUTrackerQueueTests.m */; };
 		310DAE261BF337E500422C06 /* NUTrackerSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 310DAE251BF337E500422C06 /* NUTrackerSessionTests.m */; };
 		312029C91BF2261D00B7CCC6 /* NUTrackerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */; };
 		312029CC1BF22E8B00B7CCC6 /* NUTrackerSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */; };
@@ -110,6 +111,7 @@
 		3107FB6A1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUTrackingHTTPRequestHelper+Tests.h"; sourceTree = "<group>"; };
 		3107FB6E1C15BCC300AC030B /* NUPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchase.h; sourceTree = "<group>"; };
 		3107FB6F1C15BCC300AC030B /* NUPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchase.m; sourceTree = "<group>"; };
+		3107FB7B1C17362500AC030B /* NUTrackerQueueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerQueueTests.m; sourceTree = "<group>"; };
 		310DAE251BF337E500422C06 /* NUTrackerSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerSessionTests.m; sourceTree = "<group>"; };
 		312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerTests.m; sourceTree = "<group>"; };
 		312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackerSession.h; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 			children = (
 				315A63FB1C032D1B00ADB2DD /* NUTestDefinitions.h */,
 				312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */,
+				3107FB7B1C17362500AC030B /* NUTrackerQueueTests.m */,
 				310DAE251BF337E500422C06 /* NUTrackerSessionTests.m */,
 				31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */,
 				31E61C6C1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m */,
@@ -643,6 +646,7 @@
 			files = (
 				31E61C6D1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m in Sources */,
 				31614FBE1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m in Sources */,
+				3107FB7C1C17362500AC030B /* NUTrackerQueueTests.m in Sources */,
 				31614FBF1BF3882900F0535D /* NUTrackingHTTPRequestHelper.m in Sources */,
 				31E61C691BFDCDC000AAD12B /* NUObjectPropertyStatusUtils.m in Sources */,
 				31E61C731BFDDE4700AAD12B /* NSString+LGUtils.m in Sources */,

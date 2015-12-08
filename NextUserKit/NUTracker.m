@@ -17,6 +17,7 @@
 @interface NUTracker ()
 
 @property (nonatomic) NUTrackerSession *session;
+@property (nonatomic) NSMutableArray *pendingTrackRequests; // waiting for session startup
 
 @end
 
@@ -43,6 +44,7 @@
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
         
         _session = [[NUTrackerSession alloc] init];
+        _pendingTrackRequests = [NSMutableArray array];
     }
     
     return self;
@@ -57,6 +59,10 @@
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     _isReady = YES;
+                    
+                    DDLogInfo(@"Session startup finished, pop pending track requests");
+                    [self popPendingTrackRequest];
+                    
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");
                     error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
@@ -190,33 +196,76 @@
 - (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
                             completion:(void(^)(NSError *error))completion
 {
-    if (![self isSessionValid]) {
-        DDLogWarn(@"Do not send track request, session is not valid.");
-        return;
-    }
+    DDLogInfo(@"Send track request");
     
-    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
-    NSMutableDictionary *parameters = [self defaultTrackingParameters:!_session.userIdentifierRegistered];
+    if ([self shouldPostponeTrackRequest]) {
     
-    // add track parameters
-    for (id key in trackParameters.allKeys) {
-        parameters[key] = trackParameters[key];
-    }
-    
-    [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+        DDLogWarn(@"Postpone track request sending. Session startup in progress.");
         
-        // we want to make sure that request was successful and that we registered user identifier.
-        // only if request was successful we will not send user identifier anymore
-        if (error == nil) {
-            if ([self.class hasSessionValidUserIdentifier:_session]) {
-                _session.userIdentifierRegistered = YES;
+        [self addPostponedTrackRequestWithTrackParameters:trackParameters completion:completion];
+        
+    } else if ([self isSessionValid]) {
+
+        DDLogInfo(@"Do send track request");
+
+        NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
+        NSMutableDictionary *parameters = [self defaultTrackingParameters:!_session.userIdentifierRegistered];
+        
+        // add track parameters
+        for (id key in trackParameters.allKeys) {
+            parameters[key] = trackParameters[key];
+        }
+        
+        [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+            
+            // we want to make sure that request was successful and that we registered user identifier.
+            // only if request was successful we will not send user identifier anymore
+            if (error == nil) {
+                if ([self.class hasSessionValidUserIdentifier:_session]) {
+                    _session.userIdentifierRegistered = YES;
+                }
+                
+                DDLogInfo(@"Track request finished, pop pending track requests");
+                [self popPendingTrackRequest];
             }
-        }
+            
+            if (completion != NULL) {
+                completion(error);
+            }
+        }];
+    } else {
+        DDLogWarn(@"Ignore track request sending, session not vaid");
+    }
+}
+
+- (BOOL)shouldPostponeTrackRequest
+{
+    return ![self isSessionValid] && _session.startupRequestInProgress;
+}
+
+- (void)addPostponedTrackRequestWithTrackParameters:(NSDictionary *)trackParameters completion:(void(^)(NSError *error))completion
+{
+    NSMutableDictionary *requestInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+    requestInfo[@"url_parameters"] = trackParameters;
+    if (completion != NULL) {
+        requestInfo[@"completion_block"] = [completion copy];
+    }
+    
+    [_pendingTrackRequests addObject:requestInfo];
+}
+
+- (void)popPendingTrackRequest
+{
+    if (_pendingTrackRequests.count > 0) {
+        NSDictionary *requestInfo = _pendingTrackRequests.firstObject;
+        [_pendingTrackRequests removeObjectAtIndex:0];
         
-        if (completion != NULL) {
-            completion(error);
-        }
-    }];
+        DDLogInfo(@"Pop pending request: %@", requestInfo);
+        
+        NSDictionary *trackParameters = requestInfo[@"url_parameters"];
+        void(^completion)(NSError *error) = requestInfo[@"completion_block"];
+        [self sendTrackRequestWithParameters:trackParameters completion:completion];
+    }
 }
 
 #pragma mark -
