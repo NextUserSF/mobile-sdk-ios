@@ -12,7 +12,7 @@
 
 + (instancetype)itemWithName:(NSString *)name;
 
-@property (nonatomic) NSString *name;
+@property (nonatomic, readonly) NSString *name;
 @property (nonatomic) NSString *SKU;
 @property (nonatomic) NSString *category;
 @property (nonatomic) double price;

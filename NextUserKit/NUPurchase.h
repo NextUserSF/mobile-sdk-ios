@@ -12,12 +12,8 @@
 
 @interface NUPurchase : NSObject
 
-// items is array of NUPurchaseItem objects
+// items is an array of NUPurchaseItem objects
 + (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items;
 + (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)purchaseDetails;
-
-@property (nonatomic, readonly) double totalAmount;
-@property (nonatomic, readonly) NSArray *items; // array of NUPurchaseItem objects
-@property (nonatomic, readonly) NUPurchaseDetails *details;
 
 @end

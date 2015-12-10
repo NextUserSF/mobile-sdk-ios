@@ -9,8 +9,10 @@
 #import <XCTest/XCTest.h>
 #import <NextUserKit/NextUserKit.h>
 #import "NUTrackingHTTPRequestHelper.h"
-#import "NUTrackingHTTPRequestHelper+Tests.h"
+#import "NUAction+Serialization.h"
+#import "NUPurchase+Serialization.h"
 #import "NSString+LGUtils.h"
+#import "NUPurchase+Tests.h"
 
 @interface NUTrackingHTTPRequestHelperTests : XCTestCase
 
@@ -44,7 +46,7 @@
 - (void)testActionSerializationWithoutParameters
 {
     NUAction *action = [NUAction actionWithName:@"action_name"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name"]);
 }
@@ -52,7 +54,7 @@
 - (void)testActionSerializationFromAllNullParameters
 {
     NUAction *action = [NUAction actionWithName:@"action_name"];
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name"]);
 }
@@ -61,7 +63,7 @@
 {
     NUAction *action = [NUAction actionWithName:@"action_name"];
     action.firstParameter = @"1_value";
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,1_value"]);
 }
@@ -71,7 +73,7 @@
     NUAction *action = [NUAction actionWithName:@"action_name"];
     action.secondParameter = @"2_value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value"]);
 }
@@ -81,7 +83,7 @@
     NUAction *action = [NUAction actionWithName:@"action_name"];
     action.thirdParameter = @"3_value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,,3_value"]);
 }
@@ -92,7 +94,7 @@
     action.secondParameter = @"2_value";
     action.ninthParameter = @"9_value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9_value"]);
 }
@@ -103,7 +105,7 @@
     action.secondParameter = @"2_value";
     action.ninthParameter = @"9 value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"action_name,,2_value,,,,,,,9%20value"]);
 }
@@ -114,7 +116,7 @@
     action.secondParameter = @"2 value";
     action.ninthParameter = @"9 value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert([actionParametersString isEqualToString:@"this%20is%20action%20name,,2%20value,,,,,,,9%20value"]);
 }
@@ -125,7 +127,7 @@
     action.secondParameter = @"2_value";
     action.ninthParameter = @"9_value";
     
-    NSString *actionParametersString = [NUTrackingHTTPRequestHelper serializedActionStringFromAction:action];
+    NSString *actionParametersString = [action httpRequestParameterRepresentation];
     
     XCTAssert(actionParametersString == nil);
 }
@@ -151,7 +153,7 @@
     item.price = price;
     item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
+    NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -188,7 +190,7 @@
     item.price = price;
     item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
+    NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -225,7 +227,7 @@
     //    item.price = price;
     item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
+    NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -262,7 +264,7 @@
     item.price = price;
     //    item.quantity = quantity; <-- defaults to 1 if not set
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
+    NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -301,10 +303,10 @@
     item2.price = 77.23;
     item2.quantity = 6;
     
-    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
+    NSString *serializedItems = [NUPurchase serializedPurchaseItemsStringWithItems:@[item1, item2]];
     
-    NSString *serializedItem1 = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item1];
-    NSString *serializedItem2 = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item2];
+    NSString *serializedItem1 = [NUPurchase serializedPurchaseItemStringWithItem:item1];
+    NSString *serializedItem2 = [NUPurchase serializedPurchaseItemStringWithItem:item2];
     
     NSString *expectedString = [NSString stringWithFormat:@"%@,%@", serializedItem1, serializedItem2];
     XCTAssert([serializedItems isEqualToString:expectedString]);
@@ -337,7 +339,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
+    NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -398,7 +400,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
+    NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -459,7 +461,7 @@
     details.city = city;
     details.zip = zip;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
+    NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
     
     NSString *prefix = @"_=";
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -540,18 +542,18 @@
     
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
+    NSString *generatedString = [purchase httpRequestParameterRepresentation];
     
     NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
     XCTAssert([generatedString hasPrefix:prefix]);
     
     XCTAssert([generatedString rangeOfString:@"_="].location != NSNotFound);
     
-    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
+    NSString *serializedItems = [NUPurchase serializedPurchaseItemsStringWithItems:@[item1, item2]];
     serializedItems = [@"," stringByAppendingString:serializedItems];
     XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
     
-    NSString *serializedDetails = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
+    NSString *serializedDetails = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
     XCTAssert([generatedString rangeOfString:serializedDetails].location != NSNotFound);
     
     NSString *serializedDetailsAsParameter = [@"," stringByAppendingString:serializedDetails];
@@ -579,7 +581,7 @@
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
 //    purchase.details = nil;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
+    NSString *generatedString = [purchase httpRequestParameterRepresentation];
     
     NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -587,7 +589,7 @@
     XCTAssert([generatedString rangeOfString:@"_="].location == NSNotFound);
     XCTAssert([generatedString rangeOfString:@",_="].location == NSNotFound);
     
-    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
+    NSString *serializedItems = [NUPurchase serializedPurchaseItemsStringWithItems:@[item1, item2]];
     serializedItems = [@"," stringByAppendingString:serializedItems];
     XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
 }

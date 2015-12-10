@@ -6,11 +6,13 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import "NUAction.h"
+#import "NUAction+Serialization.h"
+#import "NSString+LGUtils.h"
 
 @interface NUAction ()
 
-@property (nonatomic) NSMutableArray *parametersMutable;
+@property (nonatomic) NSString *actionName;
+@property (nonatomic) NSMutableArray *parameters;
 
 @end
 
@@ -27,9 +29,9 @@
 {
     if (self = [super init]) {
         _actionName = [actionName copy];
-        _parametersMutable = [NSMutableArray arrayWithCapacity:10];
+        _parameters = [NSMutableArray arrayWithCapacity:10];
         for (int i=0; i<10; i++) {
-            [_parametersMutable addObject:[NSNull null]];
+            [_parameters addObject:[NSNull null]];
         }
     }
     
@@ -86,11 +88,6 @@
     [self updateParameterAtIndex:9 withValue:tenthParameter];
 }
 
-- (NSArray *)parameters
-{
-    return [_parametersMutable copy];
-}
-
 #pragma mark - Private API
 
 - (void)updateParameterAtIndex:(NSUInteger)index withValue:(NSString *)value
@@ -100,7 +97,73 @@
         parameterValue = value;
     }
     
-    _parametersMutable[index] = parameterValue;
+    _parameters[index] = parameterValue;
+}
+
+#pragma mark - Trackable
+
+- (NSString *)httpRequestParameterRepresentation
+{
+    return [self.class serializedActionStringFromAction:self];
+}
+
+#pragma mark - Serialization
+
++ (NSString *)serializedActionStringFromAction:(NUAction *)action
+{
+    NSString *actionValue = [action.actionName URLEncodedString];
+    if (action.parameters.count > 0) {
+        NSString *actionParametersString = [self serializedActionParametersStringWithActionParameters:action.parameters];
+        if (actionParametersString.length > 0) {
+            actionValue = [actionValue stringByAppendingFormat:@",%@", actionParametersString];
+        }
+    }
+    
+    return actionValue;
+}
+
++ (NSString *)serializedActionParametersStringWithActionParameters:(NSArray *)actionParameters
+{
+    NSMutableString *parametersString = [NSMutableString stringWithString:@""];
+    
+    // max 10 parameters are allowed
+    if (actionParameters.count > 10) {
+        actionParameters = [actionParameters subarrayWithRange:NSMakeRange(0, 10)];
+    }
+    
+    // first, truncate trailing NSNull(s) of the input array
+    // e.g.
+    // [A, B, NSNull, NSNull, C, D, NSNull, NSNull, NSNull, NSNull]
+    // -->
+    // [A, B, NSNull, NSNull, C, D]
+    BOOL hasAtLeastOneNonNullValue = NO;
+    NSUInteger lastNonNullIndex = actionParameters.count-1;
+    for (int i=(int)(actionParameters.count-1); i>=0; i--) {
+        id valueAtIndex = actionParameters[i];
+        if (![valueAtIndex isEqual:[NSNull null]]) {
+            lastNonNullIndex = i;
+            hasAtLeastOneNonNullValue = YES;
+            break;
+        }
+    }
+    
+    if (hasAtLeastOneNonNullValue) {
+        NSArray *truncatedParameters = [actionParameters subarrayWithRange:NSMakeRange(0, lastNonNullIndex+1)];
+        if (truncatedParameters.count > 0) {
+            for (int i=0; i<truncatedParameters.count; i++) {
+                if (i > 0) { // add comma before adding each parameter except for the first one
+                    [parametersString appendString:@","];
+                }
+                
+                id actionParameter = truncatedParameters[i];
+                if (![actionParameter isEqual:[NSNull null]]) {
+                    [parametersString appendString:[actionParameter URLEncodedString]];
+                }
+            }
+        }
+    }
+    
+    return [parametersString copy];
 }
 
 @end

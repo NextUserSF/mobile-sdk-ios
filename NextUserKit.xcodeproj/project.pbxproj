@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3107FB631C15A8D900AC030B /* NUAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 3107FB611C15A8D900AC030B /* NUAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3107FB641C15A8D900AC030B /* NUAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 3107FB621C15A8D900AC030B /* NUAction.m */; };
-		3107FB6C1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h in Headers */ = {isa = PBXBuildFile; fileRef = 3107FB6A1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h */; };
 		3107FB701C15BCC300AC030B /* NUPurchase.h in Headers */ = {isa = PBXBuildFile; fileRef = 3107FB6E1C15BCC300AC030B /* NUPurchase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3107FB711C15BCC300AC030B /* NUPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3107FB6F1C15BCC300AC030B /* NUPurchase.m */; };
 		3107FB7C1C17362500AC030B /* NUTrackerQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3107FB7B1C17362500AC030B /* NUTrackerQueueTests.m */; };
@@ -83,6 +82,10 @@
 		3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D56C1BF9CC21006E88D1 /* DDMultiFormatter.m */; };
 		3198D58A1BF9E4BA006E88D1 /* NUDDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5881BF9E4BA006E88D1 /* NUDDLog.h */; };
 		3198D58B1BF9E4BA006E88D1 /* NUDDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5891BF9E4BA006E88D1 /* NUDDLog.m */; };
+		31C0B1281C19DC3500723558 /* NUTrackable.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1271C19DC3500723558 /* NUTrackable.h */; };
+		31C0B12B1C19DCB200723558 /* NUAction+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1291C19DCB200723558 /* NUAction+Serialization.h */; };
+		31C0B1301C19DCEC00723558 /* NUPurchase+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */; };
+		31C0B13C1C19E24D00723558 /* NUPurchase+Tests.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B13A1C19E24D00723558 /* NUPurchase+Tests.h */; };
 		31D99FE31BF5D9B400F9400F /* NUTracker+Tests.h in Headers */ = {isa = PBXBuildFile; fileRef = 31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */; };
 		31E23D491C05F12D00BD9A81 /* NUHTTPRequestUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 31E23D471C05F12D00BD9A81 /* NUHTTPRequestUtils.h */; };
 		31E23D4A1C05F12D00BD9A81 /* NUHTTPRequestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E23D481C05F12D00BD9A81 /* NUHTTPRequestUtils.m */; };
@@ -108,7 +111,6 @@
 /* Begin PBXFileReference section */
 		3107FB611C15A8D900AC030B /* NUAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUAction.h; sourceTree = "<group>"; };
 		3107FB621C15A8D900AC030B /* NUAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUAction.m; sourceTree = "<group>"; };
-		3107FB6A1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUTrackingHTTPRequestHelper+Tests.h"; sourceTree = "<group>"; };
 		3107FB6E1C15BCC300AC030B /* NUPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchase.h; sourceTree = "<group>"; };
 		3107FB6F1C15BCC300AC030B /* NUPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchase.m; sourceTree = "<group>"; };
 		3107FB7B1C17362500AC030B /* NUTrackerQueueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerQueueTests.m; sourceTree = "<group>"; };
@@ -186,6 +188,10 @@
 		3198D5881BF9E4BA006E88D1 /* NUDDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NUDDLog.h; path = lib_3rdParty/DDLog/NUDDLog.h; sourceTree = "<group>"; };
 		3198D5891BF9E4BA006E88D1 /* NUDDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NUDDLog.m; path = lib_3rdParty/DDLog/NUDDLog.m; sourceTree = "<group>"; };
 		31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFNetworkingNameMapper.h; sourceTree = "<group>"; };
+		31C0B1271C19DC3500723558 /* NUTrackable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackable.h; sourceTree = "<group>"; };
+		31C0B1291C19DCB200723558 /* NUAction+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUAction+Serialization.h"; sourceTree = "<group>"; };
+		31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUPurchase+Serialization.h"; sourceTree = "<group>"; };
+		31C0B13A1C19E24D00723558 /* NUPurchase+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUPurchase+Tests.h"; sourceTree = "<group>"; };
 		31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUTracker+Tests.h"; sourceTree = "<group>"; };
 		31E23D471C05F12D00BD9A81 /* NUHTTPRequestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUHTTPRequestUtils.h; sourceTree = "<group>"; };
 		31E23D481C05F12D00BD9A81 /* NUHTTPRequestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUHTTPRequestUtils.m; sourceTree = "<group>"; };
@@ -243,6 +249,7 @@
 		312029C71BF221F200B7CCC6 /* Private */ = {
 			isa = PBXGroup;
 			children = (
+				31C0B12D1C19DCC900723558 /* ModelSerialization */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
@@ -399,6 +406,16 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		31C0B12D1C19DCC900723558 /* ModelSerialization */ = {
+			isa = PBXGroup;
+			children = (
+				31C0B1271C19DC3500723558 /* NUTrackable.h */,
+				31C0B1291C19DCB200723558 /* NUAction+Serialization.h */,
+				31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */,
+			);
+			name = ModelSerialization;
+			sourceTree = "<group>";
+		};
 		31E61C721BFDDA2D00AAD12B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -434,7 +451,7 @@
 			isa = PBXGroup;
 			children = (
 				31D99FE11BF5D9B400F9400F /* NUTracker+Tests.h */,
-				3107FB6A1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h */,
+				31C0B13A1C19E24D00723558 /* NUPurchase+Tests.h */,
 			);
 			name = TestsCategory;
 			sourceTree = "<group>";
@@ -453,16 +470,19 @@
 				3198D5811BF9CC21006E88D1 /* DDContextFilterLogFormatter.h in Headers */,
 				316438E81BFC7DF80092E067 /* NUPurchaseDetails.h in Headers */,
 				318BFF6D1BECF8A400B2AA2A /* AFURLSessionManager.h in Headers */,
+				31C0B1301C19DCEC00723558 /* NUPurchase+Serialization.h in Headers */,
 				316438E41BFC7D1D0092E067 /* NUPurchaseItem.h in Headers */,
 				31614FAD1BF3508C00F0535D /* SSKeychainQuery.h in Headers */,
 				318BFF631BECF8A400B2AA2A /* AFNetworkReachabilityManager.h in Headers */,
 				3198D57B1BF9CC21006E88D1 /* DDLog+LOGV.h in Headers */,
 				318BFF691BECF8A400B2AA2A /* AFURLRequestSerialization.h in Headers */,
+				31C0B12B1C19DCB200723558 /* NUAction+Serialization.h in Headers */,
 				312029CC1BF22E8B00B7CCC6 /* NUTrackerSession.h in Headers */,
 				31614FB71BF3808000F0535D /* NUTrackingHTTPRequestHelper.h in Headers */,
 				318BFF5E1BECF8A400B2AA2A /* AFHTTPRequestOperationManager.h in Headers */,
 				3198D57C1BF9CC21006E88D1 /* DDLog.h in Headers */,
 				31E23D491C05F12D00BD9A81 /* NUHTTPRequestUtils.h in Headers */,
+				31C0B1281C19DC3500723558 /* NUTrackable.h in Headers */,
 				3198D58A1BF9E4BA006E88D1 /* NUDDLog.h in Headers */,
 				31E61C651BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.h in Headers */,
 				31D99FE31BF5D9B400F9400F /* NUTracker+Tests.h in Headers */,
@@ -483,9 +503,9 @@
 				318BFF5C1BECF8A400B2AA2A /* AFHTTPRequestOperation.h in Headers */,
 				318BFF671BECF8A400B2AA2A /* AFURLConnectionOperation.h in Headers */,
 				318BFF621BECF8A400B2AA2A /* AFNetworking.h in Headers */,
+				31C0B13C1C19E24D00723558 /* NUPurchase+Tests.h in Headers */,
 				31E61C701BFDD95100AAD12B /* NSString+LGUtils.h in Headers */,
 				318BFF651BECF8A400B2AA2A /* AFSecurityPolicy.h in Headers */,
-				3107FB6C1C15B46100AC030B /* NUTrackingHTTPRequestHelper+Tests.h in Headers */,
 				3198D57A1BF9CC21006E88D1 /* DDLegacyMacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

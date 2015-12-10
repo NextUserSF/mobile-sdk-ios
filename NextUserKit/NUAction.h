@@ -12,9 +12,6 @@
 
 + (NUAction *)actionWithName:(NSString *)actionName;
 
-@property (nonatomic, readonly) NSString *actionName;
-@property (nonatomic, readonly) NSArray *parameters;
-
 @property (nonatomic) NSString *firstParameter;
 @property (nonatomic) NSString *secondParameter;
 @property (nonatomic) NSString *thirdParameter;

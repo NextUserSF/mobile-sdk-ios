@@ -13,15 +13,15 @@
 
 + (instancetype)itemWithName:(NSString *)name
 {
-    NUPurchaseItem *item = [[NUPurchaseItem alloc] init];
-    item.name = name;
+    NUPurchaseItem *item = [[NUPurchaseItem alloc] initWithName:name];
     
     return item;
 }
 
-- (id)init
+- (id)initWithName:(NSString *)name
 {
     if (self = [super init]) {
+        _name = name;
         _quantity = 1;
         _price = [NUObjectPropertyStatusUtils doubleNonSetValue];
     }
