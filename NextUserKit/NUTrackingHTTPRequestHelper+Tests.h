@@ -14,8 +14,8 @@
 
 + (NSString *)serializedActionStringFromAction:(NUAction *)action;
 + (NSString *)serializedPurchaseStringWithPurchase:(NUPurchase *)purchase;
-+ (NSString *)serializedProductStringWithProduct:(NUProduct *)product;
-+ (NSString *)serializedProductsStringWithProducts:(NSArray *)products;
++ (NSString *)serializedPurchaseItemStringWithItem:(NUPurchaseItem *)item;
++ (NSString *)serializedPurchaseItemsStringWithItems:(NSArray *)items;
 + (NSString *)serializedPurchaseDetailsStringWithDetails:(NUPurchaseDetails *)purchaseDetails;
 
 @end

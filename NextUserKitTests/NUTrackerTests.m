@@ -223,19 +223,19 @@
 {
     double amount = 45.65;
     
-    NUProduct *product1 = [NUProduct productWithName:@"Lord Of The Rings"];
-    product1.SKU = @"234523333344";
-    product1.category = @"Science Fiction";
-    product1.productDescription = @"A long book about rings";
-    product1.price = 99.23;
-    product1.quantity = 7;
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    item1.SKU = @"234523333344";
+    item1.category = @"Science Fiction";
+    item1.itemDescription = @"A long book about rings";
+    item1.price = 99.23;
+    item1.quantity = 7;
     
-    NUProduct *product2 = [NUProduct productWithName:@"Game Of Thrones"];
-    product2.SKU = @"25678675874";
-    product2.category = @"Science Fiction";
-    product2.productDescription = @"A long book about dragons";
-    product2.price = 77.23;
-    product2.quantity = 6;
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    item2.SKU = @"25678675874";
+    item2.category = @"Science Fiction";
+    item2.itemDescription = @"A long book about dragons";
+    item2.price = 77.23;
+    item2.quantity = 6;
     
     double discount = 38.36;
     double shipping = 15.56;
@@ -262,7 +262,7 @@
     
     NUPurchase *purchase = [NUPurchase purchase];
     purchase.totalAmount = amount;
-    purchase.products = @[product1, product2];
+    purchase.items = @[item1, item2];
     purchase.details = details;
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];

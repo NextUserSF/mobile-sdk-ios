@@ -15,7 +15,7 @@
 + (NUPurchase *)purchase;
 
 @property (nonatomic) double totalAmount;
-@property (nonatomic) NSArray *products; // array of NUProduct objects
+@property (nonatomic) NSArray *items; // array of NUPurchaseItem objects
 @property (nonatomic) NUPurchaseDetails *details; // optional
 
 @end

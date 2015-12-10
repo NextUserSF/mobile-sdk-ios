@@ -1,5 +1,5 @@
 //
-//  NUProduct.h
+//  NUPurchaseItem.h
 //  NextUserKit
 //
 //  Created by Dino on 11/18/15.
@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NUProduct : NSObject
+@interface NUPurchaseItem : NSObject
 
-+ (instancetype)productWithName:(NSString *)name;
++ (instancetype)itemWithName:(NSString *)name;
 
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *SKU;
 @property (nonatomic) NSString *category;
 @property (nonatomic) double price;
 @property (nonatomic) NSUInteger quantity; // defautls to 1
-@property (nonatomic) NSString *productDescription;
+@property (nonatomic) NSString *itemDescription;
 
 @end

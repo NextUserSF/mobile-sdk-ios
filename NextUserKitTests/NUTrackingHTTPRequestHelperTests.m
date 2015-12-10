@@ -132,26 +132,26 @@
 
 #pragma mark - Purchase Serialization
 
-#pragma mark - Product
+#pragma mark - Purchase Item
 
-//  "product_name=SKU:product_SKU;category:product_category_value;price:98.56;quantity:3;description:This is a product description";
-- (void)testProductSerializationWithAllProperties
+//  "item_name=SKU:item_SKU;category:category_value;price:98.56;quantity:3;description:This is a purchase item description";
+- (void)testPurchaseItemSerializationWithAllProperties
 {
     NSString *name = @"Lord Of The Rings";
     NSString *SKU = @"2342342223";
     NSString *category = @"books";
-    NSString *productDescription = @"This is a product description";
+    NSString *itemDescription = @"This is a purchase item description";
     double price = 98.56;
     double quantity = 3;
     
-    NUProduct *product = [NUProduct productWithName:name];
-    product.SKU = SKU;
-    product.category = category;
-    product.productDescription = productDescription;
-    product.price = price;
-    product.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    item.SKU = SKU;
+    item.category = category;
+    item.itemDescription = itemDescription;
+    item.price = price;
+    item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -162,8 +162,8 @@
     NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
     XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
     
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
+    NSString *itemDescriptionParameter = [NSString stringWithFormat:@"description:%@", [itemDescription URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:itemDescriptionParameter].location != NSNotFound);
     
     NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
     XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
@@ -172,23 +172,23 @@
     XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
 }
 
-- (void)testProductSerializationWithMissingStringProperty
+- (void)testPurchaseItemSerializationWithMissingStringProperty
 {
     NSString *name = @"Lord Of The Rings";
     NSString *SKU = @"2342342223";
     NSString *category = @"books";
-    NSString *productDescription = @"This is a product description";
+    NSString *itemDescription = @"This is a purchase item description";
     double price = 98.56;
     double quantity = 3;
     
-    NUProduct *product = [NUProduct productWithName:name];
-    product.SKU = SKU;
-    product.category = category;
-    //    product.productDescription = productDescription;
-    product.price = price;
-    product.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    item.SKU = SKU;
+    item.category = category;
+    //    item.itemDescription = itemDescription;
+    item.price = price;
+    item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -199,8 +199,8 @@
     NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
     XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
     
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location == NSNotFound);
+    NSString *itemDescriptionParameter = [NSString stringWithFormat:@"description:%@", [itemDescription URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:itemDescriptionParameter].location == NSNotFound);
     
     NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
     XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
@@ -209,23 +209,23 @@
     XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
 }
 
-- (void)testProductSerializationWithMissingDoubleProperty
+- (void)testPurchaseItemSerializationWithMissingDoubleProperty
 {
     NSString *name = @"Lord Of The Rings";
     NSString *SKU = @"2342342223";
     NSString *category = @"books";
-    NSString *productDescription = @"This is a product description";
+    NSString *itemDescription = @"This is a purchase item description";
     double price = 98.56;
     double quantity = 3;
     
-    NUProduct *product = [NUProduct productWithName:name];
-    product.SKU = SKU;
-    product.category = category;
-    product.productDescription = productDescription;
-    //    product.price = price;
-    product.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    item.SKU = SKU;
+    item.category = category;
+    item.itemDescription = itemDescription;
+    //    item.price = price;
+    item.quantity = quantity;
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -236,8 +236,8 @@
     NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
     XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
     
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
+    NSString *itemDescriptionParameter = [NSString stringWithFormat:@"description:%@", [itemDescription URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:itemDescriptionParameter].location != NSNotFound);
     
     NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
     XCTAssert([generatedString rangeOfString:priceParameter].location == NSNotFound);
@@ -246,23 +246,23 @@
     XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
 }
 
-- (void)testProductSerializationWithQuantityNotSet
+- (void)testPurchaseItemSerializationWithQuantityNotSet
 {
     NSString *name = @"Lord Of The Rings";
     NSString *SKU = @"2342342223";
     NSString *category = @"books";
-    NSString *productDescription = @"This is a product description";
+    NSString *itemDescription = @"This is a purchase item description";
     double price = 98.56;
     //    double quantity = 3;
     
-    NUProduct *product = [NUProduct productWithName:name];
-    product.SKU = SKU;
-    product.category = category;
-    product.productDescription = productDescription;
-    product.price = price;
-    //    product.quantity = quantity; <-- defaults to 1 if not set
+    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    item.SKU = SKU;
+    item.category = category;
+    item.itemDescription = itemDescription;
+    item.price = price;
+    //    item.quantity = quantity; <-- defaults to 1 if not set
     
-    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product];
+    NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item];
     
     NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
     XCTAssert([generatedString hasPrefix:prefix]);
@@ -273,8 +273,8 @@
     NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
     XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
     
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
+    NSString *itemDescriptionParameter = [NSString stringWithFormat:@"description:%@", [itemDescription URLEncodedString]];
+    XCTAssert([generatedString rangeOfString:itemDescriptionParameter].location != NSNotFound);
     
     NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
     XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
@@ -285,29 +285,29 @@
 
 #pragma mark -
 
-- (void)testProductsSerialization
+- (void)testPurchaseItemSerialization
 {
-    NUProduct *product1 = [NUProduct productWithName:@"Lord Of The Rings"];
-    product1.SKU = @"234523333344";
-    product1.category = @"Science Fiction";
-    product1.productDescription = @"A long book about rings";
-    product1.price = 99.23;
-    product1.quantity = 7;
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    item1.SKU = @"234523333344";
+    item1.category = @"Science Fiction";
+    item1.itemDescription = @"A long book about rings";
+    item1.price = 99.23;
+    item1.quantity = 7;
     
-    NUProduct *product2 = [NUProduct productWithName:@"Game Of Thrones"];
-    product2.SKU = @"25678675874";
-    product2.category = @"Science Fiction";
-    product2.productDescription = @"A long book about dragons";
-    product2.price = 77.23;
-    product2.quantity = 6;
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    item2.SKU = @"25678675874";
+    item2.category = @"Science Fiction";
+    item2.itemDescription = @"A long book about dragons";
+    item2.price = 77.23;
+    item2.quantity = 6;
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
+    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
     
-    NSString *serializedProduct1 = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product1];
-    NSString *serializedProduct2 = [NUTrackingHTTPRequestHelper serializedProductStringWithProduct:product2];
+    NSString *serializedItem1 = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item1];
+    NSString *serializedItem2 = [NUTrackingHTTPRequestHelper serializedPurchaseItemStringWithItem:item2];
     
-    NSString *expectedString = [NSString stringWithFormat:@"%@,%@", serializedProduct1, serializedProduct2];
-    XCTAssert([serializedProducts isEqualToString:expectedString]);
+    NSString *expectedString = [NSString stringWithFormat:@"%@,%@", serializedItem1, serializedItem2];
+    XCTAssert([serializedItems isEqualToString:expectedString]);
 }
 
 #pragma mark - Purchase Details
@@ -501,19 +501,19 @@
 {
     double amount = 45.65;
     
-    NUProduct *product1 = [NUProduct productWithName:@"Lord Of The Rings"];
-    product1.SKU = @"234523333344";
-    product1.category = @"Science Fiction";
-    product1.productDescription = @"A long book about rings";
-    product1.price = 99.23;
-    product1.quantity = 7;
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    item1.SKU = @"234523333344";
+    item1.category = @"Science Fiction";
+    item1.itemDescription = @"A long book about rings";
+    item1.price = 99.23;
+    item1.quantity = 7;
     
-    NUProduct *product2 = [NUProduct productWithName:@"Game Of Thrones"];
-    product2.SKU = @"25678675874";
-    product2.category = @"Science Fiction";
-    product2.productDescription = @"A long book about dragons";
-    product2.price = 77.23;
-    product2.quantity = 6;
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    item2.SKU = @"25678675874";
+    item2.category = @"Science Fiction";
+    item2.itemDescription = @"A long book about dragons";
+    item2.price = 77.23;
+    item2.quantity = 6;
     
     double discount = 38.36;
     double shipping = 15.56;
@@ -540,7 +540,7 @@
     
     NUPurchase *purchase = [NUPurchase purchase];
     purchase.totalAmount = amount;
-    purchase.products = @[product1, product2];
+    purchase.items = @[item1, item2];
     purchase.details = details;
     
     NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
@@ -550,9 +550,9 @@
     
     XCTAssert([generatedString rangeOfString:@"_="].location != NSNotFound);
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
-    serializedProducts = [@"," stringByAppendingString:serializedProducts];
-    XCTAssert([generatedString rangeOfString:serializedProducts].location != NSNotFound);
+    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
+    serializedItems = [@"," stringByAppendingString:serializedItems];
+    XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
     
     NSString *serializedDetails = [NUTrackingHTTPRequestHelper serializedPurchaseDetailsStringWithDetails:details];
     XCTAssert([generatedString rangeOfString:serializedDetails].location != NSNotFound);
@@ -565,23 +565,23 @@
 {
     double amount = 45.65;
     
-    NUProduct *product1 = [NUProduct productWithName:@"Lord Of The Rings"];
-    product1.SKU = @"234523333344";
-    product1.category = @"Science Fiction";
-    product1.productDescription = @"A long book about rings";
-    product1.price = 99.23;
-    product1.quantity = 7;
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    item1.SKU = @"234523333344";
+    item1.category = @"Science Fiction";
+    item1.itemDescription = @"A long book about rings";
+    item1.price = 99.23;
+    item1.quantity = 7;
     
-    NUProduct *product2 = [NUProduct productWithName:@"Game Of Thrones"];
-    product2.SKU = @"25678675874";
-    product2.category = @"Science Fiction";
-    product2.productDescription = @"A long book about dragons";
-    product2.price = 77.23;
-    product2.quantity = 6;
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    item2.SKU = @"25678675874";
+    item2.category = @"Science Fiction";
+    item2.itemDescription = @"A long book about dragons";
+    item2.price = 77.23;
+    item2.quantity = 6;
     
     NUPurchase *purchase = [NUPurchase purchase];
     purchase.totalAmount = amount;
-    purchase.products = @[product1, product2];
+    purchase.items = @[item1, item2];
 //    purchase.details = nil;
     
     NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
@@ -592,9 +592,9 @@
     XCTAssert([generatedString rangeOfString:@"_="].location == NSNotFound);
     XCTAssert([generatedString rangeOfString:@",_="].location == NSNotFound);
     
-    NSString *serializedProducts = [NUTrackingHTTPRequestHelper serializedProductsStringWithProducts:@[product1, product2]];
-    serializedProducts = [@"," stringByAppendingString:serializedProducts];
-    XCTAssert([generatedString rangeOfString:serializedProducts].location != NSNotFound);
+    NSString *serializedItems = [NUTrackingHTTPRequestHelper serializedPurchaseItemsStringWithItems:@[item1, item2]];
+    serializedItems = [@"," stringByAppendingString:serializedItems];
+    XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
 }
 
 @end

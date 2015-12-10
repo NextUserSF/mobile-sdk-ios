@@ -27,8 +27,8 @@
 		31614FB81BF3808000F0535D /* NUTrackingHTTPRequestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */; };
 		31614FBE1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */; };
 		31614FBF1BF3882900F0535D /* NUTrackingHTTPRequestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */; };
-		316438E41BFC7D1D0092E067 /* NUProduct.h in Headers */ = {isa = PBXBuildFile; fileRef = 316438E21BFC7D1D0092E067 /* NUProduct.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		316438E51BFC7D1D0092E067 /* NUProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E31BFC7D1D0092E067 /* NUProduct.m */; };
+		316438E41BFC7D1D0092E067 /* NUPurchaseItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 316438E21BFC7D1D0092E067 /* NUPurchaseItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		316438E51BFC7D1D0092E067 /* NUPurchaseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E31BFC7D1D0092E067 /* NUPurchaseItem.m */; };
 		316438E81BFC7DF80092E067 /* NUPurchaseDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = 316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		316438E91BFC7DF80092E067 /* NUPurchaseDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E71BFC7DF80092E067 /* NUPurchaseDetails.m */; };
 		318BFF261BECF49B00B2AA2A /* NextUserKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 318BFF251BECF49B00B2AA2A /* NextUserKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -125,8 +125,8 @@
 		31614FB51BF3808000F0535D /* NUTrackingHTTPRequestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackingHTTPRequestHelper.h; sourceTree = "<group>"; };
 		31614FB61BF3808000F0535D /* NUTrackingHTTPRequestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackingHTTPRequestHelper.m; sourceTree = "<group>"; };
 		31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackingHTTPRequestHelperTests.m; sourceTree = "<group>"; };
-		316438E21BFC7D1D0092E067 /* NUProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUProduct.h; sourceTree = "<group>"; };
-		316438E31BFC7D1D0092E067 /* NUProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUProduct.m; sourceTree = "<group>"; };
+		316438E21BFC7D1D0092E067 /* NUPurchaseItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchaseItem.h; sourceTree = "<group>"; };
+		316438E31BFC7D1D0092E067 /* NUPurchaseItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchaseItem.m; sourceTree = "<group>"; };
 		316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchaseDetails.h; sourceTree = "<group>"; };
 		316438E71BFC7DF80092E067 /* NUPurchaseDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchaseDetails.m; sourceTree = "<group>"; };
 		318BFF221BECF49B00B2AA2A /* NextUserKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NextUserKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -234,8 +234,8 @@
 				3107FB6F1C15BCC300AC030B /* NUPurchase.m */,
 				316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */,
 				316438E71BFC7DF80092E067 /* NUPurchaseDetails.m */,
-				316438E21BFC7D1D0092E067 /* NUProduct.h */,
-				316438E31BFC7D1D0092E067 /* NUProduct.m */,
+				316438E21BFC7D1D0092E067 /* NUPurchaseItem.h */,
+				316438E31BFC7D1D0092E067 /* NUPurchaseItem.m */,
 			);
 			name = Purchase;
 			sourceTree = "<group>";
@@ -453,7 +453,7 @@
 				3198D5811BF9CC21006E88D1 /* DDContextFilterLogFormatter.h in Headers */,
 				316438E81BFC7DF80092E067 /* NUPurchaseDetails.h in Headers */,
 				318BFF6D1BECF8A400B2AA2A /* AFURLSessionManager.h in Headers */,
-				316438E41BFC7D1D0092E067 /* NUProduct.h in Headers */,
+				316438E41BFC7D1D0092E067 /* NUPurchaseItem.h in Headers */,
 				31614FAD1BF3508C00F0535D /* SSKeychainQuery.h in Headers */,
 				318BFF631BECF8A400B2AA2A /* AFNetworkReachabilityManager.h in Headers */,
 				3198D57B1BF9CC21006E88D1 /* DDLog+LOGV.h in Headers */,
@@ -615,7 +615,7 @@
 				3198D5761BF9CC21006E88D1 /* DDASLLogger.m in Sources */,
 				318BFF461BECF6AA00B2AA2A /* NUTracker.m in Sources */,
 				31E61C711BFDD95100AAD12B /* NSString+LGUtils.m in Sources */,
-				316438E51BFC7D1D0092E067 /* NUProduct.m in Sources */,
+				316438E51BFC7D1D0092E067 /* NUPurchaseItem.m in Sources */,
 				31614FB81BF3808000F0535D /* NUTrackingHTTPRequestHelper.m in Sources */,
 				318BFF641BECF8A400B2AA2A /* AFNetworkReachabilityManager.m in Sources */,
 				3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */,

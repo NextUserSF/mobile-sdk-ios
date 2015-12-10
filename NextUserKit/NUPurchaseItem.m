@@ -1,22 +1,22 @@
 //
-//  NUProduct.m
+//  NUPurchaseItem.m
 //  NextUserKit
 //
 //  Created by Dino on 11/18/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import "NUProduct.h"
+#import "NUPurchaseItem.h"
 #import "NUObjectPropertyStatusUtils.h"
 
-@implementation NUProduct
+@implementation NUPurchaseItem
 
-+ (instancetype)productWithName:(NSString *)name
++ (instancetype)itemWithName:(NSString *)name
 {
-    NUProduct *product = [[NUProduct alloc] init];
-    product.name = name;
+    NUPurchaseItem *item = [[NUPurchaseItem alloc] init];
+    item.name = name;
     
-    return product;
+    return item;
 }
 
 - (id)init
