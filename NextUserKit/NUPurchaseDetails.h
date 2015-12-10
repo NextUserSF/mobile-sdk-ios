@@ -21,7 +21,7 @@
 @property (nonatomic) NSString *paymentMethod;
 @property (nonatomic) NSString *affiliation; // site's purchase ID or similar
 
-// entered on purchase
+// address
 @property (nonatomic) NSString *state;
 @property (nonatomic) NSString *city;
 @property (nonatomic) NSString *zip;
