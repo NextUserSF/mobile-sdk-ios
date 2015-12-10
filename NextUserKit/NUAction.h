@@ -12,15 +12,15 @@
 
 + (NUAction *)actionWithName:(NSString *)actionName;
 
-@property (nonatomic) NSString *firstParameter;
-@property (nonatomic) NSString *secondParameter;
-@property (nonatomic) NSString *thirdParameter;
-@property (nonatomic) NSString *fourthParameter;
-@property (nonatomic) NSString *fifthParameter;
-@property (nonatomic) NSString *sixthParameter;
-@property (nonatomic) NSString *seventhParameter;
-@property (nonatomic) NSString *eightParameter;
-@property (nonatomic) NSString *ninthParameter;
-@property (nonatomic) NSString *tenthParameter;
+- (void)setFirstParameter:(NSString *)firstParameter;
+- (void)setSecondParameter:(NSString *)secondParameter;
+- (void)setThirdParameter:(NSString *)thirdParameter;
+- (void)setFourthParameter:(NSString *)fourthParameter;
+- (void)setFifthParameter:(NSString *)fifthParameter;
+- (void)setSixthParameter:(NSString *)sixthParameter;
+- (void)setSeventhParameter:(NSString *)seventhParameter;
+- (void)setEightParameter:(NSString *)eightParameter;
+- (void)setNinthParameter:(NSString *)ninthParameter;
+- (void)setTenthParameter:(NSString *)tenthParameter;
 
 @end
