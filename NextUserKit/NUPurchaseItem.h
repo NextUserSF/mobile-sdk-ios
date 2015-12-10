@@ -16,7 +16,7 @@
 @property (nonatomic) NSString *SKU;
 @property (nonatomic) NSString *category;
 @property (nonatomic) double price;
-@property (nonatomic) NSUInteger quantity; // defautls to 1
+@property (nonatomic) NSUInteger quantity; // defaults to 1
 @property (nonatomic) NSString *itemDescription;
 
 @end
