@@ -74,7 +74,7 @@
         }
     }];
     
-    [self waitForExpectat1ionsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Start session timeout error: %@", error);
         }
