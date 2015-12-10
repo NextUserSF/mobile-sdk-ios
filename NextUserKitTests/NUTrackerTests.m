@@ -260,10 +260,7 @@
     details.city = city;
     details.zip = zip;
     
-    NUPurchase *purchase = [NUPurchase purchase];
-    purchase.totalAmount = amount;
-    purchase.items = @[item1, item2];
-    purchase.details = details;
+    NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     

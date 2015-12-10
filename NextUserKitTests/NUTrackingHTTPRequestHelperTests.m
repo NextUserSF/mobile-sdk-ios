@@ -538,10 +538,7 @@
     details.city = city;
     details.zip = zip;
     
-    NUPurchase *purchase = [NUPurchase purchase];
-    purchase.totalAmount = amount;
-    purchase.items = @[item1, item2];
-    purchase.details = details;
+    NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
     NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
     
@@ -579,9 +576,7 @@
     item2.price = 77.23;
     item2.quantity = 6;
     
-    NUPurchase *purchase = [NUPurchase purchase];
-    purchase.totalAmount = amount;
-    purchase.items = @[item1, item2];
+    NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
 //    purchase.details = nil;
     
     NSString *generatedString = [NUTrackingHTTPRequestHelper serializedPurchaseStringWithPurchase:purchase];
