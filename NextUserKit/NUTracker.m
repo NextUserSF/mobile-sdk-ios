@@ -52,6 +52,11 @@
 
 #pragma mark - Initialization
 
+- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier
+{
+    [self startSessionWithTrackIdentifier:trackIdentifier completion:nil];
+}
+
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
     if (!_session.startupRequestInProgress) {

@@ -81,4 +81,29 @@
     }];
 }
 
+- (void)testTrackRequestAfterSessionStartWithoutCompletionHandler
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
+    
+    NUTracker *tracker = [NUTracker sharedTracker];
+    
+    NSLog(@"Start session");
+    [tracker startSessionWithTrackIdentifier:kTestTrackIdentifier];
+    
+    NUAction *action = [NUAction actionWithName:@"action name"];
+    [tracker trackAction:action completion:^(NSError *error) {
+        NSLog(@"Send track request finish");
+        
+        XCTAssert(error == nil);
+        
+        [expectation fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Start session timeout error: %@", error);
+        }
+    }];
+}
+
 @end
