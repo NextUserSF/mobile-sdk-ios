@@ -10,10 +10,10 @@
 
 @interface NUPurchaseItem : NSObject
 
-+ (instancetype)itemWithProductName:(NSString *)name;
++ (instancetype)itemWithProductName:(NSString *)name SKU:(NSString *)SKU;
 
 @property (nonatomic, readonly) NSString *productName;
-@property (nonatomic) NSString *SKU;
+@property (nonatomic, readonly) NSString *SKU;
 @property (nonatomic) NSString *category;
 @property (nonatomic) double price;
 @property (nonatomic) NSUInteger quantity; // defaults to 1
