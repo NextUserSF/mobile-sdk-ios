@@ -146,7 +146,7 @@
     double price = 98.56;
     double quantity = 3;
     
-    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name];
     item.SKU = SKU;
     item.category = category;
     item.itemDescription = itemDescription;
@@ -183,7 +183,7 @@
     double price = 98.56;
     double quantity = 3;
     
-    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name];
     item.SKU = SKU;
     item.category = category;
     //    item.itemDescription = itemDescription;
@@ -220,7 +220,7 @@
     double price = 98.56;
     double quantity = 3;
     
-    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name];
     item.SKU = SKU;
     item.category = category;
     item.itemDescription = itemDescription;
@@ -257,7 +257,7 @@
     double price = 98.56;
     //    double quantity = 3;
     
-    NUPurchaseItem *item = [NUPurchaseItem itemWithName:name];
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name];
     item.SKU = SKU;
     item.category = category;
     item.itemDescription = itemDescription;
@@ -289,14 +289,14 @@
 
 - (void)testPurchaseItemSerialization
 {
-    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings"];
     item1.SKU = @"234523333344";
     item1.category = @"Science Fiction";
     item1.itemDescription = @"A long book about rings";
     item1.price = 99.23;
     item1.quantity = 7;
     
-    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones"];
     item2.SKU = @"25678675874";
     item2.category = @"Science Fiction";
     item2.itemDescription = @"A long book about dragons";
@@ -503,14 +503,14 @@
 {
     double amount = 45.65;
     
-    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings"];
     item1.SKU = @"234523333344";
     item1.category = @"Science Fiction";
     item1.itemDescription = @"A long book about rings";
     item1.price = 99.23;
     item1.quantity = 7;
     
-    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones"];
     item2.SKU = @"25678675874";
     item2.category = @"Science Fiction";
     item2.itemDescription = @"A long book about dragons";
@@ -564,14 +564,14 @@
 {
     double amount = 45.65;
     
-    NUPurchaseItem *item1 = [NUPurchaseItem itemWithName:@"Lord Of The Rings"];
+    NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings"];
     item1.SKU = @"234523333344";
     item1.category = @"Science Fiction";
     item1.itemDescription = @"A long book about rings";
     item1.price = 99.23;
     item1.quantity = 7;
     
-    NUPurchaseItem *item2 = [NUPurchaseItem itemWithName:@"Game Of Thrones"];
+    NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones"];
     item2.SKU = @"25678675874";
     item2.category = @"Science Fiction";
     item2.itemDescription = @"A long book about dragons";

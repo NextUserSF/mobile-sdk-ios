@@ -82,7 +82,7 @@
 + (NSString *)serializedPurchaseItemStringWithItem:(NUPurchaseItem *)item
 {
     NSMutableString *itemString = [NSMutableString stringWithString:@""];
-    [itemString appendFormat:@"%@=", [item.name URLEncodedString]];
+    [itemString appendFormat:@"%@=", [item.productName URLEncodedString]];
     
     NSMutableArray *keyValuePairs = [NSMutableArray array];
     if ([NUObjectPropertyStatusUtils isStringValueSet:item.SKU]) {

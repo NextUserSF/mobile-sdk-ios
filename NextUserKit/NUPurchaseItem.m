@@ -11,17 +11,17 @@
 
 @implementation NUPurchaseItem
 
-+ (instancetype)itemWithName:(NSString *)name
++ (instancetype)itemWithProductName:(NSString *)name
 {
-    NUPurchaseItem *item = [[NUPurchaseItem alloc] initWithName:name];
+    NUPurchaseItem *item = [[NUPurchaseItem alloc] initWithProductName:name];
     
     return item;
 }
 
-- (id)initWithName:(NSString *)name
+- (id)initWithProductName:(NSString *)name
 {
     if (self = [super init]) {
-        _name = name;
+        _productName = name;
         _quantity = 1;
         _price = [NUObjectPropertyStatusUtils doubleNonSetValue];
     }
