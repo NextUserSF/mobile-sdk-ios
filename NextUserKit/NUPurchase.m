@@ -21,12 +21,12 @@
 
 @implementation NUPurchase
 
-+ (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items
++ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items
 {
     return [self purchaseWithTotalAmount:totalAmount items:items details:nil];
 }
 
-+ (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)details
++ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)details
 {
     NUPurchase *purchase = [[NUPurchase alloc] init];
     

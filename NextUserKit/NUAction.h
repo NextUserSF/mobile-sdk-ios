@@ -10,7 +10,7 @@
 
 @interface NUAction : NSObject
 
-+ (NUAction *)actionWithName:(NSString *)actionName;
++ (instancetype)actionWithName:(NSString *)actionName;
 
 - (void)setFirstParameter:(NSString *)firstParameter;
 - (void)setSecondParameter:(NSString *)secondParameter;

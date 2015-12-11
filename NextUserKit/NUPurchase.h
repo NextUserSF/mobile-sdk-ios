@@ -13,7 +13,7 @@
 @interface NUPurchase : NSObject
 
 // items is an array of NUPurchaseItem objects
-+ (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items;
-+ (NUPurchase *)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)purchaseDetails;
++ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items;
++ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)purchaseDetails;
 
 @end

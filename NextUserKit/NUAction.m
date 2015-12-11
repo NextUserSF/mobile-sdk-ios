@@ -18,7 +18,7 @@
 
 @implementation NUAction
 
-+ (NUAction *)actionWithName:(NSString *)actionName
++ (instancetype)actionWithName:(NSString *)actionName
 {
     NUAction *action = [[NUAction alloc] initWithName:actionName];
     
