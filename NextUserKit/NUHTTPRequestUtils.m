@@ -18,15 +18,15 @@
                     parameters:(NSDictionary *)parameters
                     completion:(void (^)(id responseObject, NSError *error))completion
 {
-    DDLogInfo(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
+    DDLogVerbose(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:path
       parameters:parameters
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
              
-             DDLogInfo(@"HTTP GET request response");
-             DDLogInfo(@"URL: %@", operation.request.URL);
-             DDLogInfo(@"Response: %@", responseObject);
+             DDLogVerbose(@"HTTP GET request response");
+             DDLogVerbose(@"URL: %@", operation.request.URL);
+             DDLogVerbose(@"Response: %@", responseObject);
              
              if (completion != NULL) {
                  completion(responseObject, nil);

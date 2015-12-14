@@ -12,13 +12,11 @@
 @class NUAction;
 
 typedef NS_ENUM(NSUInteger, NULogLevel) {
-    NULogLevelOff,      // No logs
-    NULogLevelError,    // Error logs only
-    NULogLevelWarning,  // Error and warning logs
-    NULogLevelInfo,     // Error, warning and info logs
-    NULogLevelDebug,    // Error, warning, info and debug logs
-    NULogLevelVerbose,  // Error, warning, info, debug and verbose logs
-    NULogLevelAll       // All logs (1...11111)
+    NULogLevelOff,
+    NULogLevelError,
+    NULogLevelWarning,
+    NULogLevelInfo,
+    NULogLevelVerbose
 };
 
 @interface NUTracker : NSObject

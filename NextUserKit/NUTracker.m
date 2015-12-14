@@ -59,13 +59,14 @@
 
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
+    DDLogInfo(@"Start tracker session with identifier: %@", trackIdentifier);
     if (!_session.startupRequestInProgress) {
         [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     _isReady = YES;
                     
-                    DDLogInfo(@"Session startup finished, pop pending track requests");
+                    DDLogVerbose(@"Session startup finished, pop pending track request");
                     [self popPendingTrackRequest];
                     
                 } else {
@@ -95,9 +96,7 @@
         case NULogLevelError: level = DDLogLevelError; break;
         case NULogLevelWarning: level = DDLogLevelWarning; break;
         case NULogLevelInfo: level = DDLogLevelInfo; break;
-        case NULogLevelDebug: level = DDLogLevelDebug; break;
         case NULogLevelVerbose: level = DDLogLevelVerbose; break;
-        case NULogLevelAll: level = DDLogLevelAll; break;
     }
     
     [NUDDLog setLogLevel:level];
@@ -112,15 +111,16 @@
         case DDLogLevelError: level = NULogLevelError; break;
         case DDLogLevelWarning: level = NULogLevelWarning; break;
         case DDLogLevelInfo: level = NULogLevelInfo; break;
-        case DDLogLevelDebug: level = NULogLevelDebug; break;
+        case DDLogLevelDebug: level = NULogLevelInfo; break;
         case DDLogLevelVerbose: level = NULogLevelVerbose; break;
-        case DDLogLevelAll: level = NULogLevelAll; break;
+        case DDLogLevelAll: level = NULogLevelVerbose; break;
     }
     
     return level;
 }
 
 #pragma mark - User Identification
+
 - (void)identifyUserWithIdentifier:(NSString *)userIdentifier
 {
     DDLogInfo(@"Identify user with identifer: %@", userIdentifier);
@@ -205,16 +205,16 @@
     
     if ([self shouldPostponeTrackRequest]) {
     
-        DDLogWarn(@"Postpone track request sending. Session startup in progress.");
+        DDLogVerbose(@"Postpone track request sending. Session startup in progress.");
         
         [self addPostponedTrackRequestWithTrackParameters:trackParameters completion:completion];
         
     } else if ([self isSessionValid]) {
 
-        DDLogInfo(@"Do send track request");
-
         NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
         NSMutableDictionary *parameters = [self defaultTrackingParameters:!_session.userIdentifierRegistered];
+        
+        DDLogVerbose(@"Send track request with parameters: %@", parameters);
         
         // add track parameters
         for (id key in trackParameters.allKeys) {
@@ -230,8 +230,11 @@
                     _session.userIdentifierRegistered = YES;
                 }
                 
-                DDLogInfo(@"Track request finished, pop pending track requests");
+                DDLogVerbose(@"Track request finished, pop pending track request.");
                 [self popPendingTrackRequest];
+            } else {
+                DDLogError(@"Track request error: %@", error);
+                DDLogError(@"Response: %@", responseObject);
             }
             
             if (completion != NULL) {
@@ -239,7 +242,7 @@
             }
         }];
     } else {
-        DDLogWarn(@"Ignore track request sending, session not valid");
+        DDLogWarn(@"Ignore track request sending, session not valid.");
     }
 }
 
@@ -265,7 +268,7 @@
         NSDictionary *requestInfo = _pendingTrackRequests.firstObject;
         [_pendingTrackRequests removeObjectAtIndex:0];
         
-        DDLogInfo(@"Pop pending request: %@", requestInfo);
+        DDLogVerbose(@"Popped request: %@", requestInfo);
         
         NSDictionary *trackParameters = requestInfo[@"url_parameters"];
         void(^completion)(NSError *error) = requestInfo[@"completion_block"];

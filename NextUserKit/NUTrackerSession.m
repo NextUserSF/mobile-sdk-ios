@@ -51,13 +51,13 @@
         NSDictionary *parameters = nil;
         NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie URLParameters:&parameters];
         
-        DDLogInfo(@"Fire HTTP request to start the session. Path: %@, Parameters: %@", path, parameters);
+        DDLogVerbose(@"Fire HTTP request to start the session. Path: %@, Parameters: %@", path, parameters);
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager GET:path
           parameters:parameters
              success:^(AFHTTPRequestOperation *operation, id responseObject) {
                  
-                 DDLogInfo(@"Setup tracker response: %@", responseObject);
+                 DDLogVerbose(@"Start tracker session response: %@", responseObject);
                  _startupRequestInProgress = NO;
 
                  _deviceCookie = responseObject[kDeviceCookieJSONKey];
@@ -121,7 +121,7 @@
     NSError *error = nil;
     NSString *password = [SSKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
-        DDLogError(@"Error while fetching device identifier from keychain. %@", error);
+        DDLogError(@"Error while fetching device cookie from keychain. %@", error);
     }
     
     return password;
@@ -134,7 +134,7 @@
     NSError *error = nil;
     [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
-        DDLogError(@"Error while setting device identifier in keychain. %@", error);
+        DDLogError(@"Error while setting device cookie in keychain. %@", error);
     }
 }
 
@@ -143,7 +143,7 @@
     NSError *error = nil;
     [SSKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
-        DDLogError(@"Error while deleting device identifier from keychain. %@", error);
+        DDLogError(@"Error while deleting device cookie from keychain. %@", error);
     }
 }
 
