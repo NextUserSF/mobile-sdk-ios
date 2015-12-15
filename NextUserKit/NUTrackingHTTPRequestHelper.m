@@ -12,8 +12,11 @@
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
 
-#define END_POINT_DEV @"https://track-dev.nextuser.com"
+// Uncomment this when building release version of the SDK
+//#define IS_PRODUCTION_BUILD
+
 #define END_POINT_PROD @"https://track.nextuser.com"
+#define END_POINT_DEV @"https://track-dev.nextuser.com"
 
 @implementation NUTrackingHTTPRequestHelper
 
@@ -23,7 +26,11 @@
 
 + (NSString *)basePath
 {
+#ifdef IS_PRODUCTION_BUILD
+    return END_POINT_PROD;
+#else
     return END_POINT_DEV;
+#endif
 }
 
 + (NSString *)pathWithAPIName:(NSString *)APIName
