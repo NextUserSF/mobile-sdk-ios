@@ -45,6 +45,8 @@
         
         _session = [[NUTrackerSession alloc] init];
         _pendingTrackRequests = [NSMutableArray array];
+        
+        self.logLevel = NULogLevelWarning;
     }
     
     return self;
