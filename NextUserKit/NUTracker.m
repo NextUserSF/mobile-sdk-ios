@@ -167,13 +167,15 @@
 
 #pragma mark - Private API
 
-#pragma mark -
+#pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
 {
     NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackScreenParametersWithScreenName:screenName];
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
+
+#pragma mark - Track Action
 
 - (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion
 {
@@ -185,6 +187,8 @@
     NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackActionsParametersWithActions:actions];
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
+
+#pragma mark - Track Purchase
 
 - (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion
 {
