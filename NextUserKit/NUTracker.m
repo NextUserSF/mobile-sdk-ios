@@ -64,7 +64,6 @@
         [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                    _isReady = YES;
                     
                     DDLogVerbose(@"Session startup finished, pop pending track request");
                     [self popPendingTrackRequest];
