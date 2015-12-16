@@ -7,6 +7,8 @@
 //
 
 #import "NUPurchase+Serialization.h"
+#import "NUPurchaseItem.h"
+#import "NUPurchaseDetails.h"
 #import "NSString+LGUtils.h"
 #import "NUObjectPropertyStatusUtils.h"
 
