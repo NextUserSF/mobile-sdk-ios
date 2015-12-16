@@ -61,6 +61,12 @@
 
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 {
+    if (trackIdentifier == nil || trackIdentifier.length == 0) {
+        @throw [NSException exceptionWithName:@"Tracker session start exception"
+                                       reason:@"Track identifier must be a non-empty string"
+                                     userInfo:nil];
+    }
+    
     DDLogInfo(@"Start tracker session with identifier: %@", trackIdentifier);
     if (!_session.startupRequestInProgress) {
         [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
