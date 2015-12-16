@@ -46,6 +46,13 @@
 
 #pragma mark -
 
+- (void)testFrameworkVersion
+{
+    XCTAssert(NextUserKitVersionNumber == 1.0);
+}
+
+#pragma mark -
+
 - (void)testTrackerSingleton
 {
     NUTracker *tracker = [NUTracker sharedTracker];
