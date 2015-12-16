@@ -12,7 +12,7 @@ FOUNDATION_EXPORT double NextUserKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char NextUserKitVersionString[];
 
 #import <NextUserKit/NUTracker.h>
+#import <NextUserKit/NUAction.h>
 #import <NextUserKit/NUPurchase.h>
 #import <NextUserKit/NUPurchaseItem.h>
 #import <NextUserKit/NUPurchaseDetails.h>
-#import <NextUserKit/NUAction.h>
