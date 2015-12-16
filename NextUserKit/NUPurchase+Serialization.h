@@ -6,7 +6,7 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import <NextUserKit/NextUserKit.h>
+#import "NUPurchase.h"
 #import "NUTrackable.h"
 
 @interface NUPurchase (Serialization) <NUTrackable>
