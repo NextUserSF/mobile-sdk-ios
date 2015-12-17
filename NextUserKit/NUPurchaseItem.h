@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  This class represents a purchase item to supplement the NUPurchase.
+ *  This class represents a purchase item and is being used by the NUPurchase object.
  */
 @interface NUPurchaseItem : NSObject
 
@@ -21,27 +21,47 @@
 /**
  *  Creates an instance of purchase item.
  *
- *  @param name Product name
- *  @param SKU  SKU of this item
+ *  @param name Product name.
+ *  @param SKU  Product SKU.
  *
- *  @return Instance of NUPurchaseItem object
+ *  @return Instance of NUPurchaseItem object.
  */
 + (instancetype)itemWithProductName:(NSString *)name SKU:(NSString *)SKU;
 
 
-#pragma mark - Properties
+#pragma mark - Purchase Item Properties
 /**
- * @name Properties
+ * @name Purchase Item Properties
  */
 
 /**
  *  Name of the product.
  */
 @property (nonatomic, readonly) NSString *productName;
+
+/**
+ *  Product SKU.
+ */
 @property (nonatomic, readonly) NSString *SKU;
+
+/**
+ *  Product category.
+ */
 @property (nonatomic) NSString *category;
+
+/**
+ *  Product price.
+ */
 @property (nonatomic) double price;
-@property (nonatomic) NSUInteger quantity; // defaults to 1
-@property (nonatomic) NSString *itemDescription;
+
+/**
+ *  Indicates how many products are inside this purchase item. Defaults to 1.
+ */
+@property (nonatomic) NSUInteger quantity;
+
+/**
+ *  Product description.
+ */
+@property (nonatomic) NSString *productDescription;
 
 @end

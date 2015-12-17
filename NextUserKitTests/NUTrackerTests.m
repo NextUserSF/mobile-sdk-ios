@@ -286,13 +286,13 @@
     
     NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
     item1.category = @"Science Fiction";
-    item1.itemDescription = @"A long book about rings";
+    item1.productDescription = @"A long book about rings";
     item1.price = 99.23;
     item1.quantity = 7;
     
     NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones" SKU:@"25678675874"];
     item2.category = @"Science Fiction";
-    item2.itemDescription = @"A long book about dragons";
+    item2.productDescription = @"A long book about dragons";
     item2.price = 77.23;
     item2.quantity = 6;
     
@@ -348,13 +348,13 @@
     
     NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
     item1.category = @"Science Fiction";
-    item1.itemDescription = @"A long book about rings";
+    item1.productDescription = @"A long book about rings";
     item1.price = 99.23;
     item1.quantity = 7;
     
     NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones" SKU:@"25678675874"];
     item2.category = @"Science Fiction";
-    item2.itemDescription = @"A long book about dragons";
+    item2.productDescription = @"A long book about dragons";
     item2.price = 77.23;
     item2.quantity = 6;
     

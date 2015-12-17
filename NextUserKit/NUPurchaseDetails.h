@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  This class represents purchase details to supplement the NUPurchase.
+ *  This class represents purchase details and is being used by the NUPurchase object.
  */
 @interface NUPurchaseDetails : NSObject
 
@@ -21,30 +21,64 @@
 /**
  *  Creates an instance of purchase details.
  *
- *  @return Instance of NUPurchaseDetails object
+ *  @return Instance of NUPurchaseDetails object.
  */
 + (instancetype)details;
 
-#pragma mark - Properties
+#pragma mark - Details Properties
 /**
  * @name Details Properties
  */
 
 /**
- *  Purchase discount.
+ *  Purchase discount amount.
  */
-@property (nonatomic) double discount; // amount of discount
-@property (nonatomic) double shipping; // shipping cost
+@property (nonatomic) double discount;
+
+/**
+ *  Purchase shipping cost.
+ */
+@property (nonatomic) double shipping;
+
+/**
+ *  Purchase tax amount.
+ */
 @property (nonatomic) double tax;
+
+/**
+ *  Currency in which purchase was done.
+ */
 @property (nonatomic) NSString *currency;
 
-@property (nonatomic) BOOL incomplete; // incomplete - purchase not completed (failed, saved for later...)
-@property (nonatomic) NSString *paymentMethod;
-@property (nonatomic) NSString *affiliation; // site's purchase ID or similar
+/**
+ *  Indicates whether purchase was incomplete (e.g. failed, saved for later).
+ *  Defaults to NO.
+ */
+@property (nonatomic) BOOL incomplete;
 
-// address
+/**
+ *  Purchase payment method (e.g. credit card, PayPal).
+ */
+@property (nonatomic) NSString *paymentMethod;
+
+/**
+ *  Site's purchase ID or similar.
+ */
+@property (nonatomic) NSString *affiliation;
+
+/**
+ *  Shipping address, state.
+ */
 @property (nonatomic) NSString *state;
+
+/**
+ *  Shipping address, city.
+ */
 @property (nonatomic) NSString *city;
+
+/**
+ *  Shipping address, zip code.
+ */
 @property (nonatomic) NSString *zip;
 
 @end

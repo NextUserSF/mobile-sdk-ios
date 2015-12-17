@@ -93,8 +93,8 @@
     if ([NUObjectPropertyStatusUtils isStringValueSet:item.category]) {
         [keyValuePairs addObject:[NSString stringWithFormat:@"category:%@", [item.category URLEncodedString]]];
     }
-    if ([NUObjectPropertyStatusUtils isStringValueSet:item.itemDescription]) {
-        [keyValuePairs addObject:[NSString stringWithFormat:@"description:%@", [item.itemDescription URLEncodedString]]];
+    if ([NUObjectPropertyStatusUtils isStringValueSet:item.productDescription]) {
+        [keyValuePairs addObject:[NSString stringWithFormat:@"description:%@", [item.productDescription URLEncodedString]]];
     }
     if ([NUObjectPropertyStatusUtils isDoubleValueSet:item.price]) {
         [keyValuePairs addObject:[NSString stringWithFormat:@"price:%g", item.price]];

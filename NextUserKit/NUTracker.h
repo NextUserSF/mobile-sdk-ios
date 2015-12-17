@@ -12,25 +12,29 @@
 @class NUAction;
 
 /**
- *  Log level that will be used by the tracker.
+ *  Log level used by the tracker.
  */
 typedef NS_ENUM(NSUInteger, NULogLevel) {
     /**
      *  Logging is turned off. No messages.
      */
     NULogLevelOff,
+    
     /**
      *  Logging of error messages only.
      */
     NULogLevelError,
+    
     /**
      *  Logging od error and warning messages.
      */
     NULogLevelWarning,
+    
     /**
      *  Logging of error, warning and info messages.
      */
     NULogLevelInfo,
+    
     /**
      *  Logging of error, warning, info and verbose messages.
      */
@@ -38,14 +42,20 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 };
 
 /**
- *  This class is the central place which you use to communicate with the NextUser API.
+ *  This class is the central place for user tracking which communicates with the NextUser API. 
+ *  Use shared singleton instance of the tracker.
  */
 @interface NUTracker : NSObject
 
+#pragma mark - Tracker Singleton
 /**
- *  Shared singleton instance of NUTracker. Use this method to get a reference to NUTracker obkect.
+ * @name Tracker Singleton
+ */
+
+/**
+ *  Shared singleton instance of NUTracker. Use this method to get a reference to NUTracker object.
  *
- *  @return Shared instance of NUTracker
+ *  @return Shared instance of NUTracker.
  */
 + (NUTracker *)sharedTracker;
 
@@ -58,8 +68,11 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *  Starts the session for tracker.
  *
  *  Call this method once, preferably on app startup. Also see startSessionWithTrackIdentifier:completion:
+ *  for the version of this method with an optional completion handler which gets called when session is successfully
+ *  started or if starting failed. Call only one of them. Note that without calling one of these two methods, tracker won't
+ *  be able to track any events.
  *
- *  @param trackIdentifier Track Identifier used to associate this session with.
+ *  @param trackIdentifier Track identifier used to associate this session with.
  *  @warning Throws an exception if trackIdentifier is invalid.
  *  @see startSessionWithTrackIdentifier:completion:
  */
@@ -69,6 +82,8 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *  Starts the session for tracker.
  *
  *  Call this method once, preferably on app startup. Also see startSessionWithTrackIdentifier:
+ *  for the version of this method without the completion handler. Call only one of them. Note that without calling one 
+ *  of these two methods, tracker won't be able to track any events.
  *
  *  @param trackIdentifier Track Identifier used to associate this session with.
  *  @param completion      Optional completion handler which will notify you if session started successfully.
@@ -92,11 +107,11 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 
 /**
- *  Call this method if you want to track particular users.
+ *  Call this method if you want to track particular user.
  *
- *  Each tracking request will be associated with this user.
+ *  Each tracking request will be associated with this user identifier.
  *
- *  @param userIdentifier User identifier. Could be an email or username which identifies particular user.
+ *  @param userIdentifier User identifier that is currently using the application. Can be an email or username or any other identifier which identifies a particular user.
  */
 - (void)identifyUserWithIdentifier:(NSString *)userIdentifier;
 
@@ -106,7 +121,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 
 /**
- *  Tracks screen view inside your application.
+ *  Tracks screen view inside application.
  *
  *  @param screenName Name of the screen that user just viewed.
  */
@@ -115,19 +130,19 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 #pragma mark -
 
 /**
- *  Tracks a single user action.
+ *  Tracks single user action.
  *
- *  For multiple actions at once use trackActions: method.
+ *  For tracking of multiple actions at once use trackActions: method.
  *
- *  @param action NUAction to track
+ *  @param action NUAction to track.
  *  @see trackActions:
  */
 - (void)trackAction:(NUAction *)action;
 
 /**
- *  Tracks multiple user actions.
+ *  Tracks multiple user actions at once.
  *
- *  For single action use trackAction: method.
+ *  For single action tracking use trackAction: method.
  *
  *  @param actions Array of NUAction objects.
  *  @see trackAction:
@@ -137,19 +152,19 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 #pragma mark -
 
 /**
- *  Tracks a single purchase.
+ *  Tracks single purchase.
  *
- *  For multiple purchases at once use trackPurchases: method.
+ *  For tracking of multiple purchases at once use trackPurchases: method.
  *
- *  @param purchase NUPurchase to track
+ *  @param purchase NUPurchase to track.
  *  @see trackPurchases:
  */
 - (void)trackPurchase:(NUPurchase *)purchase;
 
 /**
- *  Tracks multiple user purchases.
+ *  Tracks multiple purchases.
  *
- *  For single purchase use trackPurchase: method.
+ *  For single purchase tracking use trackPurchase: method.
  *
  *  @param purchases Array of NUPurchase objects.
  *  @see trackPurchase:
