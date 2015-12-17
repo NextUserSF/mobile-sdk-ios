@@ -1,6 +1,6 @@
 Minimum required iOS version is 7 (iOS 7).
 # Add analytics to your App
-- [download *NextUserKit.framework*](dummy_link_this_is) **[DEJAN_GIVE_ME_SOME_SERVER_SPACE]**
+- [download *NextUserKit.framework*](https://dl.dropboxusercontent.com/u/219621643/next_user_builds/sdk_builds/ios/NextUserKit.framework.zip)
 - add *NextUserKit.framework* into your Xcode project
 - link your project with dependant frameworks:
     - *MobileCoreServices.framework*
