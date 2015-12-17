@@ -39,7 +39,7 @@ Start session once on the application startup by calling one of the above method
 *NUTracker* can be setup to log things in 4 different levels: *ERROR*, *WARNING*, *INFO*, *VERBOSE* or it can be turned off completely. Here is an example of how to set *NUTracker*'s logging level to *VERBOSE*:
 
 ```objective-c
-_tracker.logLevel = NULogLevelVerbose;
+tracker.logLevel = NULogLevelVerbose;
 ```
 
 # Usage
