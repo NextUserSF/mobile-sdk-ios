@@ -3,8 +3,8 @@ Minimum required iOS version is 7 (iOS 7).
 - [download *NextUserKit.framework*](dummy_link_this_is) **[DEJAN_GIVE_ME_SOME_SERVER_SPACE]**
 - add *NextUserKit.framework* into your Xcode project
 - link your project with dependant frameworks:
-- *MobileCoreServices.framework*
-- *SystemConfiguration.framework*
+    - *MobileCoreServices.framework*
+    - *SystemConfiguration.framework*
 
 # Setup
 Import *NextUserKit* into the file where you will be using it: 
