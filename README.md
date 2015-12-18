@@ -18,7 +18,7 @@ The main object you are interested in is the *NUTracker* singleton object. To ge
 ```objective-c
 NUTracker *tracker = [NUTracker sharedTracker];
 ```
-# Session startup
+## Session startup
 For *NUTracker* object to become useful, you need to start its session first. To start a session, call: *-startSessionWithTrackIdentifier:* method:
 
 ```objective-c
@@ -35,7 +35,7 @@ For *NUTracker* object to become useful, you need to start its session first. To
 
 Start session once on the application startup by calling one of the above methods.
 
-# Logging
+## Logging
 *NUTracker* can be setup to log things in 4 different levels: *ERROR*, *WARNING*, *INFO*, *VERBOSE* or it can be turned off completely. Here is an example of how to set *NUTracker*'s logging level to *VERBOSE*:
 
 ```objective-c
