@@ -144,7 +144,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *
  *  For single action tracking use trackAction: method.
  *
- *  @param actions Array of NUAction objects.
+ *  @param actions Array of NUAction objects to track.
  *  @see trackAction:
  */
 - (void)trackActions:(NSArray *)actions;
@@ -166,7 +166,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *
  *  For single purchase tracking use trackPurchase: method.
  *
- *  @param purchases Array of NUPurchase objects.
+ *  @param purchases Array of NUPurchase objects to track.
  *  @see trackPurchase:
  */
 - (void)trackPurchases:(NSArray *)purchases;

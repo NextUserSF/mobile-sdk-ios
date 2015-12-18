@@ -30,6 +30,16 @@
  */
 + (instancetype)actionWithName:(NSString *)actionName;
 
+#pragma mark - Action Properties
+/**
+ * @name Action Properties
+ */
+
+/**
+ *  Name of the action.
+ */
+@property (nonatomic, readonly) NSString *actionName;
+
 #pragma mark - Action parameters
 /**
  * @name Action parameters
