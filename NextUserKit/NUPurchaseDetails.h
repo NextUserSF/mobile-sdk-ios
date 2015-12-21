@@ -9,7 +9,10 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  This class represents purchase details and is being used by the NUPurchase object.
+ *  This class represents additional purchase information. It contains methods which add more information
+ *  into the purchase (e.g. shipping cost, discount amount etc).
+ *
+ *  This class is being used by NUPurchase factory method when creating new purchase.
  */
 @interface NUPurchaseDetails : NSObject
 
@@ -51,8 +54,8 @@
 @property (nonatomic) NSString *currency;
 
 /**
- *  Indicates whether purchase was incomplete (e.g. failed, saved for later).
- *  Defaults to NO.
+ *  Purchase completion (incomplete) status. E.g. if purchase is failed or saved for later, its 
+ *  incomplete status would be *YES*. Defaults to *NO*.
  */
 @property (nonatomic) BOOL incomplete;
 

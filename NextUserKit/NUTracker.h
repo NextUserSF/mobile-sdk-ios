@@ -42,8 +42,12 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 };
 
 /**
- *  This class is the central place for user tracking which communicates with the NextUser API. 
- *  Use shared singleton instance of the tracker.
+ * This class is the primary interface for user tracking which communicates with the NextUser API.
+ * Use shared singleton instance of the tracker. Use this class to configure your project analytics
+ * and to track events.
+ *
+ * Before you can track any events, you need to start tracking session. Do this by calling one of two
+ * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
  */
 @interface NUTracker : NSObject
 

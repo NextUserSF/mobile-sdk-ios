@@ -9,7 +9,11 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  This class represents an action that user performed inside of the application.
+ *  This class represents an action that user performed inside the application. Action can be anything from
+ *  pressing a button or using of some particular item inside the application.
+ *
+ *  Each action, at minimum, has its actionName which uniquely describes it. It can also contain up to
+ *  10 additional parameters.
  */
 @interface NUAction : NSObject
 

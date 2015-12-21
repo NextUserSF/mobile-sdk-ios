@@ -9,7 +9,11 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  This class represents a purchase item and is being used by the NUPurchase object.
+ *  This class represents a purchase item and is being used by NUPurchase factory methods when
+ *  creating new purchase. Each purchase can contain multiple purchase items.
+ *
+ *  Each purchase item should have at least productName and SKU set so use itemWithProductName:SKU:
+ *  method when creating new item.
  */
 @interface NUPurchaseItem : NSObject
 
