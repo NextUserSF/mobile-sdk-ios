@@ -135,6 +135,11 @@
     _session.userIdentifierRegistered = NO;
 }
 
+- (NSString *)currentUserIdenifier
+{
+    return _session.userIdentifier;
+}
+
 #pragma mark - Track Screen
 
 - (void)trackScreenWithName:(NSString *)screenName
@@ -225,13 +230,12 @@
         NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
         NSMutableDictionary *parameters = [self defaultTrackingParameters:!_session.userIdentifierRegistered];
         
-        DDLogVerbose(@"Send track request with parameters: %@", parameters);
-        
         // add track parameters
         for (id key in trackParameters.allKeys) {
             parameters[key] = trackParameters[key];
         }
-        
+                
+        DDLogVerbose(@"Send track request with parameters: %@", parameters);
         [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
             
             // we want to make sure that request was successful and that we registered user identifier.

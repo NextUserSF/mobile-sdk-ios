@@ -119,6 +119,13 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 - (void)identifyUserWithIdentifier:(NSString *)userIdentifier;
 
+/**
+ *  Gets current user identifier. This value will be *nil* or the one that you passed in -identifyUserWithIdentifier: method.
+ *
+ *  @return Current user identifier
+ */
+- (NSString *)currentUserIdenifier;
+
 #pragma mark - Tracking
 /**
  * @name Tracking
