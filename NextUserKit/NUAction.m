@@ -111,7 +111,7 @@
 
 + (NSString *)serializedActionStringFromAction:(NUAction *)action
 {
-    NSString *actionValue = [action.actionName URLEncodedString];
+    NSString *actionValue = [self URLParameterValueFromString:action.actionName];
     if (action.parameters.count > 0) {
         NSString *actionParametersString = [self serializedActionParametersStringWithActionParameters:action.parameters];
         if (actionParametersString.length > 0) {
@@ -157,13 +157,18 @@
                 
                 id actionParameter = truncatedParameters[i];
                 if (![actionParameter isEqual:[NSNull null]]) {
-                    [parametersString appendString:[actionParameter URLEncodedString]];
+                    [parametersString appendString:[self URLParameterValueFromString:actionParameter]];
                 }
             }
         }
     }
     
     return [parametersString copy];
+}
+
++ (NSString *)URLParameterValueFromString:(NSString *)parameterValue
+{
+    return parameterValue;
 }
 
 @end
