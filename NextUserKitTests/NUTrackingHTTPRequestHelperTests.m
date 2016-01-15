@@ -136,154 +136,61 @@
 
 #pragma mark - Purchase Item
 
-//  "item_name=SKU:item_SKU;category:category_value;price:98.56;quantity:3;description:This is a purchase item description";
 - (void)testPurchaseItemSerializationWithAllProperties
 {
-    NSString *name = @"Lord Of The Rings";
-    NSString *SKU = @"2342342223";
-    NSString *category = @"books";
-    NSString *productDescription = @"This is a purchase item description";
-    double price = 98.56;
-    double quantity = 3;
-    
-    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name SKU:SKU];
-    item.category = category;
-    item.productDescription = productDescription;
-    item.price = price;
-    item.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"2342342223"];
+    item.category = @"books";
+    item.price = 98.56;
+    item.quantity = 2;
+    item.productDescription = @"This is a product description";
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
+    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:2;description:This is a product description";
     
-    NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *SKUParameter = [NSString stringWithFormat:@"SKU:%@", [SKU URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:SKUParameter].location != NSNotFound);
-    
-    NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
-    
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
-    
-    NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
-    XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
-    
-    NSString *quantityParameter = [NSString stringWithFormat:@"quantity:%@", @(quantity)];
-    XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseItemSerializationWithMissingStringProperty
 {
-    NSString *name = @"Lord Of The Rings";
-    NSString *SKU = @"2342342223";
-    NSString *category = @"books";
-    NSString *productDescription = @"This is a purchase item description";
-    double price = 98.56;
-    double quantity = 3;
-    
-    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name SKU:SKU];
-    item.category = category;
-    //    item.productDescription = productDescription;
-    item.price = price;
-    item.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"2342342223"];
+    item.category = @"books";
+    item.price = 98.56;
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
+    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1";
     
-    NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *SKUParameter = [NSString stringWithFormat:@"SKU:%@", [SKU URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:SKUParameter].location != NSNotFound);
-    
-    NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
-    
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location == NSNotFound);
-    
-    NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
-    XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
-    
-    NSString *quantityParameter = [NSString stringWithFormat:@"quantity:%@", @(quantity)];
-    XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseItemSerializationWithMissingDoubleProperty
 {
-    NSString *name = @"Lord Of The Rings";
-    NSString *SKU = @"2342342223";
-    NSString *category = @"books";
-    NSString *productDescription = @"This is a purchase item description";
-    double price = 98.56;
-    double quantity = 3;
-    
-    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name SKU:SKU];
-    item.category = category;
-    item.productDescription = productDescription;
-    //    item.price = price;
-    item.quantity = quantity;
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"2342342223"];
+    item.category = @"books";
+    item.quantity = 3;
+    item.productDescription = @"This is a product description";
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
+    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;quantity:3;description:This is a product description";
     
-    NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *SKUParameter = [NSString stringWithFormat:@"SKU:%@", [SKU URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:SKUParameter].location != NSNotFound);
-    
-    NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
-    
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
-    
-    NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
-    XCTAssert([generatedString rangeOfString:priceParameter].location == NSNotFound);
-    
-    NSString *quantityParameter = [NSString stringWithFormat:@"quantity:%@", @(quantity)];
-    XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseItemSerializationWithQuantityNotSet
 {
-    NSString *name = @"Lord Of The Rings";
-    NSString *SKU = @"2342342223";
-    NSString *category = @"books";
-    NSString *productDescription = @"This is a product description";
-    double price = 98.56;
-    //    double quantity = 3;
-    
-    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:name SKU:SKU];
-    item.category = category;
-    item.productDescription = productDescription;
-    item.price = price;
-    //    item.quantity = quantity; <-- defaults to 1 if not set
+    NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"2342342223"];
+    item.category = @"books";
+    item.productDescription = @"This is a product description";
+    item.price = 98.56;
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
+    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1;description:This is a product description";
     
-    NSString *prefix = [NSString stringWithFormat:@"%@=", [name URLEncodedString]];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *SKUParameter = [NSString stringWithFormat:@"SKU:%@", [SKU URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:SKUParameter].location != NSNotFound);
-    
-    NSString *categoryParameter = [NSString stringWithFormat:@"category:%@", [category URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:categoryParameter].location != NSNotFound);
-    
-    NSString *productDescriptionParameter = [NSString stringWithFormat:@"description:%@", [productDescription URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:productDescriptionParameter].location != NSNotFound);
-    
-    NSString *priceParameter = [NSString stringWithFormat:@"price:%@", @(price)];
-    XCTAssert([generatedString rangeOfString:priceParameter].location != NSNotFound);
-    
-    NSString *quantityParameter = [NSString stringWithFormat:@"quantity:%@", @(1)];
-    XCTAssert([generatedString rangeOfString:quantityParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 #pragma mark -
 
-- (void)testPurchaseItemSerialization
+- (void)testPurchaseItemsSerialization
 {
     NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
     item1.category = @"Science Fiction";
@@ -310,188 +217,65 @@
 
 - (void)testPurchaseDetailsSerializationWithAllProperties
 {
-    double discount = 38.36;
-    double shipping = 15.56;
-    double tax = 3.87;
-    BOOL incomplete = YES;
-    NSString *currency = @"$";
-    NSString *paymentMethod = @"MasterCard";
-    NSString *affiliation = @"Don't know about this";
-    NSString *state = @"Croatia";
-    NSString *city = @"Pozega";
-    NSString *zip = @"34000";
-    
     NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = discount;
-    details.shipping = shipping;
-    details.tax = tax;
-    details.currency = currency;
-    details.incomplete = incomplete;
-    details.paymentMethod = paymentMethod;
-    details.affiliation = affiliation;
-    details.state = state;
-    details.city = city;
-    details.zip = zip;
+    details.discount = 38.36;
+    details.shipping = 15.56;
+    details.tax = 3.87;
+    details.currency = @"$";
+    details.incomplete = YES;
+    details.paymentMethod = @"MasterCard";
+    details.affiliation = @"Don't know about this";
+    details.state = @"Croatia";
+    details.city = @"Pozega";
+    details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
+    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
     
-    NSString *prefix = @"_=";
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *currencyParameter = [NSString stringWithFormat:@"currency:%@", [currency URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:currencyParameter].location != NSNotFound);
-    
-    NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
-    
-    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
-    
-    NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:stateParameter].location != NSNotFound);
-    
-    NSString *cityParameter = [NSString stringWithFormat:@"city:%@", [city URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:cityParameter].location != NSNotFound);
-    
-    NSString *zipParameter = [NSString stringWithFormat:@"zip:%@", [zip URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:zipParameter].location != NSNotFound);
-    
-    NSString *discountParameter = [NSString stringWithFormat:@"discount:%@", @(discount)];
-    XCTAssert([generatedString rangeOfString:discountParameter].location != NSNotFound);
-    
-    NSString *shippingParameter = [NSString stringWithFormat:@"shipping:%@", @(shipping)];
-    XCTAssert([generatedString rangeOfString:shippingParameter].location != NSNotFound);
-    
-    NSString *taxgParameter = [NSString stringWithFormat:@"tax:%@", @(tax)];
-    XCTAssert([generatedString rangeOfString:taxgParameter].location != NSNotFound);
-    
-    NSString *incompleteParameter = @"incomplete:1";
-    XCTAssert([generatedString rangeOfString:incompleteParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseDetailsSerializationWithMissingStringProperty
 {
-    double discount = 38.36;
-    double shipping = 15.56;
-    double tax = 3.87;
-    BOOL incomplete = YES;
-    NSString *currency = @"$";
-    NSString *paymentMethod = @"MasterCard";
-    NSString *affiliation = @"Don't know about this";
-    NSString *state = @"Croatia";
-    NSString *city = @"Pozega";
-    NSString *zip = @"34000";
-    
+    // state missing
     NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = discount;
-    details.shipping = shipping;
-    details.tax = tax;
-    details.currency = currency;
-    details.incomplete = incomplete;
-    details.paymentMethod = paymentMethod;
-    details.affiliation = affiliation;
-//    details.state = state;
-    details.city = city;
-    details.zip = zip;
+    details.discount = 38.36;
+    details.shipping = 15.56;
+    details.tax = 3.87;
+    details.currency = @"$";
+    details.incomplete = YES;
+    details.paymentMethod = @"MasterCard";
+    details.affiliation = @"Don't know about this";
+    details.city = @"Pozega";
+    details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
+    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;city:Pozega;zip:34000";
     
-    NSString *prefix = @"_=";
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *currencyParameter = [NSString stringWithFormat:@"currency:%@", [currency URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:currencyParameter].location != NSNotFound);
-    
-    NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
-    
-    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
-    
-    NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:stateParameter].location == NSNotFound);
-    
-    NSString *cityParameter = [NSString stringWithFormat:@"city:%@", [city URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:cityParameter].location != NSNotFound);
-    
-    NSString *zipParameter = [NSString stringWithFormat:@"zip:%@", [zip URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:zipParameter].location != NSNotFound);
-    
-    NSString *discountParameter = [NSString stringWithFormat:@"discount:%@", @(discount)];
-    XCTAssert([generatedString rangeOfString:discountParameter].location != NSNotFound);
-    
-    NSString *shippingParameter = [NSString stringWithFormat:@"shipping:%@", @(shipping)];
-    XCTAssert([generatedString rangeOfString:shippingParameter].location != NSNotFound);
-    
-    NSString *taxgParameter = [NSString stringWithFormat:@"tax:%@", @(tax)];
-    XCTAssert([generatedString rangeOfString:taxgParameter].location != NSNotFound);
-    
-    NSString *incompleteParameter = @"incomplete:1";
-    XCTAssert([generatedString rangeOfString:incompleteParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseDetailsSerializationWithMissingDoubleProperty
 {
-    double discount = 38.36;
-    double shipping = 15.56;
-    double tax = 3.87;
-    BOOL incomplete = YES;
-    NSString *currency = @"$";
-    NSString *paymentMethod = @"MasterCard";
-    NSString *affiliation = @"Don't know about this";
-    NSString *state = @"Croatia";
-    NSString *city = @"Pozega";
-    NSString *zip = @"34000";
-    
+    // shipping missing
     NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = discount;
-//    details.shipping = shipping;
-    details.tax = tax;
-    details.currency = currency;
-    details.incomplete = incomplete;
-    details.paymentMethod = paymentMethod;
-    details.affiliation = affiliation;
-    details.state = state;
-    details.city = city;
-    details.zip = zip;
+    details.discount = 38.36;
+    details.tax = 3.87;
+    details.currency = @"$";
+    details.incomplete = YES;
+    details.paymentMethod = @"MasterCard";
+    details.affiliation = @"Don't know about this";
+    details.state = @"Croatia";
+    details.city = @"Pozega";
+    details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
+    NSString *expectedString = @"_=discount:38_dot_36;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
     
-    NSString *prefix = @"_=";
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    NSString *currencyParameter = [NSString stringWithFormat:@"currency:%@", [currency URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:currencyParameter].location != NSNotFound);
-    
-    NSString *paymentMethodParameter = [NSString stringWithFormat:@"method:%@", [paymentMethod URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:paymentMethodParameter].location != NSNotFound);
-    
-    NSString *affiliationParameter = [NSString stringWithFormat:@"affiliation:%@", [affiliation URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:affiliationParameter].location != NSNotFound);
-    
-    NSString *stateParameter = [NSString stringWithFormat:@"state:%@", [state URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:stateParameter].location != NSNotFound);
-    
-    NSString *cityParameter = [NSString stringWithFormat:@"city:%@", [city URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:cityParameter].location != NSNotFound);
-    
-    NSString *zipParameter = [NSString stringWithFormat:@"zip:%@", [zip URLEncodedString]];
-    XCTAssert([generatedString rangeOfString:zipParameter].location != NSNotFound);
-    
-    NSString *discountParameter = [NSString stringWithFormat:@"discount:%@", @(discount)];
-    XCTAssert([generatedString rangeOfString:discountParameter].location != NSNotFound);
-    
-    NSString *shippingParameter = [NSString stringWithFormat:@"shipping:%@", @(shipping)];
-    XCTAssert([generatedString rangeOfString:shippingParameter].location == NSNotFound);
-    
-    NSString *taxParameter = [NSString stringWithFormat:@"tax:%@", @(tax)];
-    XCTAssert([generatedString rangeOfString:taxParameter].location != NSNotFound);
-    
-    NSString *incompleteParameter = @"incomplete:1";
-    XCTAssert([generatedString rangeOfString:incompleteParameter].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
-#pragma mark -
+#pragma mark - Purchase
 
 - (void)testPurchaseParametersSerializationWithDetails
 {
@@ -509,47 +293,24 @@
     item2.price = 77.23;
     item2.quantity = 6;
     
-    double discount = 38.36;
-    double shipping = 15.56;
-    double tax = 3.87;
-    BOOL incomplete = YES;
-    NSString *currency = @"$";
-    NSString *paymentMethod = @"MasterCard";
-    NSString *affiliation = @"Don't know about this";
-    NSString *state = @"Croatia";
-    NSString *city = @"Pozega";
-    NSString *zip = @"34000";
-    
     NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = discount;
-    details.shipping = shipping;
-    details.tax = tax;
-    details.currency = currency;
-    details.incomplete = incomplete;
-    details.paymentMethod = paymentMethod;
-    details.affiliation = affiliation;
-    details.state = state;
-    details.city = city;
-    details.zip = zip;
+    details.discount = 38.36;
+    details.shipping = 15.56;
+    details.tax = 3.87;
+    details.currency = @"$";
+    details.incomplete = YES;
+    details.paymentMethod = @"MasterCard";
+    details.affiliation = @"Don't know about this";
+    details.state = @"Croatia";
+    details.city = @"Pozega";
+    details.zip = @"34000";
     
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
     NSString *generatedString = [purchase httpRequestParameterRepresentation];
-    
-    NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    XCTAssert([generatedString rangeOfString:@"_="].location != NSNotFound);
-    
-    NSString *serializedItems = [NUPurchase serializedPurchaseItemsStringWithItems:@[item1, item2]];
-    serializedItems = [@"," stringByAppendingString:serializedItems];
-    XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
-    
-    NSString *serializedDetails = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
-    XCTAssert([generatedString rangeOfString:serializedDetails].location != NSNotFound);
-    
-    NSString *serializedDetailsAsParameter = [@"," stringByAppendingString:serializedDetails];
-    XCTAssert([generatedString rangeOfString:serializedDetailsAsParameter].location != NSNotFound);
+    NSString *expectedString = @"45.65,Lord Of The Rings=SKU:234523333344;category:Science Fiction;price:99_dot_23;quantity:7;description:A long book about rings,Game Of Thrones=SKU:25678675874;category:Science Fiction;price:77_dot_23;quantity:6;description:A long book about dragons,_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
+
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 - (void)testPurchaseParametersSerializationWithoutDetails
@@ -569,19 +330,11 @@
     item2.quantity = 6;
     
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
-//    purchase.details = nil;
     
     NSString *generatedString = [purchase httpRequestParameterRepresentation];
+    NSString *expectedString = @"45.65,Lord Of The Rings=SKU:234523333344;category:Science Fiction;price:99_dot_23;quantity:7;description:A long book about rings,Game Of Thrones=SKU:25678675874;category:Science Fiction;price:77_dot_23;quantity:6;description:A long book about dragons";
     
-    NSString *prefix = [NSString stringWithFormat:@"%@,", @(amount)];
-    XCTAssert([generatedString hasPrefix:prefix]);
-    
-    XCTAssert([generatedString rangeOfString:@"_="].location == NSNotFound);
-    XCTAssert([generatedString rangeOfString:@",_="].location == NSNotFound);
-    
-    NSString *serializedItems = [NUPurchase serializedPurchaseItemsStringWithItems:@[item1, item2]];
-    serializedItems = [@"," stringByAppendingString:serializedItems];
-    XCTAssert([generatedString rangeOfString:serializedItems].location != NSNotFound);
+    XCTAssert([generatedString isEqualToString:expectedString]);
 }
 
 @end
