@@ -26,14 +26,26 @@
             ];
 }
 
-- (NSString *)URLEncodedString
+- (NSString *)URLEncodedStringWithIgnoredCharacters:(NSString *)characters
 {
     NSString *unescaped = self;
     NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]\" ";
-    NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+    
+    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet characterSetWithCharactersInString:charactersToEscape];
+    if (characters) {
+        [characterSet removeCharactersInString:characters];
+    }
+    
+    NSCharacterSet *allowedCharacters = [characterSet invertedSet];
+    
     NSString *encodedString = [unescaped stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     
     return encodedString;
+}
+
+- (NSString *)URLEncodedString
+{
+    return [self URLEncodedStringWithIgnoredCharacters:nil];
 }
 
 - (NSUInteger)lengthConsideringEmojis

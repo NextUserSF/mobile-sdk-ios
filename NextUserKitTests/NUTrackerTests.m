@@ -28,6 +28,7 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
     _tracker = [NUTracker sharedTracker];
+    _tracker.logLevel = NULogLevelVerbose;
     [_tracker startSessionWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
         
         if (error != nil) {
@@ -286,7 +287,7 @@
     
     NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
     item1.category = @"Science Fiction";
-    item1.productDescription = @"A long book about rings";
+    item1.productDescription = @"A long book about rings, something";
     item1.price = 99.23;
     item1.quantity = 7;
     

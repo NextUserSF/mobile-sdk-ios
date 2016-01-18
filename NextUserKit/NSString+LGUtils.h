@@ -11,6 +11,7 @@
 @interface NSString (LGUtils)
 
 - (NSString *)MD5String;
+- (NSString *)URLEncodedStringWithIgnoredCharacters:(NSString *)characters;
 - (NSString *)URLEncodedString;
 
 // each emoji is considered to be length of 1

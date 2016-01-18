@@ -237,7 +237,7 @@
         }
                 
         DDLogVerbose(@"Send track request with parameters: %@", parameters);
-        [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+        [NUHTTPRequestUtils sendCustomSerializedQueryParametersGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
             
             // we want to make sure that request was successful and that we registered user identifier.
             // only if request was successful we will not send user identifier anymore
