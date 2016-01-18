@@ -54,7 +54,7 @@
             NSMutableArray *mutablePairs = [NSMutableArray array];
             for (NSString *key in parameters) {
                 NSString *value = parameters[key];
-                [mutablePairs addObject:[NSString stringWithFormat:@"%@=%@", [self URLEncodedQueryString:key], [self URLEncodedQueryString:value]]];
+                [mutablePairs addObject:[NSString stringWithFormat:@"%@=%@", [self nextUserAPIQueryParameterEncodedString:key], [self nextUserAPIQueryParameterEncodedString:value]]];
             }
             
             return [mutablePairs componentsJoinedByString:@"&"];
@@ -86,7 +86,7 @@
 
 }
 
-+ (NSString *)URLEncodedQueryString:(NSString *)string
++ (NSString *)nextUserAPIQueryParameterEncodedString:(NSString *)string
 {
     return [string URLEncodedStringWithIgnoredCharacters:@":,;="];
 }
