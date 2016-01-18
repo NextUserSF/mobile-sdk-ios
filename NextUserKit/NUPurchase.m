@@ -193,7 +193,7 @@
 
 + (NSString *)URLParameterValueFromString:(NSString *)parameterValue
 {
-    return parameterValue;
+    return [parameterValue URLEncodedString];
 }
 
 + (NSString *)URLParameterValueFromDouble:(double)value encodeDot:(BOOL)encodeDot
