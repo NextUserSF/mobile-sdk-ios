@@ -31,6 +31,7 @@
  *  @param actionName Name of the action
  *
  *  @return Instance of NUAction object
+ *  @warning Throws an exception if action name is invalid (empty or nil).
  */
 + (instancetype)actionWithName:(NSString *)actionName;
 

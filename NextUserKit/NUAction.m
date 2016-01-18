@@ -27,6 +27,12 @@
 
 - (id)initWithName:(NSString *)actionName
 {
+    if (actionName == nil || actionName.length == 0) {
+        @throw [NSException exceptionWithName:@"Action create exception"
+                                       reason:@"Action name must be a non-empty string"
+                                     userInfo:nil];
+    }
+    
     if (self = [super init]) {
         _actionName = [actionName copy];
         _parameters = [NSMutableArray arrayWithCapacity:10];

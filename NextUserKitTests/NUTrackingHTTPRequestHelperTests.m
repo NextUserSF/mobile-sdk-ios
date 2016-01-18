@@ -51,14 +51,6 @@
     XCTAssert([actionParametersString isEqualToString:@"action_name"]);
 }
 
-- (void)testActionSerializationFromAllNullParameters
-{
-    NUAction *action = [NUAction actionWithName:@"action_name"];
-    NSString *actionParametersString = [action httpRequestParameterRepresentation];
-    
-    XCTAssert([actionParametersString isEqualToString:@"action_name"]);
-}
-
 - (void)testActionSerializationFromOneNonNullParameterAtFirstIndex
 {
     NUAction *action = [NUAction actionWithName:@"action_name"];
@@ -92,6 +84,7 @@
 {
     NUAction *action = [NUAction actionWithName:@"action_name"];
     action.secondParameter = @"2_value";
+    action.thirdParameter = nil; // defaults to nil anyway
     action.ninthParameter = @"9_value";
     
     NSString *actionParametersString = [action httpRequestParameterRepresentation];
@@ -123,13 +116,7 @@
 
 - (void)testActionSerializationWithNilActionName
 {
-    NUAction *action = [NUAction actionWithName:nil];
-    action.secondParameter = @"2_value";
-    action.ninthParameter = @"9_value";
-    
-    NSString *actionParametersString = [action httpRequestParameterRepresentation];
-    
-    XCTAssert(actionParametersString == nil);
+    XCTAssertThrows([NUAction actionWithName:nil]);
 }
 
 #pragma mark - Purchase Serialization
