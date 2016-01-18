@@ -9,7 +9,7 @@
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
-#import "AFNetworking.h"
+#import "NUHTTPRequestUtils.h"
 #import "SSKeychain.h"
 
 #define kDeviceCookieSerializationKey @"nu_device_ide"
@@ -52,36 +52,38 @@
         NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie URLParameters:&parameters];
         
         DDLogVerbose(@"Fire HTTP request to start the session. Path: %@, Parameters: %@", path, parameters);
-        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        [manager GET:path
-          parameters:parameters
-             success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                 
-                 DDLogVerbose(@"Start tracker session response: %@", responseObject);
-                 _startupRequestInProgress = NO;
+        [NUHTTPRequestUtils sendGETRequestWithPath:path
+                                        parameters:parameters
+                                        completion:^(id responseObject, NSError *error) {
+                                            
+                                            _startupRequestInProgress = NO;
 
-                 _deviceCookie = responseObject[kDeviceCookieJSONKey];
-                 _sessionCookie = responseObject[kSessionCookieJSONKey];
-                 
-                 // save new device cookie only if one does not already exists
-                 if (currentDeviceCookie == nil && _deviceCookie != nil) {
-                     [self serializeDeviceCookie:_deviceCookie];
-                 }
-                 
-                 if (completion != NULL) {
-                     completion(nil);
-                 }
-                 
-             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                 
-                 DDLogError(@"Setup tracker error: %@", error);
-                 _startupRequestInProgress = NO;
-                 
-                 if (completion != NULL) {
-                     completion(error);
-                 }
-             }];
-    }
+                                            if (error == nil) {
+                                                
+                                                DDLogVerbose(@"Start tracker session response: %@", responseObject);
+                                                
+                                                _deviceCookie = responseObject[kDeviceCookieJSONKey];
+                                                _sessionCookie = responseObject[kSessionCookieJSONKey];
+                                                
+                                                // save new device cookie only if one does not already exists
+                                                if (currentDeviceCookie == nil && _deviceCookie != nil) {
+                                                    [self serializeDeviceCookie:_deviceCookie];
+                                                }
+                                                
+                                                if (completion != NULL) {
+                                                    completion(nil);
+                                                }
+
+                                            } else {
+                                                
+                                                DDLogError(@"Setup tracker error: %@", error);
+                                                
+                                                if (completion != NULL) {
+                                                    completion(error);
+                                                }
+                                            }
+                                        }];
+            }
 }
 
 #pragma mark - Private API

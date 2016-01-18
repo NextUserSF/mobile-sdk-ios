@@ -83,7 +83,6 @@
                  completion(nil, error);
              }
          }];
-
 }
 
 + (NSString *)nextUserAPIQueryParameterEncodedString:(NSString *)string
