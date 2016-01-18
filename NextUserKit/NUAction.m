@@ -174,7 +174,7 @@
 
 + (NSString *)URLParameterValueFromString:(NSString *)parameterValue
 {
-    return parameterValue;
+    return [parameterValue URLEncodedString];
 }
 
 @end

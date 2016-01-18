@@ -201,8 +201,8 @@
     
     NUTracker *tracker = [NUTracker sharedTracker];
     NUAction *action = [NUAction actionWithName:@"2ParamsAction"];
-    action.firstParameter = @"parameter1";
-    action.thirdParameter = @"parameter3";
+    action.firstParameter = @"parameter,1";
+    action.thirdParameter = @"parameter3,";
     
     [tracker trackAction:action completion:^(NSError *error) {
         if (error == nil) {
