@@ -77,7 +77,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *  be able to track any events.
  *
  *  @param trackIdentifier Track identifier used to associate this session with.
- *  @warning Throws an exception if trackIdentifier is invalid.
+ *  @warning Throws an exception if trackIdentifier is invalid (empty or nil).
  *  @see startSessionWithTrackIdentifier:completion:
  */
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier;

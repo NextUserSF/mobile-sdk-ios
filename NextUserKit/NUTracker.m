@@ -13,6 +13,7 @@
 #import "NUTracker+Tests.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
+#import "NSError+NextUser.h"
 
 @interface NUTracker ()
 
@@ -78,7 +79,7 @@
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");
-                    error = [NSError errorWithDomain:@"com.nextuser" code:0 userInfo:@{NSLocalizedDescriptionKey : @"Missing cookies"}];
+                    error = [NSError nextUserErrorWithMessage:@"Missing cookies"];
                 }
             } else {
                 DDLogError(@"Error initializing tracker: %@", error);
@@ -257,7 +258,12 @@
             }
         }];
     } else {
+        
         DDLogWarn(@"Ignore track request sending, session not valid.");
+        NSError *error = [NSError nextUserErrorWithMessage:@"Session not valid. Will not send tracking request."];
+        if (completion != NULL) {
+            completion(error);
+        }
     }
 }
 

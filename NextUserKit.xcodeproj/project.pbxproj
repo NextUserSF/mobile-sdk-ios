@@ -96,6 +96,9 @@
 		3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D56C1BF9CC21006E88D1 /* DDMultiFormatter.m */; };
 		3198D58A1BF9E4BA006E88D1 /* NUDDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5881BF9E4BA006E88D1 /* NUDDLog.h */; };
 		3198D58B1BF9E4BA006E88D1 /* NUDDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5891BF9E4BA006E88D1 /* NUDDLog.m */; };
+		319C92401C4CF29E0015F02D /* NSError+NextUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 319C923E1C4CF29E0015F02D /* NSError+NextUser.h */; };
+		319C92411C4CF29E0015F02D /* NSError+NextUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 319C923F1C4CF29E0015F02D /* NSError+NextUser.m */; };
+		319C92431C4D09270015F02D /* NSError+NextUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 319C923F1C4CF29E0015F02D /* NSError+NextUser.m */; };
 		31C0B1281C19DC3500723558 /* NUTrackable.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1271C19DC3500723558 /* NUTrackable.h */; };
 		31C0B12B1C19DCB200723558 /* NUAction+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1291C19DCB200723558 /* NUAction+Serialization.h */; };
 		31C0B1301C19DCEC00723558 /* NUPurchase+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */; };
@@ -201,6 +204,9 @@
 		3198D5871BF9D36A006E88D1 /* CocoaLumberjackNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaLumberjackNameMapper.h; sourceTree = "<group>"; };
 		3198D5881BF9E4BA006E88D1 /* NUDDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NUDDLog.h; path = lib_3rdParty/DDLog/NUDDLog.h; sourceTree = "<group>"; };
 		3198D5891BF9E4BA006E88D1 /* NUDDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NUDDLog.m; path = lib_3rdParty/DDLog/NUDDLog.m; sourceTree = "<group>"; };
+		319C923E1C4CF29E0015F02D /* NSError+NextUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+NextUser.h"; sourceTree = "<group>"; };
+		319C923F1C4CF29E0015F02D /* NSError+NextUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+NextUser.m"; sourceTree = "<group>"; };
+		319C92421C4D01250015F02D /* NUErrorDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NUErrorDefinitions.h; sourceTree = "<group>"; };
 		31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFNetworkingNameMapper.h; sourceTree = "<group>"; };
 		31C0B1271C19DC3500723558 /* NUTrackable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackable.h; sourceTree = "<group>"; };
 		31C0B1291C19DCB200723558 /* NUAction+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUAction+Serialization.h"; sourceTree = "<group>"; };
@@ -263,6 +269,8 @@
 		312029C71BF221F200B7CCC6 /* Private */ = {
 			isa = PBXGroup;
 			children = (
+				319C923E1C4CF29E0015F02D /* NSError+NextUser.h */,
+				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				31C0B12D1C19DCC900723558 /* ModelSerialization */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
@@ -310,6 +318,7 @@
 				318BFF251BECF49B00B2AA2A /* NextUserKit.h */,
 				318BFF431BECF6AA00B2AA2A /* NUTracker.h */,
 				318BFF441BECF6AA00B2AA2A /* NUTracker.m */,
+				319C92421C4D01250015F02D /* NUErrorDefinitions.h */,
 				3107FB651C15B01100AC030B /* Model */,
 				312029C71BF221F200B7CCC6 /* Private */,
 				318BFF471BECF8A400B2AA2A /* lib_3rdParty */,
@@ -506,6 +515,7 @@
 				3198D5851BF9CC21006E88D1 /* DDMultiFormatter.h in Headers */,
 				31614FAB1BF3508C00F0535D /* SSKeychain.h in Headers */,
 				3198D57E1BF9CC21006E88D1 /* DDLogMacros.h in Headers */,
+				319C92401C4CF29E0015F02D /* NSError+NextUser.h in Headers */,
 				3198D5781BF9CC21006E88D1 /* DDFileLogger.h in Headers */,
 				318BFF601BECF8A400B2AA2A /* AFHTTPSessionManager.h in Headers */,
 				3198D5731BF9CC21006E88D1 /* DDASLLogCapture.h in Headers */,
@@ -659,6 +669,7 @@
 				3107FB641C15A8D900AC030B /* NUAction.m in Sources */,
 				3198D57D1BF9CC21006E88D1 /* DDLog.m in Sources */,
 				31614FAE1BF3508C00F0535D /* SSKeychainQuery.m in Sources */,
+				319C92411C4CF29E0015F02D /* NSError+NextUser.m in Sources */,
 				318BFF681BECF8A400B2AA2A /* AFURLConnectionOperation.m in Sources */,
 				318BFF6C1BECF8A400B2AA2A /* AFURLResponseSerialization.m in Sources */,
 				3107FB711C15BCC300AC030B /* NUPurchase.m in Sources */,
@@ -704,6 +715,7 @@
 				312029CE1BF2300C00B7CCC6 /* NUTrackerSession.m in Sources */,
 				312029C91BF2261D00B7CCC6 /* NUTrackerTests.m in Sources */,
 				310DAE261BF337E500422C06 /* NUTrackerSessionTests.m in Sources */,
+				319C92431C4D09270015F02D /* NSError+NextUser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
