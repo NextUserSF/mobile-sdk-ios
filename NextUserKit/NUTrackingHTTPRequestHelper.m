@@ -42,7 +42,7 @@
 
 + (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName
 {
-    NSDictionary *parameters = @{@"pv0" : screenName};
+    NSDictionary *parameters = @{@"pv0" : [screenName URLEncodedString]};
     return parameters;
 }
 
