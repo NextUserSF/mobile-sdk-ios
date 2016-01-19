@@ -152,7 +152,7 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - screen test"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackScreenWithName:@"testScreenName" completion:^(NSError *error) {
+    [tracker trackScreenWithName:@"screen ' with lots, of/spaces]characters, get = it" completion:^(NSError *error) {
         if (error == nil) {
             XCTAssert(YES);
         } else {
@@ -169,7 +169,6 @@
     }];
 }
 
-
 #pragma mark - Action Track
 
 - (void)testTrackActionWithoutParameters
@@ -177,7 +176,7 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    NUAction *action = [NUAction actionWithName:@"noParamsSingleAction"];
+    NUAction *action = [NUAction actionWithName:@"action ' with lots, of/spaces]characters, get = it"];
     [tracker trackAction:action completion:^(NSError *error) {
         if (error == nil) {
             XCTAssert(YES);
@@ -200,9 +199,9 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    NUAction *action = [NUAction actionWithName:@"2ParamsAction"];
-    action.firstParameter = @"parameter,1";
-    action.thirdParameter = @"parameter3,";
+    NUAction *action = [NUAction actionWithName:@"action 'with characters,'&?;:"];
+    action.firstParameter = @"param 1 '&?;:";
+    action.thirdParameter = @"param 3 '&?;:";
     
     [tracker trackAction:action completion:^(NSError *error) {
         if (error == nil) {
@@ -228,11 +227,11 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    NSArray *actions = @[[NUAction actionWithName:@"noParamsAction1"],
-                         [NUAction actionWithName:@"noParamsAction2"],
-                         [NUAction actionWithName:@"noParamsAction3"],
-                         [NUAction actionWithName:@"noParamsAction4"],
-                         [NUAction actionWithName:@"noParamsAction5"]];
+    NSArray *actions = @[[NUAction actionWithName:@"1 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"2 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"3 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"4 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"5 action 'with characters,'&?;"]];
     
     [tracker trackActions:actions completion:^(NSError *error) {
         if (error == nil) {
@@ -256,11 +255,8 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    NSArray *actions = @[[NUTrackerTests randomActionWithParametersAndName:@"3ParamsAction1"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"3ParamsAction2"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"3ParamsAction3"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"3ParamsAction4"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"3ParamsAction5"]];
+    NSArray *actions = @[[NUTrackerTests randomActionWithParametersAndName:@"1 action 'with characters,'&?;"],
+                         [NUTrackerTests randomActionWithParametersAndName:@"2 action 'with characters,'&?;"]];
     
     [tracker trackActions:actions completion:^(NSError *error) {
         if (error == nil) {
@@ -297,28 +293,17 @@
     item2.price = 77.23;
     item2.quantity = 6;
     
-    double discount = 38.36;
-    double shipping = 15.56;
-    double tax = 3.87;
-    BOOL incomplete = YES;
-    NSString *currency = @"$";
-    NSString *paymentMethod = @"MasterCard";
-    NSString *affiliation = @"Don't know about this";
-    NSString *state = @"Croatia";
-    NSString *city = @"Pozega";
-    NSString *zip = @"34000";
-    
     NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = discount;
-    details.shipping = shipping;
-    details.tax = tax;
-    details.currency = currency;
-    details.incomplete = incomplete;
-    details.paymentMethod = paymentMethod;
-    details.affiliation = affiliation;
-    details.state = state;
-    details.city = city;
-    details.zip = zip;
+    details.discount = 38.36;
+    details.shipping = 15.56;
+    details.tax = 3.87;
+    details.currency = @"$";
+    details.incomplete = YES;
+    details.paymentMethod = @"MasterCard";
+    details.affiliation = @"Don't know about this";
+    details.state = @"Croatia";
+    details.city = @"Pozega";
+    details.zip = @"34000";
     
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
@@ -345,18 +330,18 @@
 
 - (void)testPurchaseWithoutDetails
 {
-    double amount = 45.65;
+    double amount = 32.56;
     
     NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
     item1.category = @"Science Fiction";
     item1.productDescription = @"A long book about rings";
-    item1.price = 99.23;
+    item1.price = 89.23;
     item1.quantity = 7;
     
     NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones" SKU:@"25678675874"];
     item2.category = @"Science Fiction";
     item2.productDescription = @"A long book about dragons";
-    item2.price = 77.23;
+    item2.price = 57.23;
     item2.quantity = 6;
     
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
@@ -388,9 +373,9 @@
 + (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
 {
     NUAction *action = [NUAction actionWithName:actionName];
-    action.firstParameter = @"parameter1";
-    action.thirdParameter = @"parameter3";
-    action.sixthParameter = @"parameter6";
+    action.firstParameter = @"param 1 '&?;:";
+    action.thirdParameter = @"param 3 '&?;:";
+    action.sixthParameter = @"param 6 '&?;:";
     
     return action;
 }
