@@ -14,8 +14,4 @@
                     parameters:(NSDictionary *)parameters
                     completion:(void(^)(id responseObject, NSError *error))completion;
 
-+ (void)sendCustomSerializedQueryParametersGETRequestWithPath:(NSString *)path
-                                                   parameters:(NSDictionary *)parameters
-                                                   completion:(void(^)(id responseObject, NSError *error))completion;
-
 @end

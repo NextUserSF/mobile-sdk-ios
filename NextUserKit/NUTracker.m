@@ -237,7 +237,7 @@
         }
                 
         DDLogVerbose(@"Send track request with parameters: %@", parameters);
-        [NUHTTPRequestUtils sendCustomSerializedQueryParametersGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
+        [NUHTTPRequestUtils sendGETRequestWithPath:path parameters:parameters completion:^(id responseObject, NSError *error) {
             
             // we want to make sure that request was successful and that we registered user identifier.
             // only if request was successful we will not send user identifier anymore
@@ -306,6 +306,7 @@
         parameters[@"nutm_s"] = [NUTracker deviceCookieParameterForSession:_session];
         parameters[@"nutm_sc"] = _session.sessionCookie;
         parameters[@"tid"] = [NUTracker trackIdentifierParameterForSession:_session appendUserIdentifier:includeUserIdentifier];
+        parameters[@"nuv"] = @"m1";
     }
     
     return parameters;

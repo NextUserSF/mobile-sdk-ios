@@ -15,51 +15,13 @@
 
 #pragma mark - HTTP Request
 
-+ (void)sendCustomSerializedQueryParametersGETRequestWithPath:(NSString *)path
-                                                   parameters:(NSDictionary *)parameters
-                                                   completion:(void (^)(id, NSError *))completion
-{
-    DDLogVerbose(@"Fire NextUser API HTTP GET request. Path: %@, Parameters: %@", path, parameters);
-
-    [self sendGETRequestWithPath:path
-                      parameters:parameters
-     useNextUserAPIQueryEncoding:YES
-                      completion:completion];
-}
-
 + (void)sendGETRequestWithPath:(NSString *)path
                     parameters:(NSDictionary *)parameters
                     completion:(void (^)(id responseObject, NSError *error))completion
 {
     DDLogVerbose(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
     
-    [self sendGETRequestWithPath:path
-                      parameters:parameters
-     useNextUserAPIQueryEncoding:NO
-                      completion:completion];
-}
-
-#pragma mark - Private
-
-+ (void)sendGETRequestWithPath:(NSString *)path
-                    parameters:(NSDictionary *)parameters
-   useNextUserAPIQueryEncoding:(BOOL)useNextUserAPIQueryEncoding
-                    completion:(void (^)(id responseObject, NSError *error))completion
-{
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    
-    if (useNextUserAPIQueryEncoding) {
-        [manager.requestSerializer setQueryStringSerializationWithBlock:^NSString * _Nonnull(NSURLRequest * _Nonnull request, id  _Nonnull parameters, NSError * _Nullable __autoreleasing * _Nullable error) {
-            
-            NSMutableArray *mutablePairs = [NSMutableArray array];
-            for (NSString *key in parameters) {
-                NSString *value = parameters[key];
-                [mutablePairs addObject:[NSString stringWithFormat:@"%@=%@", [self nextUserAPIQueryParameterEncodedString:key], [self nextUserAPIQueryParameterEncodedString:value]]];
-            }
-            
-            return [mutablePairs componentsJoinedByString:@"&"];
-        }];
-    }
     
     [manager GET:path
       parameters:parameters
@@ -83,11 +45,6 @@
                  completion(nil, error);
              }
          }];
-}
-
-+ (NSString *)nextUserAPIQueryParameterEncodedString:(NSString *)string
-{
-    return [string URLEncodedStringWithIgnoredCharacters:@":,;="];
 }
 
 @end
