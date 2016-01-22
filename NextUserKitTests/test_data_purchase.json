@@ -1,0 +1,68 @@
+{
+    "with_details": {
+        "total_amount": 34.5,
+        "items": [
+                  {
+                  "product_name": "Lord Of The Rings",
+                  "sku": "234523333344",
+                  "category": "Science Fiction",
+                  "price": 14.64,
+                  "quantity": 7,
+                  "product_description": "A long book about rings, something"
+                  },
+                  {
+                  "product_name": "Game Of Thrones",
+                  "sku": "25678675874",
+                  "category": "Science Fiction",
+                  "price": 34.64,
+                  "quantity": 6,
+                  "product_description": "A long book about dragons"
+                  }
+                  ],
+        "details": {
+            "discount": 38.36,
+            "shipping": 15.56,
+            "tax": 3.87,
+            "currency": "$",
+            "incomplete": true,
+            "paymentMethod": "MasterCard",
+            "affiliation": "Don't know about this",
+            "state": "Croatia",
+            "city": "Pozega",
+            "zip": "34000"
+        }
+    },
+    "without_details": {
+        "total_amount": 34.5,
+        "items": [
+                  {
+                  "product_name": "Lord Of The Rings",
+                  "sku": "234523333344",
+                  "category": "Science Fiction",
+                  "price": 34.44,
+                  "quantity": 7,
+                  "product_description": "A long book about rings, something"
+                  },
+                  {
+                  "product_name": "Game Of Thrones",
+                  "sku": "25678675874",
+                  "category": "Science Fiction",
+                  "price": 24.44,
+                  "quantity": 6,
+                  "product_description": "A long book about dragons"
+                  }
+                  ],
+        "details": {
+            "discount": 38.36,
+            "shipping": 15.56,
+            "tax": 3.87,
+            "currency": "$",
+            "incomplete": true,
+            "paymentMethod": "MasterCard",
+            "affiliation": "Don't know about this",
+            "state": "Croatia",
+            "city": "Pozega",
+            "zip": "34000"
+        }
+    }
+}

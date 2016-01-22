@@ -16,10 +16,38 @@
 @interface NUTrackerTests : XCTestCase
 
 @property (nonatomic) NUTracker *tracker;
+@property (nonatomic) NSDictionary *actionTestSampleData;
+@property (nonatomic) NSDictionary *purchaseTestSampleData;
 
 @end
 
 @implementation NUTrackerTests
+
+- (instancetype)initWithInvocation:(NSInvocation *)invocation
+{
+    if (self = [super initWithInvocation:invocation]) {
+        // http://www.objgen.com/json/models/ZpR8
+        _actionTestSampleData = [self loadSampleDataForFileName:@"test_data_action"];
+        
+        // http://www.objgen.com/json/models/uDmiV
+        _purchaseTestSampleData = [self loadSampleDataForFileName:@"test_data_purchase"];
+    }
+    
+    return self;
+}
+
+- (NSDictionary *)loadSampleDataForFileName:(NSString *)fileName
+{
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    NSString *filePath = [bundle pathForResource:fileName
+                                          ofType:@"json"];
+    NSError *deserializingError;
+    NSURL *localFileURL = [NSURL fileURLWithPath:filePath];
+    NSData *contentOfLocalFile = [NSData dataWithContentsOfURL:localFileURL];
+    return [NSJSONSerialization JSONObjectWithData:contentOfLocalFile
+                                           options:0
+                                             error:&deserializingError];
+}
 
 - (void)setUp
 {
@@ -169,58 +197,19 @@
     }];
 }
 
-#pragma mark - Action Track
+#pragma mark - Track Multiple Actions Tests
 
-- (void)testTrackActionWithoutParameters
++ (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
 {
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
-    
-    NUTracker *tracker = [NUTracker sharedTracker];
-    NUAction *action = [NUAction actionWithName:@"action ' with lots, of/spaces]characters, get = it"];
-    [tracker trackAction:action completion:^(NSError *error) {
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track action failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Expectation timeout - action test. Error: %@", error);
-        }
-    }];
-}
-
-- (void)testTrackActionWithParameters
-{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
-    
-    NUTracker *tracker = [NUTracker sharedTracker];
-    NUAction *action = [NUAction actionWithName:@"action 'with characters,'&?;:"];
+    NUAction *action = [NUAction actionWithName:actionName];
     action.firstParameter = @"param 1 '&?;:";
     action.thirdParameter = @"param 3 '&?;:";
+    action.sixthParameter = @"param 6 '&?;:";
     
-    [tracker trackAction:action completion:^(NSError *error) {
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track action failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Expectation timeout - action test. Error: %@", error);
-        }
-    }];
+    return action;
 }
 
-#pragma mark - Multiple Actions Track
+#pragma mark -
 
 - (void)testMultipleActionsWithoutParameters
 {
@@ -275,109 +264,144 @@
     }];
 }
 
-#pragma mark - Purchase Track
+#pragma mark - Action Track Helper
 
-- (void)testPurchaseWithDetails
+- (NUAction *)actionWithSampleDataKey:(NSString *)sampleDataKey
 {
-    double amount = 45.65;
+    NSDictionary *actionInfo = _actionTestSampleData[sampleDataKey];
     
-    NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
-    item1.category = @"Science Fiction";
-    item1.productDescription = @"A long book about rings, something";
-    item1.price = 99.23;
-    item1.quantity = 7;
+    NUAction *action = [NUAction actionWithName:actionInfo[@"name"]];
+
+    [action setFirstParameter:actionInfo[@"param_1"]];
+    [action setSecondParameter:actionInfo[@"param_2"]];
+    [action setThirdParameter:actionInfo[@"param_3"]];
+    [action setFourthParameter:actionInfo[@"param_4"]];
+    [action setFifthParameter:actionInfo[@"param_5"]];
+    [action setSixthParameter:actionInfo[@"param_6"]];
+    [action setSeventhParameter:actionInfo[@"param_7"]];
+    [action setEightParameter:actionInfo[@"param_8"]];
+    [action setNinthParameter:actionInfo[@"param_9"]];
+    [action setTenthParameter:actionInfo[@"param_10"]];
     
-    NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones" SKU:@"25678675874"];
-    item2.category = @"Science Fiction";
-    item2.productDescription = @"A long book about dragons";
-    item2.price = 77.23;
-    item2.quantity = 6;
+    return action;
+}
+
+- (void)testTrackActionWithDataKey:(NSString *)actionDataKey
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
-    NUPurchaseDetails *details = [NUPurchaseDetails details];
-    details.discount = 38.36;
-    details.shipping = 15.56;
-    details.tax = 3.87;
-    details.currency = @"$";
-    details.incomplete = YES;
-    details.paymentMethod = @"MasterCard";
-    details.affiliation = @"Don't know about this";
-    details.state = @"Croatia";
-    details.city = @"Pozega";
-    details.zip = @"34000";
+    NUTracker *tracker = [NUTracker sharedTracker];
+    [tracker trackAction:[self actionWithSampleDataKey:actionDataKey]
+              completion:^(NSError *error) {
+                  XCTAssert(error == nil);
+                  [expectation fulfill];
+              }];
     
-    NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Expectation timeout - action test. Error: %@", error);
+        }
+    }];
+}
+
+#pragma mark - Track Action Tests
+
+- (void)testTrackActionSimpleValues
+{
+    [self testTrackActionWithDataKey:@"simple_values"];
+}
+
+- (void)testTrackActionSpecialCharacterValues
+{
+    [self testTrackActionWithDataKey:@"special_character_values"];
+}
+
+- (void)testTrackActionNoParamsSimpleName
+{
+    [self testTrackActionWithDataKey:@"no_params_simple_name"];
+}
+
+- (void)testTrackActionNoParamsSpeciarCharacterName
+{
+    [self testTrackActionWithDataKey:@"no_params_special_character_name"];
+}
+
+#pragma mark - Track Purchase Helper
+
+- (NUPurchase *)purchaseWithSampleDataKey:(NSString *)sampleDataKey
+{
+    NUPurchase *purchase = nil;
     
+    NSDictionary *purchaseInfo = _purchaseTestSampleData[sampleDataKey];
+    
+    double totalAmount = [purchaseInfo[@"total_amount"] doubleValue];
+    NSArray *itemsInfo = purchaseInfo[@"items"];
+    if (itemsInfo) {
+        NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsInfo.count];
+        for (NSDictionary *itemInfo in itemsInfo) {
+            NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:itemInfo[@"product_name"]
+                                                                   SKU:itemInfo[@"sku"]];
+            item.category = itemInfo[@"category"];
+            item.price = [itemInfo[@"price"] doubleValue];
+            item.quantity = [itemInfo[@"quantity"] unsignedIntegerValue];
+            item.productDescription = itemInfo[@"product_description"];
+            
+            [items addObject:item];
+        }
+        
+        NSDictionary *detailsInfo = purchaseInfo[@"details"];
+        if (detailsInfo) {
+            NUPurchaseDetails *details = [NUPurchaseDetails details];
+            details.discount = [detailsInfo[@"discount"] doubleValue];
+            details.shipping = [detailsInfo[@"shipping"] doubleValue];
+            details.tax = [detailsInfo[@"tax"] doubleValue];
+            
+            details.currency = detailsInfo[@"currency"];
+            details.incomplete = [detailsInfo[@"incomplete"] boolValue];
+            details.paymentMethod = detailsInfo[@"paymentMethod"];
+            details.affiliation = detailsInfo[@"affiliation"];
+
+            details.state = detailsInfo[@"state"];
+            details.city = detailsInfo[@"city"];
+            details.zip = detailsInfo[@"zip"];
+            
+            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items details:details];
+        } else {
+            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items];
+        }
+    }
+    
+    return purchase;
+}
+
+- (void)testTrackPurchaseWithDataKey:(NSString *)dataKey
+{
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackPurchase:purchase completion:^(NSError *error) {
-        
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track purchase failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
+    [tracker trackPurchase:[self purchaseWithSampleDataKey:dataKey]
+                completion:^(NSError *error) {
+                    XCTAssert(error == nil);
+                    [expectation fulfill];
+                }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Expectation timeout - purchase test. Error: %@", error);
         }
     }];
+}
+
+#pragma mark - Track Purchase Tests
+
+- (void)testPurchaseWithDetails
+{
+    [self testTrackPurchaseWithDataKey:@"with_details"];
 }
 
 - (void)testPurchaseWithoutDetails
 {
-    double amount = 32.56;
-    
-    NUPurchaseItem *item1 = [NUPurchaseItem itemWithProductName:@"Lord Of The Rings" SKU:@"234523333344"];
-    item1.category = @"Science Fiction";
-    item1.productDescription = @"A long book about rings";
-    item1.price = 89.23;
-    item1.quantity = 7;
-    
-    NUPurchaseItem *item2 = [NUPurchaseItem itemWithProductName:@"Game Of Thrones" SKU:@"25678675874"];
-    item2.category = @"Science Fiction";
-    item2.productDescription = @"A long book about dragons";
-    item2.price = 57.23;
-    item2.quantity = 6;
-    
-    NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
-    
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
-    
-    NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackPurchase:purchase completion:^(NSError *error) {
-        
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track purchase failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Expectation timeout - purchase test. Error: %@", error);
-        }
-    }];
-}
-
-
-#pragma mark - Private
-
-+ (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
-{
-    NUAction *action = [NUAction actionWithName:actionName];
-    action.firstParameter = @"param 1 '&?;:";
-    action.thirdParameter = @"param 3 '&?;:";
-    action.sixthParameter = @"param 6 '&?;:";
-    
-    return action;
+    [self testTrackPurchaseWithDataKey:@"without_details"];
 }
 
 @end
