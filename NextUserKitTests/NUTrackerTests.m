@@ -334,7 +334,7 @@
     [self testTrackAction:[self actionWithSampleDataKey:@"no_params_simple_name"]];
 }
 
-- (void)testTrackActionNoParamsSpeciarCharacterName
+- (void)testTrackActionNoParamsSpecialCharacterName
 {
     [self testTrackAction:[self actionWithSampleDataKey:@"no_params_special_character_name"]];
 }
