@@ -27,28 +27,28 @@
     },
     "no_params_simple_name": {
         "name": "m_no_param_name",
-        "param_1": {},
-        "param_2": {},
-        "param_3": {},
-        "param_4": {},
-        "param_5": {},
-        "param_6": {},
-        "param_7": {},
-        "param_8": {},
-        "param_9": {},
-        "param_10": {}
+        "param_1": "",
+        "param_2": "",
+        "param_3": "",
+        "param_4": "",
+        "param_5": "",
+        "param_6": "",
+        "param_7": "",
+        "param_8": "",
+        "param_9": "",
+        "param_10": ""
     },
     "no_params_special_character_name": {
         "name": "action 'with characters,'&?;:",
-        "param_1": {},
-        "param_2": {},
-        "param_3": {},
-        "param_4": {},
-        "param_5": {},
-        "param_6": {},
-        "param_7": {},
-        "param_8": {},
-        "param_9": {},
-        "param_10": {}
+        "param_1": "",
+        "param_2": "",
+        "param_3": "",
+        "param_4": "",
+        "param_5": "",
+        "param_6": "",
+        "param_7": "",
+        "param_8": "",
+        "param_9": "",
+        "param_10": ""
     }
 }

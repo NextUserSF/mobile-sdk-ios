@@ -36,6 +36,8 @@
     return self;
 }
 
+#pragma mark -
+
 - (NSDictionary *)loadSampleDataForFileName:(NSString *)fileName
 {
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -48,6 +50,86 @@
                                            options:0
                                              error:&deserializingError];
 }
+
+#pragma mark - Model Factory
+
+- (NUAction *)actionWithSampleDataKey:(NSString *)sampleDataKey
+{
+    NSDictionary *actionInfo = _actionTestSampleData[sampleDataKey];
+    
+    NUAction *action = [NUAction actionWithName:actionInfo[@"name"]];
+    
+    [action setFirstParameter:actionInfo[@"param_1"]];
+    [action setSecondParameter:actionInfo[@"param_2"]];
+    [action setThirdParameter:actionInfo[@"param_3"]];
+    [action setFourthParameter:actionInfo[@"param_4"]];
+    [action setFifthParameter:actionInfo[@"param_5"]];
+    [action setSixthParameter:actionInfo[@"param_6"]];
+    [action setSeventhParameter:actionInfo[@"param_7"]];
+    [action setEightParameter:actionInfo[@"param_8"]];
+    [action setNinthParameter:actionInfo[@"param_9"]];
+    [action setTenthParameter:actionInfo[@"param_10"]];
+    
+    return action;
+}
+
+- (NUPurchase *)purchaseWithSampleDataKey:(NSString *)sampleDataKey
+{
+    NUPurchase *purchase = nil;
+    
+    NSDictionary *purchaseInfo = _purchaseTestSampleData[sampleDataKey];
+    
+    double totalAmount = [purchaseInfo[@"total_amount"] doubleValue];
+    NSArray *itemsInfo = purchaseInfo[@"items"];
+    if (itemsInfo) {
+        NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsInfo.count];
+        for (NSDictionary *itemInfo in itemsInfo) {
+            NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:itemInfo[@"product_name"]
+                                                                   SKU:itemInfo[@"sku"]];
+            item.category = itemInfo[@"category"];
+            item.price = [itemInfo[@"price"] doubleValue];
+            item.quantity = [itemInfo[@"quantity"] unsignedIntegerValue];
+            item.productDescription = itemInfo[@"product_description"];
+            
+            [items addObject:item];
+        }
+        
+        NSDictionary *detailsInfo = purchaseInfo[@"details"];
+        if (detailsInfo) {
+            NUPurchaseDetails *details = [NUPurchaseDetails details];
+            details.discount = [detailsInfo[@"discount"] doubleValue];
+            details.shipping = [detailsInfo[@"shipping"] doubleValue];
+            details.tax = [detailsInfo[@"tax"] doubleValue];
+            
+            details.currency = detailsInfo[@"currency"];
+            details.incomplete = [detailsInfo[@"incomplete"] boolValue];
+            details.paymentMethod = detailsInfo[@"paymentMethod"];
+            details.affiliation = detailsInfo[@"affiliation"];
+            
+            details.state = detailsInfo[@"state"];
+            details.city = detailsInfo[@"city"];
+            details.zip = detailsInfo[@"zip"];
+            
+            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items details:details];
+        } else {
+            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items];
+        }
+    }
+    
+    return purchase;
+}
+
++ (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
+{
+    NUAction *action = [NUAction actionWithName:actionName];
+    action.firstParameter = @"param 1 '&?;:";
+    action.thirdParameter = @"param 3 '&?;:";
+    action.sixthParameter = @"param 6 '&?;:";
+    
+    return action;
+}
+
+#pragma mark -
 
 - (void)setUp
 {
@@ -73,14 +155,14 @@
     }];
 }
 
-#pragma mark -
+#pragma mark - Framework Version
 
 - (void)testFrameworkVersion
 {
     XCTAssert(NextUserKitVersionNumber == 1.0);
 }
 
-#pragma mark -
+#pragma mark - Tracker Singleton
 
 - (void)testTrackerSingleton
 {
@@ -197,101 +279,14 @@
     }];
 }
 
-#pragma mark - Track Multiple Actions Tests
+#pragma mark - Track Action Tests
 
-+ (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
-{
-    NUAction *action = [NUAction actionWithName:actionName];
-    action.firstParameter = @"param 1 '&?;:";
-    action.thirdParameter = @"param 3 '&?;:";
-    action.sixthParameter = @"param 6 '&?;:";
-    
-    return action;
-}
-
-#pragma mark -
-
-- (void)testMultipleActionsWithoutParameters
-{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
-    
-    NUTracker *tracker = [NUTracker sharedTracker];
-    NSArray *actions = @[[NUAction actionWithName:@"1 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"2 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"3 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"4 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"5 action 'with characters,'&?;"]];
-    
-    [tracker trackActions:actions completion:^(NSError *error) {
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track screen failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Expectation timeout - actions test. Error: %@", error);
-        }
-    }];
-}
-
-- (void)testMultipleActionsWithParameters
-{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - multiple actions"];
-    
-    NUTracker *tracker = [NUTracker sharedTracker];
-    NSArray *actions = @[[NUTrackerTests randomActionWithParametersAndName:@"1 action 'with characters,'&?;"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"2 action 'with characters,'&?;"]];
-    
-    [tracker trackActions:actions completion:^(NSError *error) {
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track screen failed with error: %@", error);
-        }
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Expectation timeout - actions test. Error: %@", error);
-        }
-    }];
-}
-
-#pragma mark - Action Track Helper
-
-- (NUAction *)actionWithSampleDataKey:(NSString *)sampleDataKey
-{
-    NSDictionary *actionInfo = _actionTestSampleData[sampleDataKey];
-    
-    NUAction *action = [NUAction actionWithName:actionInfo[@"name"]];
-
-    [action setFirstParameter:actionInfo[@"param_1"]];
-    [action setSecondParameter:actionInfo[@"param_2"]];
-    [action setThirdParameter:actionInfo[@"param_3"]];
-    [action setFourthParameter:actionInfo[@"param_4"]];
-    [action setFifthParameter:actionInfo[@"param_5"]];
-    [action setSixthParameter:actionInfo[@"param_6"]];
-    [action setSeventhParameter:actionInfo[@"param_7"]];
-    [action setEightParameter:actionInfo[@"param_8"]];
-    [action setNinthParameter:actionInfo[@"param_9"]];
-    [action setTenthParameter:actionInfo[@"param_10"]];
-    
-    return action;
-}
-
-- (void)testTrackActionWithDataKey:(NSString *)actionDataKey
+- (void)testTrackAction:(NUAction *)action
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackAction:[self actionWithSampleDataKey:actionDataKey]
+    [tracker trackAction:action
               completion:^(NSError *error) {
                   XCTAssert(error == nil);
                   [expectation fulfill];
@@ -304,82 +299,73 @@
     }];
 }
 
-#pragma mark - Track Action Tests
+- (void)testTrackActions:(NSArray *)actions
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
+    
+    NUTracker *tracker = [NUTracker sharedTracker];
+    [tracker trackActions:actions
+               completion:^(NSError *error) {
+                   XCTAssert(error == nil);
+                   [expectation fulfill];
+               }];
+    
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Expectation timeout - action test. Error: %@", error);
+        }
+    }];
+}
+
+#pragma mark -
 
 - (void)testTrackActionSimpleValues
 {
-    [self testTrackActionWithDataKey:@"simple_values"];
+    [self testTrackAction:[self actionWithSampleDataKey:@"simple_values"]];
 }
 
 - (void)testTrackActionSpecialCharacterValues
 {
-    [self testTrackActionWithDataKey:@"special_character_values"];
+    [self testTrackAction:[self actionWithSampleDataKey:@"special_character_values"]];
 }
 
 - (void)testTrackActionNoParamsSimpleName
 {
-    [self testTrackActionWithDataKey:@"no_params_simple_name"];
+    [self testTrackAction:[self actionWithSampleDataKey:@"no_params_simple_name"]];
 }
 
 - (void)testTrackActionNoParamsSpeciarCharacterName
 {
-    [self testTrackActionWithDataKey:@"no_params_special_character_name"];
+    [self testTrackAction:[self actionWithSampleDataKey:@"no_params_special_character_name"]];
 }
 
-#pragma mark - Track Purchase Helper
+#pragma mark -
 
-- (NUPurchase *)purchaseWithSampleDataKey:(NSString *)sampleDataKey
+- (void)testMultipleActionsWithoutParameters
 {
-    NUPurchase *purchase = nil;
-    
-    NSDictionary *purchaseInfo = _purchaseTestSampleData[sampleDataKey];
-    
-    double totalAmount = [purchaseInfo[@"total_amount"] doubleValue];
-    NSArray *itemsInfo = purchaseInfo[@"items"];
-    if (itemsInfo) {
-        NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsInfo.count];
-        for (NSDictionary *itemInfo in itemsInfo) {
-            NUPurchaseItem *item = [NUPurchaseItem itemWithProductName:itemInfo[@"product_name"]
-                                                                   SKU:itemInfo[@"sku"]];
-            item.category = itemInfo[@"category"];
-            item.price = [itemInfo[@"price"] doubleValue];
-            item.quantity = [itemInfo[@"quantity"] unsignedIntegerValue];
-            item.productDescription = itemInfo[@"product_description"];
-            
-            [items addObject:item];
-        }
-        
-        NSDictionary *detailsInfo = purchaseInfo[@"details"];
-        if (detailsInfo) {
-            NUPurchaseDetails *details = [NUPurchaseDetails details];
-            details.discount = [detailsInfo[@"discount"] doubleValue];
-            details.shipping = [detailsInfo[@"shipping"] doubleValue];
-            details.tax = [detailsInfo[@"tax"] doubleValue];
-            
-            details.currency = detailsInfo[@"currency"];
-            details.incomplete = [detailsInfo[@"incomplete"] boolValue];
-            details.paymentMethod = detailsInfo[@"paymentMethod"];
-            details.affiliation = detailsInfo[@"affiliation"];
-
-            details.state = detailsInfo[@"state"];
-            details.city = detailsInfo[@"city"];
-            details.zip = detailsInfo[@"zip"];
-            
-            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items details:details];
-        } else {
-            purchase = [NUPurchase purchaseWithTotalAmount:totalAmount items:items];
-        }
-    }
-    
-    return purchase;
+    NSArray *actions = @[[NUAction actionWithName:@"1 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"2 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"3 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"4 action 'with characters,'&?;"],
+                         [NUAction actionWithName:@"5 action 'with characters,'&?;"]];
+    [self testTrackActions:actions];
 }
 
-- (void)testTrackPurchaseWithDataKey:(NSString *)dataKey
+- (void)testMultipleActionsWithParameters
+{
+    NSArray *actions = @[[NUTrackerTests randomActionWithParametersAndName:@"1 action 'with characters,'&?;"],
+                         [NUTrackerTests randomActionWithParametersAndName:@"2 action 'with characters,'&?;"]];
+    [self testTrackActions:actions];
+}
+
+#pragma mark - Track Purchase Tests
+
+- (void)testTrackPurchase:(NUPurchase *)purchase
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackPurchase:[self purchaseWithSampleDataKey:dataKey]
+    [tracker trackPurchase:purchase
                 completion:^(NSError *error) {
                     XCTAssert(error == nil);
                     [expectation fulfill];
@@ -392,16 +378,16 @@
     }];
 }
 
-#pragma mark - Track Purchase Tests
+#pragma mark -
 
 - (void)testPurchaseWithDetails
 {
-    [self testTrackPurchaseWithDataKey:@"with_details"];
+    [self testTrackPurchase:[self purchaseWithSampleDataKey:@"with_details"]];
 }
 
 - (void)testPurchaseWithoutDetails
 {
-    [self testTrackPurchaseWithDataKey:@"without_details"];
+    [self testTrackPurchase:[self purchaseWithSampleDataKey:@"without_details"]];
 }
 
 @end
