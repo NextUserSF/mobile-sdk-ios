@@ -36,7 +36,7 @@
     return self;
 }
 
-#pragma mark -
+#pragma mark - JSON Sample Data Load
 
 - (NSDictionary *)loadSampleDataForFileName:(NSString *)fileName
 {
@@ -51,7 +51,7 @@
                                              error:&deserializingError];
 }
 
-#pragma mark - Model Factory
+#pragma mark - Test Data Factory
 
 - (NUAction *)actionWithSampleDataKey:(NSString *)sampleDataKey
 {
@@ -119,17 +119,7 @@
     return purchase;
 }
 
-+ (NUAction *)randomActionWithParametersAndName:(NSString *)actionName
-{
-    NUAction *action = [NUAction actionWithName:actionName];
-    action.firstParameter = @"param 1 '&?;:";
-    action.thirdParameter = @"param 3 '&?;:";
-    action.sixthParameter = @"param 6 '&?;:";
-    
-    return action;
-}
-
-#pragma mark -
+#pragma mark - Unit Test Setup
 
 - (void)setUp
 {
@@ -257,18 +247,13 @@
 
 #pragma mark - Screen Track
 
-- (void)testTrackScreen
+- (void)testTrackScreenWithName:(NSString *)screenName
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - screen test"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackScreenWithName:@"screen ' with lots, of/spaces]characters, get = it" completion:^(NSError *error) {
-        if (error == nil) {
-            XCTAssert(YES);
-        } else {
-            XCTFail(@"Track screen failed with error: %@", error);
-        }
-        
+    [tracker trackScreenWithName:screenName completion:^(NSError *error) {
+        XCTAssert(error == nil);
         [expectation fulfill];
     }];
     
@@ -277,6 +262,18 @@
             NSLog(@"Expectation timeout - screen test. Error: %@", error);
         }
     }];
+}
+
+#pragma mark -
+
+- (void)testTrackScreenWithComplicatedName
+{
+    [self testTrackScreenWithName:@"screen ' with lots, of/spaces]characters, get = it"];
+}
+
+- (void)testTrackScreenWithSimpleName
+{
+    [self testTrackScreenWithName:@"simple_screen_name"];
 }
 
 #pragma mark - Track Action Tests
@@ -339,22 +336,20 @@
     [self testTrackAction:[self actionWithSampleDataKey:@"no_params_special_character_name"]];
 }
 
-#pragma mark -
-
 - (void)testMultipleActionsWithoutParameters
 {
-    NSArray *actions = @[[NUAction actionWithName:@"1 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"2 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"3 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"4 action 'with characters,'&?;"],
-                         [NUAction actionWithName:@"5 action 'with characters,'&?;"]];
+    NSArray *actions = @[[self actionWithSampleDataKey:@"no_params_simple_name"],
+                         [self actionWithSampleDataKey:@"special_character_values"],
+                         [self actionWithSampleDataKey:@"no_params_simple_name"],
+                         [self actionWithSampleDataKey:@"no_params_special_character_name"],
+                         [self actionWithSampleDataKey:@"no_params_simple_name"]];
     [self testTrackActions:actions];
 }
 
 - (void)testMultipleActionsWithParameters
 {
-    NSArray *actions = @[[NUTrackerTests randomActionWithParametersAndName:@"1 action 'with characters,'&?;"],
-                         [NUTrackerTests randomActionWithParametersAndName:@"2 action 'with characters,'&?;"]];
+    NSArray *actions = @[[self actionWithSampleDataKey:@"no_params_simple_name"],
+                         [self actionWithSampleDataKey:@"no_params_special_character_name"]];
     [self testTrackActions:actions];
 }
 
@@ -378,6 +373,24 @@
     }];
 }
 
+- (void)testTrackPurchases:(NSArray *)purchases
+{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
+    
+    NUTracker *tracker = [NUTracker sharedTracker];
+    [tracker trackPurchases:purchases
+                 completion:^(NSError *error) {
+                     XCTAssert(error == nil);
+                     [expectation fulfill];
+                 }];
+    
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Expectation timeout - purchase test. Error: %@", error);
+        }
+    }];
+}
+
 #pragma mark -
 
 - (void)testPurchaseWithDetails
@@ -388,6 +401,12 @@
 - (void)testPurchaseWithoutDetails
 {
     [self testTrackPurchase:[self purchaseWithSampleDataKey:@"without_details"]];
+}
+
+- (void)testPurchasesTracking
+{
+    [self testTrackPurchases:@[[self purchaseWithSampleDataKey:@"with_details"],
+                               [self purchaseWithSampleDataKey:@"without_details"]]];
 }
 
 @end
