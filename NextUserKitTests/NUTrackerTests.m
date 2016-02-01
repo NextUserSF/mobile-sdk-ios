@@ -162,6 +162,13 @@
     XCTAssertEqual(tracker, trackerAgain, @"Must be the same object instance");
 }
 
+#pragma mark - Session Start
+
+- (void)testEmptyTrackingIdentifierThrowsException
+{
+    XCTAssertThrows([_tracker startSessionWithTrackIdentifier:nil]);
+}
+
 #pragma mark - User Identify
 
 - (void)testTrackIdentifierParameterWithUserIdentification
