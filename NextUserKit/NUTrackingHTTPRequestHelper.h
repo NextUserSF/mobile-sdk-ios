@@ -2,7 +2,7 @@
 //  NUTrackingHTTPRequestHelper.h
 //  NextUserKit
 //
-//  Created by Dino on 11/11/15.
+//  Created by NextUser on 11/11/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 

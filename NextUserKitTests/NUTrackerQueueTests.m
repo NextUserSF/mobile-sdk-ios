@@ -2,7 +2,7 @@
 //  NUTrackerQueueTests.m
 //  NextUserKit
 //
-//  Created by Dino on 12/8/15.
+//  Created by NextUser on 12/8/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 

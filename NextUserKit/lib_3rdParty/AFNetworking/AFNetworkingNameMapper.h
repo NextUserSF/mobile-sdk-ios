@@ -2,7 +2,7 @@
 //  AFNetworkingNameMapper.h
 //  NextUserKit
 //
-//  Created by Dino on 11/12/15.
+//  Created by NextUser on 11/12/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 

@@ -2,7 +2,7 @@
 //  NUTracker.m
 //  NextUserKit
 //
-//  Created by Dino on 11/6/15.
+//  Created by NextUser on 11/6/15.
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 

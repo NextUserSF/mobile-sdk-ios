@@ -2,7 +2,7 @@
 //  NSString+LGUtils.h
 //  Looks Good
 //
-//  Created by Dino Bartosak on 07/02/15.
+//  Created by NextUser Bartosak on 07/02/15.
 //  Copyright (c) 2015 Dino Bartosak. All rights reserved.
 //
 
