@@ -145,6 +145,11 @@
     }];
 }
 
+- (void)tearDown
+{
+    [NUTracker releaseSharedInstance];
+}
+
 #pragma mark - Framework Version
 
 - (void)testFrameworkVersion

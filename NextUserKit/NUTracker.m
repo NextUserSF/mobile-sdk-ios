@@ -26,15 +26,20 @@
 
 #pragma mark - Public API
 
+static NUTracker *instance = nil;
 + (NUTracker *)sharedTracker
 {
-    static NUTracker *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    if (instance == nil) {
         instance = [[NUTracker alloc] init];
-    });
+    }
     
     return instance;
+}
+
++ (void)releaseSharedInstance
+{
+    [instance.session clearSerializedDeviceCookie];
+    instance = nil;
 }
 
 - (instancetype)init

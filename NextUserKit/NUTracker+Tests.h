@@ -11,6 +11,8 @@
 
 @interface NUTracker (Tests)
 
++ (void)releaseSharedInstance;
+
 - (NUTrackerSession *)session;
 
 - (NSMutableDictionary *)defaultTrackingParameters:(BOOL)includeUserIdentifier;
