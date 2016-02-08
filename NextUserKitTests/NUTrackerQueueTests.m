@@ -17,6 +17,15 @@
 
 @implementation NUTrackerQueueTests
 
+#pragma mark - Setup
+
+- (void)tearDown
+{
+    [NUTracker releaseSharedInstance];
+}
+
+#pragma mark - Tests
+
 - (void)testTrackRequestAfterSessionStart
 {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
