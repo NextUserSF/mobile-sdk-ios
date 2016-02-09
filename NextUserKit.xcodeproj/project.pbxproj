@@ -275,9 +275,9 @@
 			children = (
 				319C923E1C4CF29E0015F02D /* NSError+NextUser.h */,
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
-				31C0B12D1C19DCC900723558 /* ModelSerialization */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
+				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
 				31F2752B1BF9FC9B00D0D755 /* Logger */,
@@ -435,14 +435,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		31C0B12D1C19DCC900723558 /* ModelSerialization */ = {
+		31C0B12D1C19DCC900723558 /* Model Serialization Protocol */ = {
 			isa = PBXGroup;
 			children = (
 				31C0B1271C19DC3500723558 /* NUTrackable.h */,
 				31C0B1291C19DCB200723558 /* NUAction+Serialization.h */,
 				31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */,
 			);
-			name = ModelSerialization;
+			name = "Model Serialization Protocol";
 			sourceTree = "<group>";
 		};
 		31E61C721BFDDA2D00AAD12B /* Utils */ = {
