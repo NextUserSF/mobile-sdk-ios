@@ -233,8 +233,8 @@
 		31917A611C6A0A2D008E21CA /* PNURLBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 319179BF1C6A0A2D008E21CA /* PNURLBuilder.h */; };
 		31917A621C6A0A2D008E21CA /* PNURLBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 319179C01C6A0A2D008E21CA /* PNURLBuilder.m */; };
 		31917A631C6A0A2D008E21CA /* PubNub.h in Headers */ = {isa = PBXBuildFile; fileRef = 319179C11C6A0A2D008E21CA /* PubNub.h */; };
-		31917A661C6A0A40008E21CA /* NUPubNubManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 31917A641C6A0A40008E21CA /* NUPubNubManager.h */; };
-		31917A671C6A0A40008E21CA /* NUPubNubManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A651C6A0A40008E21CA /* NUPubNubManager.m */; };
+		31917A661C6A0A40008E21CA /* NUPubNubClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31917A641C6A0A40008E21CA /* NUPubNubClient.h */; };
+		31917A671C6A0A40008E21CA /* NUPubNubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A651C6A0A40008E21CA /* NUPubNubClient.m */; };
 		3198D56D1BF9CC21006E88D1 /* CLIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5521BF9CC21006E88D1 /* CLIColor.h */; };
 		3198D56E1BF9CC21006E88D1 /* CLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5531BF9CC21006E88D1 /* CLIColor.m */; };
 		3198D56F1BF9CC21006E88D1 /* CocoaLumberjack.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */; };
@@ -506,8 +506,8 @@
 		319179BF1C6A0A2D008E21CA /* PNURLBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PNURLBuilder.h; sourceTree = "<group>"; };
 		319179C01C6A0A2D008E21CA /* PNURLBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PNURLBuilder.m; sourceTree = "<group>"; };
 		319179C11C6A0A2D008E21CA /* PubNub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PubNub.h; sourceTree = "<group>"; };
-		31917A641C6A0A40008E21CA /* NUPubNubManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPubNubManager.h; sourceTree = "<group>"; };
-		31917A651C6A0A40008E21CA /* NUPubNubManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPubNubManager.m; sourceTree = "<group>"; };
+		31917A641C6A0A40008E21CA /* NUPubNubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPubNubClient.h; sourceTree = "<group>"; };
+		31917A651C6A0A40008E21CA /* NUPubNubClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPubNubClient.m; sourceTree = "<group>"; };
 		3198D5521BF9CC21006E88D1 /* CLIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLIColor.h; sourceTree = "<group>"; };
 		3198D5531BF9CC21006E88D1 /* CLIColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLIColor.m; sourceTree = "<group>"; };
 		3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaLumberjack.h; sourceTree = "<group>"; };
@@ -605,8 +605,8 @@
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
-				31917A641C6A0A40008E21CA /* NUPubNubManager.h */,
-				31917A651C6A0A40008E21CA /* NUPubNubManager.m */,
+				31917A641C6A0A40008E21CA /* NUPubNubClient.h */,
+				31917A651C6A0A40008E21CA /* NUPubNubClient.m */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
@@ -1175,7 +1175,7 @@
 				31917A3D1C6A0A2D008E21CA /* PNChannelGroupAuditionParser.h in Headers */,
 				31917A231C6A0A2D008E21CA /* PNDictionary.h in Headers */,
 				3198D5851BF9CC21006E88D1 /* DDMultiFormatter.h in Headers */,
-				31917A661C6A0A40008E21CA /* NUPubNubManager.h in Headers */,
+				31917A661C6A0A40008E21CA /* NUPubNubClient.h in Headers */,
 				31917A321C6A0A2D008E21CA /* PNLogFileManager.h in Headers */,
 				31917A391C6A0A2D008E21CA /* PNPrivateStructures.h in Headers */,
 				31614FAB1BF3508C00F0535D /* SSKeychain.h in Headers */,
@@ -1425,7 +1425,7 @@
 				31917A131C6A0A2D008E21CA /* PNSubscribeStatus.m in Sources */,
 				316438E91BFC7DF80092E067 /* NUPurchaseDetails.m in Sources */,
 				3198D56E1BF9CC21006E88D1 /* CLIColor.m in Sources */,
-				31917A671C6A0A40008E21CA /* NUPubNubManager.m in Sources */,
+				31917A671C6A0A40008E21CA /* NUPubNubClient.m in Sources */,
 				31E61C661BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m in Sources */,
 				319179DE1C6A0A2D008E21CA /* PNStateListener.m in Sources */,
 				31917A581C6A0A2D008E21CA /* PNTimeParser.m in Sources */,

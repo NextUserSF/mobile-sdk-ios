@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NUPubNubManager : NSObject
+typedef void(^MessageReceivedBlock)(id message);
+
+@interface NUPubNubClient : NSObject
 
 @end
