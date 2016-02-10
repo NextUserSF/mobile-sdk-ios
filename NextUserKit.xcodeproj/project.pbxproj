@@ -71,6 +71,8 @@
 		318BFF6E1BECF8A400B2AA2A /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 318BFF5B1BECF8A400B2AA2A /* AFURLSessionManager.m */; };
 		318BFF741BECFE4D00B2AA2A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318BFF731BECFE4D00B2AA2A /* SystemConfiguration.framework */; };
 		318BFF761BECFE5300B2AA2A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318BFF751BECFE5300B2AA2A /* MobileCoreServices.framework */; };
+		31917A6A1C6B6E96008E21CA /* NUPrefetchTrackerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */; };
+		31917A6B1C6B6E96008E21CA /* NUPrefetchTrackerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */; };
 		3198D56D1BF9CC21006E88D1 /* CLIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5521BF9CC21006E88D1 /* CLIColor.h */; };
 		3198D56E1BF9CC21006E88D1 /* CLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5531BF9CC21006E88D1 /* CLIColor.m */; };
 		3198D56F1BF9CC21006E88D1 /* CocoaLumberjack.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */; };
@@ -180,6 +182,8 @@
 		318BFF5B1BECF8A400B2AA2A /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
 		318BFF731BECFE4D00B2AA2A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		318BFF751BECFE5300B2AA2A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPrefetchTrackerClient.h; sourceTree = "<group>"; };
+		31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPrefetchTrackerClient.m; sourceTree = "<group>"; };
 		3198D5521BF9CC21006E88D1 /* CLIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLIColor.h; sourceTree = "<group>"; };
 		3198D5531BF9CC21006E88D1 /* CLIColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLIColor.m; sourceTree = "<group>"; };
 		3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaLumberjack.h; sourceTree = "<group>"; };
@@ -277,6 +281,8 @@
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
+				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
+				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
@@ -532,6 +538,7 @@
 				3198D56D1BF9CC21006E88D1 /* CLIColor.h in Headers */,
 				318BFF5C1BECF8A400B2AA2A /* AFHTTPRequestOperation.h in Headers */,
 				318BFF671BECF8A400B2AA2A /* AFURLConnectionOperation.h in Headers */,
+				31917A6A1C6B6E96008E21CA /* NUPrefetchTrackerClient.h in Headers */,
 				318BFF621BECF8A400B2AA2A /* AFNetworking.h in Headers */,
 				31C0B13C1C19E24D00723558 /* NUPurchase+Tests.h in Headers */,
 				31E61C701BFDD95100AAD12B /* NSString+LGUtils.h in Headers */,
@@ -679,6 +686,7 @@
 				31614FAE1BF3508C00F0535D /* SSKeychainQuery.m in Sources */,
 				319C92411C4CF29E0015F02D /* NSError+NextUser.m in Sources */,
 				318BFF681BECF8A400B2AA2A /* AFURLConnectionOperation.m in Sources */,
+				31917A6B1C6B6E96008E21CA /* NUPrefetchTrackerClient.m in Sources */,
 				318BFF6C1BECF8A400B2AA2A /* AFURLResponseSerialization.m in Sources */,
 				3107FB711C15BCC300AC030B /* NUPurchase.m in Sources */,
 				318BFF5D1BECF8A400B2AA2A /* AFHTTPRequestOperation.m in Sources */,

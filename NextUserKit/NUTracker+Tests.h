@@ -15,9 +15,6 @@
 
 - (NUTrackerSession *)session;
 
-- (NSMutableDictionary *)defaultTrackingParameters:(BOOL)includeUserIdentifier;
-+ (NSString *)trackIdentifierParameterForSession:(NUTrackerSession *)session appendUserIdentifier:(BOOL)appendUserIdentifier;
-
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion;
 - (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion;
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
