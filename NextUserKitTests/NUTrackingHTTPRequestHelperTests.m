@@ -132,7 +132,7 @@
     item.productDescription = @"This is a product description";
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
-    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:2;description:This is a product description";
+    NSString *expectedString = @"Lord%20Of%20The%20Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:2;description:This%20is%20a%20product%20description";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -144,7 +144,7 @@
     item.price = 98.56;
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
-    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1";
+    NSString *expectedString = @"Lord%20Of%20The%20Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -157,7 +157,7 @@
     item.productDescription = @"This is a product description";
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
-    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;quantity:3;description:This is a product description";
+    NSString *expectedString = @"Lord%20Of%20The%20Rings=SKU:2342342223;category:books;quantity:3;description:This%20is%20a%20product%20description";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -170,7 +170,7 @@
     item.price = 98.56;
     
     NSString *generatedString = [NUPurchase serializedPurchaseItemStringWithItem:item];
-    NSString *expectedString = @"Lord Of The Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1;description:This is a product description";
+    NSString *expectedString = @"Lord%20Of%20The%20Rings=SKU:2342342223;category:books;price:98_dot_56;quantity:1;description:This%20is%20a%20product%20description";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -217,7 +217,7 @@
     details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
-    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
+    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:%24;incomplete:1;method:MasterCard;affiliation:Don%27t%20know%20about%20this;state:Croatia;city:Pozega;zip:34000";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -237,7 +237,7 @@
     details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
-    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;city:Pozega;zip:34000";
+    NSString *expectedString = @"_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:%24;incomplete:1;method:MasterCard;affiliation:Don%27t%20know%20about%20this;city:Pozega;zip:34000";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -257,7 +257,7 @@
     details.zip = @"34000";
     
     NSString *generatedString = [NUPurchase serializedPurchaseDetailsStringWithDetails:details];
-    NSString *expectedString = @"_=discount:38_dot_36;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
+    NSString *expectedString = @"_=discount:38_dot_36;tax:3_dot_87;currency:%24;incomplete:1;method:MasterCard;affiliation:Don%27t%20know%20about%20this;state:Croatia;city:Pozega;zip:34000";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -295,7 +295,7 @@
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2] details:details];
     
     NSString *generatedString = [purchase httpRequestParameterRepresentation];
-    NSString *expectedString = @"45.65,Lord Of The Rings=SKU:234523333344;category:Science Fiction;price:99_dot_23;quantity:7;description:A long book about rings,Game Of Thrones=SKU:25678675874;category:Science Fiction;price:77_dot_23;quantity:6;description:A long book about dragons,_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:$;incomplete:1;method:MasterCard;affiliation:Don't know about this;state:Croatia;city:Pozega;zip:34000";
+    NSString *expectedString = @"45.65,Lord%20Of%20The%20Rings=SKU:234523333344;category:Science%20Fiction;price:99_dot_23;quantity:7;description:A%20long%20book%20about%20rings,Game%20Of%20Thrones=SKU:25678675874;category:Science%20Fiction;price:77_dot_23;quantity:6;description:A%20long%20book%20about%20dragons,_=discount:38_dot_36;shipping:15_dot_56;tax:3_dot_87;currency:%24;incomplete:1;method:MasterCard;affiliation:Don%27t%20know%20about%20this;state:Croatia;city:Pozega;zip:34000";
 
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -319,7 +319,7 @@
     NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:amount items:@[item1, item2]];
     
     NSString *generatedString = [purchase httpRequestParameterRepresentation];
-    NSString *expectedString = @"45.65,Lord Of The Rings=SKU:234523333344;category:Science Fiction;price:99_dot_23;quantity:7;description:A long book about rings,Game Of Thrones=SKU:25678675874;category:Science Fiction;price:77_dot_23;quantity:6;description:A long book about dragons";
+    NSString *expectedString = @"45.65,Lord%20Of%20The%20Rings=SKU:234523333344;category:Science%20Fiction;price:99_dot_23;quantity:7;description:A%20long%20book%20about%20rings,Game%20Of%20Thrones=SKU:25678675874;category:Science%20Fiction;price:77_dot_23;quantity:6;description:A%20long%20book%20about%20dragons";
     
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
