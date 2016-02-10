@@ -182,6 +182,7 @@ static NUTracker *instance = nil;
 
 + (void)releaseSharedInstance
 {
+    [DDLog removeAllLoggers];
     [instance.session clearSerializedDeviceCookie];
     instance = nil;
 }
