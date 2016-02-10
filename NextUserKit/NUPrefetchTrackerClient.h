@@ -14,7 +14,11 @@
 
 @interface NUPrefetchTrackerClient : NSObject
 
+#pragma mark - Factory
+
 + (instancetype)clientWithSession:(NUTrackerSession *)session;
+
+#pragma mark -
 
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion;
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
@@ -22,6 +26,7 @@
 
 - (void)refreshPendingRequests;
 
+#pragma mark - Utils
 
 + (NSMutableDictionary *)defaultTrackingParametersForSession:(NUTrackerSession *)session
                                        includeUserIdentifier:(BOOL)includeUserIdentifier;
