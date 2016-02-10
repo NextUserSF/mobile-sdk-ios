@@ -605,13 +605,13 @@
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
+				31917A641C6A0A40008E21CA /* NUPubNubManager.h */,
+				31917A651C6A0A40008E21CA /* NUPubNubManager.m */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
 				31F2752B1BF9FC9B00D0D755 /* Logger */,
 				31F2752D1BFA056400D0D755 /* TestsCategory */,
-				31917A641C6A0A40008E21CA /* NUPubNubManager.h */,
-				31917A651C6A0A40008E21CA /* NUPubNubManager.m */,
 			);
 			name = Private;
 			sourceTree = "<group>";
