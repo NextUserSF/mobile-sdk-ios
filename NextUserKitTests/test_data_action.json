@@ -39,7 +39,7 @@
         "param_10": ""
     },
     "no_params_special_character_name": {
-        "name": "action 'with characters,'&?;:",
+        "name": "no_params_special_character_name-action 'with characters,'&?;:",
         "param_1": "",
         "param_2": "",
         "param_3": "",
