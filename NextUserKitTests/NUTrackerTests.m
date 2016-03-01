@@ -12,6 +12,7 @@
 #import "NUTracker+Tests.h"
 #import "NUTestDefinitions.h"
 #import "NUTrackerSession.h"
+#import "NUPrefetchTrackerClient.h"
 
 @interface NUTrackerTests : XCTestCase
 
@@ -184,7 +185,7 @@
     NSString *userIdentifier = @"dummyUsername";
     [tracker identifyUserWithIdentifier:userIdentifier];
     
-    NSString *generatedString = [NUTracker trackIdentifierParameterForSession:session appendUserIdentifier:YES];
+    NSString *generatedString = [NUPrefetchTrackerClient trackIdentifierParameterForSession:session appendUserIdentifier:YES];
     NSString *expectedString = [NSString stringWithFormat:@"%@+%@", session.trackIdentifier, session.userIdentifier];
     XCTAssert([generatedString isEqualToString:expectedString]);
     
@@ -199,7 +200,7 @@
     
     [tracker identifyUserWithIdentifier:nil];
     
-    NSString *generatedString = [NUTracker trackIdentifierParameterForSession:session appendUserIdentifier:YES];
+    NSString *generatedString = [NUPrefetchTrackerClient trackIdentifierParameterForSession:session appendUserIdentifier:YES];
     NSString *expectedString = session.trackIdentifier;
     XCTAssert([generatedString isEqualToString:expectedString]);
 }
@@ -213,7 +214,8 @@
     
     [tracker identifyUserWithIdentifier:@"dummyUsername"];
     
-    __block NSDictionary *requestParameters = [tracker defaultTrackingParameters:!session.userIdentifierRegistered];
+    __block NSDictionary *requestParameters = [NUPrefetchTrackerClient defaultTrackingParametersForSession:session
+                                                                                     includeUserIdentifier:!session.userIdentifierRegistered];
     __block NSString *generatedTid = requestParameters[@"tid"];
     __block NSString *expectedTid = [NSString stringWithFormat:@"%@+%@", session.trackIdentifier, session.userIdentifier];
     
@@ -227,7 +229,8 @@
                 
                 // all good for the first step
                 // now, check how parameters will be generated for the next request (which must not send user identifier with 'tid' parameter)
-                requestParameters = [tracker defaultTrackingParameters:!session.userIdentifierRegistered];
+                requestParameters = [NUPrefetchTrackerClient defaultTrackingParametersForSession:session
+                                                                           includeUserIdentifier:!session.userIdentifierRegistered];
                 generatedTid = requestParameters[@"tid"];
                 expectedTid = session.trackIdentifier;
                 

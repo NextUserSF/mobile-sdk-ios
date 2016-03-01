@@ -235,6 +235,8 @@
 		31917A631C6A0A2D008E21CA /* PubNub.h in Headers */ = {isa = PBXBuildFile; fileRef = 319179C11C6A0A2D008E21CA /* PubNub.h */; };
 		31917A661C6A0A40008E21CA /* NUPubNubClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31917A641C6A0A40008E21CA /* NUPubNubClient.h */; };
 		31917A671C6A0A40008E21CA /* NUPubNubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A651C6A0A40008E21CA /* NUPubNubClient.m */; };
+		31917A6A1C6B6E96008E21CA /* NUPrefetchTrackerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */; };
+		31917A6B1C6B6E96008E21CA /* NUPrefetchTrackerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */; };
 		3198D56D1BF9CC21006E88D1 /* CLIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5521BF9CC21006E88D1 /* CLIColor.h */; };
 		3198D56E1BF9CC21006E88D1 /* CLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3198D5531BF9CC21006E88D1 /* CLIColor.m */; };
 		3198D56F1BF9CC21006E88D1 /* CocoaLumberjack.h in Headers */ = {isa = PBXBuildFile; fileRef = 3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */; };
@@ -508,6 +510,8 @@
 		319179C11C6A0A2D008E21CA /* PubNub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PubNub.h; sourceTree = "<group>"; };
 		31917A641C6A0A40008E21CA /* NUPubNubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPubNubClient.h; sourceTree = "<group>"; };
 		31917A651C6A0A40008E21CA /* NUPubNubClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPubNubClient.m; sourceTree = "<group>"; };
+		31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPrefetchTrackerClient.h; sourceTree = "<group>"; };
+		31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPrefetchTrackerClient.m; sourceTree = "<group>"; };
 		3198D5521BF9CC21006E88D1 /* CLIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLIColor.h; sourceTree = "<group>"; };
 		3198D5531BF9CC21006E88D1 /* CLIColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLIColor.m; sourceTree = "<group>"; };
 		3198D5541BF9CC21006E88D1 /* CocoaLumberjack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaLumberjack.h; sourceTree = "<group>"; };
@@ -607,6 +611,8 @@
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
 				31917A641C6A0A40008E21CA /* NUPubNubClient.h */,
 				31917A651C6A0A40008E21CA /* NUPubNubClient.m */,
+				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
+				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
@@ -1209,6 +1215,7 @@
 				3198D56D1BF9CC21006E88D1 /* CLIColor.h in Headers */,
 				318BFF5C1BECF8A400B2AA2A /* AFHTTPRequestOperation.h in Headers */,
 				318BFF671BECF8A400B2AA2A /* AFURLConnectionOperation.h in Headers */,
+				31917A6A1C6B6E96008E21CA /* NUPrefetchTrackerClient.h in Headers */,
 				318BFF621BECF8A400B2AA2A /* AFNetworking.h in Headers */,
 				31917A0D1C6A0A2D008E21CA /* PNStatus+Private.h in Headers */,
 				319179E11C6A0A2D008E21CA /* PNAES.h in Headers */,
@@ -1379,6 +1386,7 @@
 				318BFF681BECF8A400B2AA2A /* AFURLConnectionOperation.m in Sources */,
 				319179DA1C6A0A2D008E21CA /* PNClientState.m in Sources */,
 				319179E21C6A0A2D008E21CA /* PNAES.m in Sources */,
+				31917A6B1C6B6E96008E21CA /* NUPrefetchTrackerClient.m in Sources */,
 				318BFF6C1BECF8A400B2AA2A /* AFURLResponseSerialization.m in Sources */,
 				31917A441C6A0A2D008E21CA /* PNErrorParser.m in Sources */,
 				3107FB711C15BCC300AC030B /* NUPurchase.m in Sources */,
