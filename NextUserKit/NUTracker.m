@@ -9,6 +9,8 @@
 #import "NUTracker.h"
 #import "NUTrackerSession.h"
 #import "NUPrefetchTrackerClient.h"
+#import "NUPushMessageServiceFactory.h"
+
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUHTTPRequestUtils.h"
 #import "NUTracker+Tests.h"
@@ -19,7 +21,8 @@
 @interface NUTracker ()
 
 @property (nonatomic) NUTrackerSession *session;
-@property (nonatomic) NUPrefetchTrackerClient *prefetchTrackerClient;
+@property (nonatomic) NUPrefetchTrackerClient *prefetchClient;
+@property (nonatomic) NUPushMessageService *pushMessageService;
 
 @end
 
@@ -45,7 +48,8 @@ static NUTracker *instance = nil;
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
         
         _session = [[NUTrackerSession alloc] init];
-        _prefetchTrackerClient = [NUPrefetchTrackerClient clientWithSession:_session];
+        _prefetchClient = [NUPrefetchTrackerClient clientWithSession:_session];
+//        _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
         
         self.logLevel = NULogLevelWarning;
     }
@@ -75,7 +79,7 @@ static NUTracker *instance = nil;
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     
                     DDLogVerbose(@"Session startup finished, pop pending track request");
-                    [_prefetchTrackerClient refreshPendingRequests];
+                    [_prefetchClient refreshPendingRequests];
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");
@@ -146,7 +150,7 @@ static NUTracker *instance = nil;
 - (void)trackScreenWithName:(NSString *)screenName
 {
     DDLogInfo(@"Track screen with name: %@", screenName);
-    [self trackScreenWithName:screenName completion:NULL];
+    [_prefetchClient trackScreenWithName:screenName completion:NULL];
 }
 
 #pragma mark - Track Action
@@ -154,13 +158,13 @@ static NUTracker *instance = nil;
 - (void)trackAction:(NUAction *)action
 {
     DDLogInfo(@"Track action: %@", action);
-    [self trackAction:action completion:NULL];
+    [_prefetchClient trackActions:@[action] completion:NULL];
 }
 
 - (void)trackActions:(NSArray *)actions
 {
     DDLogInfo(@"Track actions: %@", actions);
-    [self trackActions:actions completion:NULL];
+    [_prefetchClient trackActions:actions completion:NULL];
 }
 
 #pragma mark - Track Purchase
@@ -168,13 +172,13 @@ static NUTracker *instance = nil;
 - (void)trackPurchase:(NUPurchase *)purchase
 {
     DDLogInfo(@"Track purchase: %@", purchase);
-    [self trackPurchase:purchase completion:NULL];
+    [_prefetchClient trackPurchases:@[purchase] completion:NULL];
 }
 
 - (void)trackPurchases:(NSArray *)purchases
 {
     DDLogInfo(@"Track purchases: %@", purchases);
-    [self trackPurchases:purchases completion:NULL];
+    [_prefetchClient trackPurchases:purchases completion:NULL];
 }
 
 #pragma mark - Tracker + Tests Category
@@ -184,31 +188,6 @@ static NUTracker *instance = nil;
     [DDLog removeAllLoggers];
     [instance.session clearSerializedDeviceCookie];
     instance = nil;
-}
-
-- (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion
-{
-    [_prefetchTrackerClient trackScreenWithName:screenName completion:completion];
-}
-
-- (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion
-{
-    [self trackActions:@[action] completion:completion];
-}
-
-- (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion
-{
-    [_prefetchTrackerClient trackActions:actions completion:completion];
-}
-
-- (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion
-{
-    [self trackPurchases:@[purchase] completion:completion];
-}
-
-- (void)trackPurchases:(NSArray *)purchases completion:(void(^)(NSError *error))completion
-{
-    [_prefetchTrackerClient trackPurchases:purchases completion:completion];
 }
 
 @end

@@ -31,6 +31,11 @@
 		312029CC1BF22E8B00B7CCC6 /* NUTrackerSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */; };
 		312029CD1BF22E8B00B7CCC6 /* NUTrackerSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */; };
 		312029CE1BF2300C00B7CCC6 /* NUTrackerSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */; };
+		313628AB1C85DD6500198551 /* NUPushMessageServiceFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 313628A91C85DD6500198551 /* NUPushMessageServiceFactory.h */; };
+		313628AC1C85DD6500198551 /* NUPushMessageServiceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */; };
+		313628B01C85DED400198551 /* NUPushMessageService.h in Headers */ = {isa = PBXBuildFile; fileRef = 313628AE1C85DED400198551 /* NUPushMessageService.h */; };
+		313628B11C85DED400198551 /* NUPushMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 313628AF1C85DED400198551 /* NUPushMessageService.m */; };
+		313628B31C87050300198551 /* NUPrefetchTrackerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */; };
 		31614FA91BF3508C00F0535D /* SSKeychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 31614FA21BF3508C00F0535D /* SSKeychain.strings */; };
 		31614FAB1BF3508C00F0535D /* SSKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 31614FA51BF3508C00F0535D /* SSKeychain.h */; };
 		31614FAC1BF3508C00F0535D /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FA61BF3508C00F0535D /* SSKeychain.m */; };
@@ -303,6 +308,10 @@
 		312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerTests.m; sourceTree = "<group>"; };
 		312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackerSession.h; sourceTree = "<group>"; };
 		312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerSession.m; sourceTree = "<group>"; };
+		313628A91C85DD6500198551 /* NUPushMessageServiceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPushMessageServiceFactory.h; sourceTree = "<group>"; };
+		313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessageServiceFactory.m; sourceTree = "<group>"; };
+		313628AE1C85DED400198551 /* NUPushMessageService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPushMessageService.h; sourceTree = "<group>"; };
+		313628AF1C85DED400198551 /* NUPushMessageService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessageService.m; sourceTree = "<group>"; };
 		315A63FB1C032D1B00ADB2DD /* NUTestDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NUTestDefinitions.h; sourceTree = "<group>"; };
 		31614FA31BF3508C00F0535D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SSKeychain.strings; sourceTree = "<group>"; };
 		31614FA51BF3508C00F0535D /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
@@ -609,10 +618,9 @@
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
-				31917A641C6A0A40008E21CA /* NUPubNubClient.h */,
-				31917A651C6A0A40008E21CA /* NUPubNubClient.m */,
 				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
 				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
+				313628A81C85DB4500198551 /* Push Message Service */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
 				31F2752C1BFA044000D0D755 /* ServerAPI */,
@@ -620,6 +628,27 @@
 				31F2752D1BFA056400D0D755 /* TestsCategory */,
 			);
 			name = Private;
+			sourceTree = "<group>";
+		};
+		313628A81C85DB4500198551 /* Push Message Service */ = {
+			isa = PBXGroup;
+			children = (
+				313628A91C85DD6500198551 /* NUPushMessageServiceFactory.h */,
+				313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */,
+				313628AE1C85DED400198551 /* NUPushMessageService.h */,
+				313628AF1C85DED400198551 /* NUPushMessageService.m */,
+				313628B21C85E49700198551 /* Implementation */,
+			);
+			name = "Push Message Service";
+			sourceTree = "<group>";
+		};
+		313628B21C85E49700198551 /* Implementation */ = {
+			isa = PBXGroup;
+			children = (
+				31917A641C6A0A40008E21CA /* NUPubNubClient.h */,
+				31917A651C6A0A40008E21CA /* NUPubNubClient.m */,
+			);
+			name = Implementation;
 			sourceTree = "<group>";
 		};
 		31614FA11BF3508C00F0535D /* SSKeychain */ = {
@@ -1120,6 +1149,7 @@
 				31C0B1301C19DCEC00723558 /* NUPurchase+Serialization.h in Headers */,
 				31917A471C6A0A2D008E21CA /* PNHistoryParser.h in Headers */,
 				319179C91C6A0A2D008E21CA /* PubNub+FAB.h in Headers */,
+				313628B01C85DED400198551 /* NUPushMessageService.h in Headers */,
 				31917A381C6A0A2D008E21CA /* PNErrorCodes.h in Headers */,
 				319179D61C6A0A2D008E21CA /* PubNub+SubscribePrivate.h in Headers */,
 				319179EA1C6A0A2D008E21CA /* PNAcknowledgmentStatus.h in Headers */,
@@ -1233,6 +1263,7 @@
 				31917A591C6A0A2D008E21CA /* PNNetwork.h in Headers */,
 				31917A2E1C6A0A2D008E21CA /* PNURLRequest.h in Headers */,
 				319179C81C6A0A2D008E21CA /* PubNub+CorePrivate.h in Headers */,
+				313628AB1C85DD6500198551 /* NUPushMessageServiceFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1416,6 +1447,7 @@
 				3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */,
 				31917A4C1C6A0A2D008E21CA /* PNMessagePublishParser.m in Sources */,
 				319179D81C6A0A2D008E21CA /* PubNub+Time.m in Sources */,
+				313628B11C85DED400198551 /* NUPushMessageService.m in Sources */,
 				319179E71C6A0A2D008E21CA /* PNConfiguration.m in Sources */,
 				319179F51C6A0A2D008E21CA /* PNChannelGroupsResult.m in Sources */,
 				31917A5A1C6A0A2D008E21CA /* PNNetwork.m in Sources */,
@@ -1437,6 +1469,7 @@
 				31E61C661BFDCD9500AAD12B /* NUObjectPropertyStatusUtils.m in Sources */,
 				319179DE1C6A0A2D008E21CA /* PNStateListener.m in Sources */,
 				31917A581C6A0A2D008E21CA /* PNTimeParser.m in Sources */,
+				313628AC1C85DD6500198551 /* NUPushMessageServiceFactory.m in Sources */,
 				319179ED1C6A0A2D008E21CA /* PNAPNSEnabledChannelsResult.m in Sources */,
 				31917A311C6A0A2D008E21CA /* PNLog.m in Sources */,
 				318BFF6E1BECF8A400B2AA2A /* AFURLSessionManager.m in Sources */,
@@ -1482,6 +1515,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				313628B31C87050300198551 /* NUPrefetchTrackerClient.m in Sources */,
 				31E61C6D1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m in Sources */,
 				31614FBE1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m in Sources */,
 				3107FB7C1C17362500AC030B /* NUTrackerQueueTests.m in Sources */,

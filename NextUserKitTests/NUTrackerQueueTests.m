@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import <NextUserKit/NextUserKit.h>
+#import "NUPrefetchTrackerClient.h"
 #import "NUTestDefinitions.h"
 #import "NUTracker+Tests.h"
 
@@ -38,7 +39,9 @@
     }];
     
     NUAction *action = [NUAction actionWithName:@"action name"];
-    [tracker trackAction:action completion:^(NSError *error) {
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackActions:@[action] completion:^(NSError *error) {
         NSLog(@"Send track request finish");
         
         XCTAssert(error == nil);
@@ -58,13 +61,15 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
     
     [tracker startSessionWithTrackIdentifier:kTestTrackIdentifier completion:^(NSError *error) {
     }];
     
     __block NSUInteger requestsCount = 2;
     NUAction *action = [NUAction actionWithName:@"action name"];
-    [tracker trackAction:action completion:^(NSError *error) {
+
+    [prefetchClient trackActions:@[action] completion:^(NSError *error) {
         requestsCount--;
         if (requestsCount == 0) {
             XCTAssert(error == nil);
@@ -74,7 +79,7 @@
     }];
     
     NUAction *action2 = [NUAction actionWithName:@"action name 2"];
-    [tracker trackAction:action2 completion:^(NSError *error) {
+    [prefetchClient trackActions:@[action2] completion:^(NSError *error) {
         requestsCount--;
         if (requestsCount == 0) {
             XCTAssert(error == nil);
@@ -95,12 +100,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
     
     NSLog(@"Start session");
     [tracker startSessionWithTrackIdentifier:kTestTrackIdentifier];
     
     NUAction *action = [NUAction actionWithName:@"action name"];
-    [tracker trackAction:action completion:^(NSError *error) {
+    [prefetchClient trackActions:@[action] completion:^(NSError *error) {
         NSLog(@"Send track request finish");
         
         XCTAssert(error == nil);
@@ -120,9 +126,10 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - session setup"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
     
     NUAction *action = [NUAction actionWithName:@"action name"];
-    [tracker trackAction:action completion:^(NSError *error) {
+    [prefetchClient trackActions:@[action] completion:^(NSError *error) {
         NSLog(@"Send track request finish. Error: %@", error);
         
         XCTAssert(error != nil);

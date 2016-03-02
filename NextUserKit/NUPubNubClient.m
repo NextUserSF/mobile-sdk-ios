@@ -17,31 +17,66 @@
 
 @implementation NUPubNubClient
 
-#pragma mark - Factory
-
-+ (instancetype)clientWithPublishKey:(NSString *)publishKey
-                        subscribeKey:(NSString *)subscribeKey
+- (id)initWithSession:(NUTrackerSession *)session
 {
-    return [[NUPubNubClient alloc] initWithPublishKey:publishKey subscribeKey:subscribeKey];
-}
-
-- (instancetype)initWithPublishKey:(NSString *)publishKey subscribeKey:(NSString *)subscribeKey
-{
-    if (self = [super init]) {
+    if (self = [super initWithSession:session]) {
+        
+        NSString *publishKey = nil;
+        NSString *subscribeKey = nil;
         PNConfiguration *configuration = [PNConfiguration configurationWithPublishKey:publishKey
                                                                          subscribeKey:subscribeKey];
         self.client = [PubNub clientWithConfiguration:configuration];
+        [self.client addListener:self];
+
+        
+//        PNChannel *channel = [PNChannel channelWithName:@"demo_tutorial"];
+
     }
     
     return self;
 }
 
-#pragma mark - Public API
+#pragma mark - Override (Subclass category)
+
+- (void)startListening
+{
+    [self subscribeToChannel:nil];
+}
+
+- (void)stopListening
+{
+    [self unsubscribeFromChannel:nil];
+}
+
+- (void)fetchMissedMessages
+{
+    [self.client historyForChannel: @"my_channel" start:nil end:nil limit:100
+                    withCompletion:^(PNHistoryResult *result, PNErrorStatus *status) {
+                        
+                        // Check whether request successfully completed or not.
+                        if (!status.isError) {
+                            
+                            // Handle downloaded history using:
+                            //   result.data.start - oldest message time stamp in response
+                            //   result.data.end - newest message time stamp in response
+                            //   result.data.messages - list of messages
+                        }
+                        // Request processing failed.
+                        else {
+                            
+                            // Handle message history download error. Check 'category' property to find
+                            // out possible issue because of which request did fail.
+                            //
+                            // Request can be resent using: [status retry];
+                        }
+                    }];
+}
+
+#pragma mark - Private API
 
 - (void)subscribeToChannel:(NSString *)channel
 {
-    [self.client addListener:self];
-    [self.client subscribeToChannels: @[channel] withPresence:YES];
+    [self.client subscribeToChannels: @[channel] withPresence:NO];
 }
 
 - (void)unsubscribeFromChannel:(NSString *)channel
@@ -132,7 +167,6 @@
         // Handle messsage decryption error. Probably client configured to
         // encrypt messages and on live data feed it received plain text.
     }
-    
 }
 
 @end

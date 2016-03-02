@@ -211,6 +211,7 @@
     
     NUTracker *tracker = [NUTracker sharedTracker];
     NUTrackerSession *session = [tracker session];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
     
     [tracker identifyUserWithIdentifier:@"dummyUsername"];
     
@@ -222,7 +223,7 @@
     // on first request after setting user identifier, we want to send user identifier with 'tid' parameter
     XCTAssert([generatedTid isEqualToString:expectedTid]);
     
-    [tracker trackScreenWithName:@"testScreenName" completion:^(NSError *error) {
+    [prefetchClient trackScreenWithName:@"testScreenName" completion:^(NSError *error) {
         if (error == nil) {
             
             if (session.userIdentifierRegistered) {
@@ -267,7 +268,9 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - screen test"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackScreenWithName:screenName completion:^(NSError *error) {
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackScreenWithName:screenName completion:^(NSError *error) {
         XCTAssert(error == nil);
         [expectation fulfill];
     }];
@@ -298,11 +301,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackAction:action
-              completion:^(NSError *error) {
-                  XCTAssert(error == nil);
-                  [expectation fulfill];
-              }];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackActions:@[action]
+                      completion:^(NSError *error) {
+                          XCTAssert(error == nil);
+                          [expectation fulfill];
+                      }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
@@ -316,11 +321,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Action start expectation"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackActions:actions
-               completion:^(NSError *error) {
-                   XCTAssert(error == nil);
-                   [expectation fulfill];
-               }];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackActions:actions
+                      completion:^(NSError *error) {
+                          XCTAssert(error == nil);
+                          [expectation fulfill];
+                      }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
@@ -375,11 +382,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackPurchase:purchase
-                completion:^(NSError *error) {
-                    XCTAssert(error == nil);
-                    [expectation fulfill];
-                }];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackPurchases:@[purchase]
+                        completion:^(NSError *error) {
+                            XCTAssert(error == nil);
+                            [expectation fulfill];
+                        }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {
@@ -393,11 +402,13 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"Start expectation - purchase"];
     
     NUTracker *tracker = [NUTracker sharedTracker];
-    [tracker trackPurchases:purchases
-                 completion:^(NSError *error) {
-                     XCTAssert(error == nil);
-                     [expectation fulfill];
-                 }];
+    NUPrefetchTrackerClient *prefetchClient = [tracker prefetchClient];
+
+    [prefetchClient trackPurchases:purchases
+                        completion:^(NSError *error) {
+                            XCTAssert(error == nil);
+                            [expectation fulfill];
+                        }];
     
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         if (error) {

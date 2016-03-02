@@ -6,10 +6,8 @@
 //  Copyright © 2016 NextUser. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "NUPushMessageService.h"
 
-typedef void(^MessageReceivedBlock)(id message);
-
-@interface NUPubNubClient : NSObject
+@interface NUPubNubClient : NUPushMessageService
 
 @end

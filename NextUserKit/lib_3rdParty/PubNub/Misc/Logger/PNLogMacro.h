@@ -6,7 +6,7 @@
  @since 4.0
  @copyright © 2009-2015 PubNub, Inc.
  */
-#import <CocoaLumberjack/CocoaLumberjack.h>
+#import "CocoaLumberjack.h"
 
 #pragma once
 

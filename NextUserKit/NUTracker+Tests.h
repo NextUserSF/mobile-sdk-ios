@@ -8,17 +8,13 @@
 
 #import <NextUserKit/NextUserKit.h>
 @class NUTrackerSession;
+@class NUPrefetchTrackerClient;
 
 @interface NUTracker (Tests)
 
 + (void)releaseSharedInstance;
 
 - (NUTrackerSession *)session;
-
-- (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion;
-- (void)trackAction:(NUAction *)action completion:(void(^)(NSError *error))completion;
-- (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
-- (void)trackPurchase:(NUPurchase *)purchase completion:(void(^)(NSError *error))completion;
-- (void)trackPurchases:(NSArray *)purchases completion:(void(^)(NSError *error))completion;
+- (NUPrefetchTrackerClient *)prefetchClient;
 
 @end
