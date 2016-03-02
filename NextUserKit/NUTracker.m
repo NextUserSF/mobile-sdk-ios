@@ -145,7 +145,7 @@ static NUTracker *instance = nil;
     return _session.userIdentifier;
 }
 
-#pragma mark - Track Screen
+#pragma mark - Tracking
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
@@ -153,7 +153,7 @@ static NUTracker *instance = nil;
     [_prefetchClient trackScreenWithName:screenName completion:NULL];
 }
 
-#pragma mark - Track Action
+#pragma mark -
 
 - (void)trackAction:(NUAction *)action
 {
@@ -167,7 +167,7 @@ static NUTracker *instance = nil;
     [_prefetchClient trackActions:actions completion:NULL];
 }
 
-#pragma mark - Track Purchase
+#pragma mark -
 
 - (void)trackPurchase:(NUPurchase *)purchase
 {
