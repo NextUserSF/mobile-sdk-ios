@@ -30,5 +30,6 @@ didWakeUpAppInBackgroundWithTaskCompletion:(void(^)())completion;
 - (void)stop;
 
 + (BOOL)isAppInBackground;
++ (BOOL)appWakeUpAvailable;
 
 @end

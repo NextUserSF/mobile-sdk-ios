@@ -7,6 +7,7 @@
 //
 
 #import "NUAppWakeUpManager.h"
+#import "NUDDLog.h"
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
@@ -41,11 +42,8 @@
                                                  selector:@selector(applicationDidFinishLaunchingNotification:)
                                                      name:UIApplicationDidFinishLaunchingNotification
                                                    object:nil];
-        
-//        [CLLocationManager significantLocationChangeMonitoringAvailable];
 //        NSURL *settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 //        [[UIApplication sharedApplication] openURL:settingsURL];
-
     }
     
     return self;
@@ -67,12 +65,12 @@
 {
     NSAssert([self.class isAppInBackground], @"Must be in background to start app wake up manager.");
     
-    if ([self.class isAppInBackground] && [self.class areLocationServicesEnabled]) {
+    if ([self.class isAppInBackground] && [self.class areLocationServicesEnabled] && [self.class appWakeUpAvailable]) {
         if (!_isRunning) {
             [self doStart];
         }
     } else {
-        NSLog(@"Wakeup manager can start only when app is in background and location services are enabled");
+        DDLogWarn(@"Wakeup manager can start only when app is in background and location services are enabled");
     }
 }
 
@@ -83,11 +81,21 @@
     }
 }
 
++ (BOOL)isAppInBackground
+{
+    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
+}
+
++ (BOOL)appWakeUpAvailable
+{
+    return [CLLocationManager significantLocationChangeMonitoringAvailable];
+}
+
 #pragma mark - Private
 
 - (void)doStart
 {
-    NSLog(@"Start monitoring significant location changes");
+    DDLogInfo(@"Start monitoring significant location changes");
     _isRunning = YES;
     [self serializeIsRunning];
     [_locationManager startMonitoringSignificantLocationChanges];
@@ -95,7 +103,7 @@
 
 - (void)doStop
 {
-    NSLog(@"Stop monitoring significant location changes");
+    DDLogInfo(@"Stop monitoring significant location changes");
     _isRunning = NO;
     [self serializeIsRunning];
     [_locationManager stopMonitoringSignificantLocationChanges];
@@ -115,11 +123,6 @@
 }
 
 #pragma mark -
-
-+ (BOOL)isAppInBackground
-{
-    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
-}
 
 - (void)requestLocationUsageAuthorization
 {
@@ -152,7 +155,7 @@
 - (void)startBackgroundTask
 {
     if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
-        NSLog(@"Start background task");
+        DDLogInfo(@"Start background task");
         _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
@@ -162,7 +165,7 @@
 - (void)stopBackgroundTask
 {
     if (_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
-        NSLog(@"Stop background task");
+        DDLogInfo(@"Stop background task");
         [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
         _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
     }
@@ -178,7 +181,7 @@
             [self stopBackgroundTask];
         }];
     } else {
-        NSLog(@"not in background, will not notify");
+        DDLogWarn(@"App not in background, will not notify wake-up delegate");
     }
 }
 
@@ -186,7 +189,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
-    NSLog(@"Location manager did update locations. Remaining time in background: %@",
+    DDLogInfo(@"Location manager did update locations. Remaining time in background: %@",
           @([[UIApplication sharedApplication] backgroundTimeRemaining]));
     
     [self notifyDelegateOnWakeUp];
@@ -194,14 +197,14 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"Location manager did fail. Stop location services. Error: %@", error);
+    DDLogError(@"Location manager did fail. Stop location services. Error: %@", error);
     
     [self doStop];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-    NSLog(@"Location manager did change authorization status: %@ (Enabled: %@). WAM running: %@",
+    DDLogInfo(@"Location manager did change authorization status: %@ (Enabled: %@). WAM running: %@",
           @(status), @([self.class areLocationServicesEnabled]), @(_isRunning));
     
     if ([self shouldStartLocationServicesOnAuthorizationChange]) {
