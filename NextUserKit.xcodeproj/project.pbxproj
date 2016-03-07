@@ -36,6 +36,8 @@
 		313628B01C85DED400198551 /* NUPushMessageService.h in Headers */ = {isa = PBXBuildFile; fileRef = 313628AE1C85DED400198551 /* NUPushMessageService.h */; };
 		313628B11C85DED400198551 /* NUPushMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 313628AF1C85DED400198551 /* NUPushMessageService.m */; };
 		313628B31C87050300198551 /* NUPrefetchTrackerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */; };
+		313628B61C8717F300198551 /* NUAppWakeUpManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 313628B41C8717F300198551 /* NUAppWakeUpManager.h */; };
+		313628B71C8717F300198551 /* NUAppWakeUpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 313628B51C8717F300198551 /* NUAppWakeUpManager.m */; };
 		31614FA91BF3508C00F0535D /* SSKeychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 31614FA21BF3508C00F0535D /* SSKeychain.strings */; };
 		31614FAB1BF3508C00F0535D /* SSKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 31614FA51BF3508C00F0535D /* SSKeychain.h */; };
 		31614FAC1BF3508C00F0535D /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 31614FA61BF3508C00F0535D /* SSKeychain.m */; };
@@ -312,6 +314,8 @@
 		313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessageServiceFactory.m; sourceTree = "<group>"; };
 		313628AE1C85DED400198551 /* NUPushMessageService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPushMessageService.h; sourceTree = "<group>"; };
 		313628AF1C85DED400198551 /* NUPushMessageService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessageService.m; sourceTree = "<group>"; };
+		313628B41C8717F300198551 /* NUAppWakeUpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUAppWakeUpManager.h; sourceTree = "<group>"; };
+		313628B51C8717F300198551 /* NUAppWakeUpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUAppWakeUpManager.m; sourceTree = "<group>"; };
 		315A63FB1C032D1B00ADB2DD /* NUTestDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NUTestDefinitions.h; sourceTree = "<group>"; };
 		31614FA31BF3508C00F0535D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SSKeychain.strings; sourceTree = "<group>"; };
 		31614FA51BF3508C00F0535D /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
@@ -620,6 +624,8 @@
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
 				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
 				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
+				313628B41C8717F300198551 /* NUAppWakeUpManager.h */,
+				313628B51C8717F300198551 /* NUAppWakeUpManager.m */,
 				313628A81C85DB4500198551 /* Push Message Service */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
@@ -1213,6 +1219,7 @@
 				3198D5851BF9CC21006E88D1 /* DDMultiFormatter.h in Headers */,
 				31917A661C6A0A40008E21CA /* NUPubNubClient.h in Headers */,
 				31917A321C6A0A2D008E21CA /* PNLogFileManager.h in Headers */,
+				313628B61C8717F300198551 /* NUAppWakeUpManager.h in Headers */,
 				31917A391C6A0A2D008E21CA /* PNPrivateStructures.h in Headers */,
 				31614FAB1BF3508C00F0535D /* SSKeychain.h in Headers */,
 				31917A081C6A0A2D008E21CA /* PNResult.h in Headers */,
@@ -1428,6 +1435,7 @@
 				31917A601C6A0A2D008E21CA /* PNRequestParameters.m in Sources */,
 				319179E41C6A0A2D008E21CA /* PNClientInformation.m in Sources */,
 				3198D5761BF9CC21006E88D1 /* DDASLLogger.m in Sources */,
+				313628B71C8717F300198551 /* NUAppWakeUpManager.m in Sources */,
 				319179FE1C6A0A2D008E21CA /* PNPresenceChannelGroupHereNowResult.m in Sources */,
 				31917A351C6A0A2D008E21CA /* PNLogger.m in Sources */,
 				318BFF461BECF6AA00B2AA2A /* NUTracker.m in Sources */,
@@ -1647,12 +1655,13 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = NextUserKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextuser.NextUserKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1667,12 +1676,13 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				INFOPLIST_FILE = NextUserKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextuser.NextUserKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

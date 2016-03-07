@@ -63,11 +63,6 @@
 
 #pragma mark - Track Generic
 
-- (BOOL)isSessionValid
-{
-    return [self.class isValidSession:_session];
-}
-
 - (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
                             completion:(void(^)(NSError *error))completion
 {
@@ -79,7 +74,7 @@
         
         [self addPostponedTrackRequestWithTrackParameters:trackParameters completion:completion];
         
-    } else if ([self isSessionValid]) {
+    } else if ([_session isValid]) {
         
         NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
         NSMutableDictionary *parameters = [self.class defaultTrackingParametersForSession:_session
@@ -125,7 +120,7 @@
 
 - (BOOL)shouldPostponeTrackRequest
 {
-    return ![self isSessionValid] && _session.startupRequestInProgress;
+    return ![_session isValid] && _session.startupRequestInProgress;
 }
 
 - (void)addPostponedTrackRequestWithTrackParameters:(NSDictionary *)trackParameters completion:(void(^)(NSError *error))completion
@@ -155,18 +150,11 @@
 
 #pragma mark - Utils
 
-+ (BOOL)isValidSession:(NUTrackerSession *)session
-{
-    return ![NSString isEmptyString:session.deviceCookie] &&
-    ![NSString isEmptyString:session.sessionCookie] &&
-    ![NSString isEmptyString:session.trackIdentifier];
-}
-
 + (NSMutableDictionary *)defaultTrackingParametersForSession:(NUTrackerSession *)session
                                        includeUserIdentifier:(BOOL)includeUserIdentifier
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    if ([self isValidSession:session]) {
+    if ([session isValid]) {
         parameters[@"nutm_s"] = [self deviceCookieParameterForSession:session];
         parameters[@"nutm_sc"] = session.sessionCookie;
         parameters[@"tid"] = [self trackIdentifierParameterForSession:session appendUserIdentifier:includeUserIdentifier];
@@ -193,7 +181,7 @@
 
 + (BOOL)isUserIdentifierValidForSession:(NUTrackerSession *)session
 {
-    return ![NSString isEmptyString:session.userIdentifier];
+    return ![NSString lg_isEmptyString:session.userIdentifier];
 }
 
 @end

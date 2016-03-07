@@ -59,7 +59,7 @@
     return length;
 }
 
-+ (BOOL)isEmptyString:(NSString *)input
++ (BOOL)lg_isEmptyString:(NSString *)input
 {
     return input == nil || input.length == 0;
 }

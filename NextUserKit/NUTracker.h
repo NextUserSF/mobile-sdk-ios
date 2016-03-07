@@ -48,6 +48,8 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *
  * Before you can track any events, you need to start tracking session. Do this by calling one of two
  * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
+ * It is important to initialize sharedTracker tracker in application:didFinishLaunchingWithOptions:
+ *
  */
 @interface NUTracker : NSObject
 

@@ -30,6 +30,8 @@
 
         
 //        PNChannel *channel = [PNChannel channelWithName:@"demo_tutorial"];
+        
+        [PNLog enabled:YES];
 
     }
     
@@ -167,6 +169,11 @@
         // Handle messsage decryption error. Probably client configured to
         // encrypt messages and on live data feed it received plain text.
     }
+}
+
+- (void)client:(PubNub *)client didReceivePresenceEvent:(PNPresenceEventResult *)event
+{
+    
 }
 
 @end

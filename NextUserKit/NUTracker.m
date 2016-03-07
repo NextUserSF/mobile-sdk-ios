@@ -10,19 +10,20 @@
 #import "NUTrackerSession.h"
 #import "NUPrefetchTrackerClient.h"
 #import "NUPushMessageServiceFactory.h"
+#import "NUAppWakeUpManager.h"
 
-#import "NUTrackingHTTPRequestHelper.h"
-#import "NUHTTPRequestUtils.h"
-#import "NUTracker+Tests.h"
-#import "NSString+LGUtils.h"
-#import "NUDDLog.h"
 #import "NSError+NextUser.h"
+#import "NUDDLog.h"
 
-@interface NUTracker ()
+#import "NUTracker+Tests.h"
+
+
+@interface NUTracker () <NUAppWakeUpManagerDelegate>
 
 @property (nonatomic) NUTrackerSession *session;
 @property (nonatomic) NUPrefetchTrackerClient *prefetchClient;
 @property (nonatomic) NUPushMessageService *pushMessageService;
+@property (nonatomic) NUAppWakeUpManager *wakeUpManager;
 
 @end
 
@@ -30,7 +31,7 @@
 
 #pragma mark - Public API
 
-static NUTracker *instance = nil;
+static NUTracker *instance;
 + (NUTracker *)sharedTracker
 {
     if (instance == nil) {
@@ -50,11 +51,80 @@ static NUTracker *instance = nil;
         _session = [[NUTrackerSession alloc] init];
         _prefetchClient = [NUPrefetchTrackerClient clientWithSession:_session];
 //        _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
+        _wakeUpManager = [NUAppWakeUpManager manager];
+        _wakeUpManager.delegate = self;
+        
+        
+        //register local notifications
+        if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
+        }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidBecomeActiveNotification:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackgroundNotification:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillTerminateNotification:)
+                                                     name:UIApplicationWillTerminateNotification
+                                                   object:nil];
         
         self.logLevel = NULogLevelWarning;
     }
     
     return self;
+}
+
+#pragma mark - Application State Notifications
+
+- (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
+{
+    NSLog(@"Application did enter background");
+    if (_session.isValid) {
+        [_wakeUpManager start];
+    }
+}
+
+- (void)applicationWillTerminateNotification:(NSNotification *)notification
+{
+    NSLog(@"Application will terminate");
+    if (_session.isValid) {
+        [_wakeUpManager start];
+    }}
+
+- (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
+{
+    NSLog(@"Application did become active");
+    [_wakeUpManager stop];
+}
+
+#pragma mark - App Wake Up Manager
+
+- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)())completion
+{
+    // fetch missed messages (history)
+    // schedule local notes
+    // call completion
+    
+    NSLog(@"Did wake up application");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSString *text = [NSString stringWithFormat:@"AS: %@, BG time: %@", @([[UIApplication sharedApplication] applicationState]), @([[UIApplication sharedApplication] backgroundTimeRemaining])];
+        
+        UILocalNotification *note = [[UILocalNotification alloc] init];
+        note.timeZone = [NSTimeZone defaultTimeZone];
+        note.alertBody = text;
+        note.fireDate = [NSDate dateWithTimeIntervalSinceNow:5];
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:note];
+        
+        completion();
+    });
 }
 
 #pragma mark - Initialization

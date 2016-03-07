@@ -17,6 +17,9 @@
 @property (nonatomic) NSString *userIdentifier; // username, email or something else
 @property (nonatomic) BOOL userIdentifierRegistered;
 
+@property (nonatomic, readonly) BOOL isValid;
+
+
 // property serialization
 - (NSString *)serializedDeviceCookie;
 - (void)clearSerializedDeviceCookie;
