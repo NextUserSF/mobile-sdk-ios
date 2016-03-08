@@ -65,9 +65,11 @@
 {
     NSAssert([self.class isAppInBackground], @"Must be in background to start app wake up manager.");
     
-    if ([self.class isAppInBackground] && [self.class areLocationServicesEnabled] && [self.class appWakeUpAvailable]) {
+    if ([self.class canStartMonitoringSignificanLocationChanges]) {
         if (!_isRunning) {
             [self doStart];
+        } else {
+            DDLogWarn(@"Already monitoring location changes");
         }
     } else {
         DDLogWarn(@"Wakeup manager can start only when app is in background and location services are enabled");
@@ -78,6 +80,8 @@
 {
     if (_isRunning) {
         [self doStop];
+    } else {
+        DDLogWarn(@"Location changes monitoring already stopped.");
     }
 }
 
@@ -145,9 +149,9 @@
     return enabled;
 }
 
-- (BOOL)shouldStartLocationServicesOnAuthorizationChange
++ (BOOL)canStartMonitoringSignificanLocationChanges
 {
-    return _isRunning && [self.class areLocationServicesEnabled] && [self.class isAppInBackground];
+    return [self.class appWakeUpAvailable] && [self.class areLocationServicesEnabled] && [self.class isAppInBackground];
 }
 
 #pragma mark - Background Task
@@ -207,7 +211,7 @@
     DDLogInfo(@"Location manager did change authorization status: %@ (Enabled: %@). WAM running: %@",
           @(status), @([self.class areLocationServicesEnabled]), @(_isRunning));
     
-    if ([self shouldStartLocationServicesOnAuthorizationChange]) {
+    if (_isRunning && [self.class canStartMonitoringSignificanLocationChanges]) {
         [_locationManager startMonitoringSignificantLocationChanges];
     }
 }
