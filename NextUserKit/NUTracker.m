@@ -23,7 +23,9 @@
 @property (nonatomic) NUTrackerSession *session;
 @property (nonatomic) NUPrefetchTrackerClient *prefetchClient;
 @property (nonatomic) NUPushMessageService *pushMessageService;
+
 @property (nonatomic) NUAppWakeUpManager *wakeUpManager;
+@property (nonatomic) BOOL subscribedToAppStatusNotifications;
 
 @end
 
@@ -50,15 +52,40 @@ static NUTracker *instance;
         
         _session = [[NUTrackerSession alloc] init];
         _prefetchClient = [NUPrefetchTrackerClient clientWithSession:_session];
-//        _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
+        
+        // create app wake up manager (importat to create it in tracker initializer since
+        // wake up manager listens for app finished launching notification)
         _wakeUpManager = [NUAppWakeUpManager manager];
         _wakeUpManager.delegate = self;
         
-        
-        //register local notifications
-        if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
-            [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
-        }
+        self.logLevel = NULogLevelWarning;
+    }
+    
+    return self;
+}
+
+- (void)dealloc
+{
+    [self unsubscribeFromAppStateNotifications];
+}
+
+#pragma mark - User Permissions
+
+- (void)requestLocalNotificationsPermissions
+{
+    // register local notifications
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }
+}
+
+#pragma mark - App State Subscribe/Unsubscribe
+
+- (void)subscribeToAppStateNotificationsOnce
+{
+    if (!_subscribedToAppStatusNotifications) {
+        _subscribedToAppStatusNotifications = YES;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidBecomeActiveNotification:)
@@ -74,11 +101,16 @@ static NUTracker *instance;
                                                  selector:@selector(applicationWillTerminateNotification:)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
-        
-        self.logLevel = NULogLevelWarning;
     }
-    
-    return self;
+}
+
+- (void)unsubscribeFromAppStateNotifications
+{
+    if (_subscribedToAppStatusNotifications) {
+        _subscribedToAppStatusNotifications = NO;
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
 }
 
 #pragma mark - Application State Notifications
@@ -148,8 +180,22 @@ static NUTracker *instance;
             if (error == nil) {
                 if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
                     
-                    DDLogVerbose(@"Session startup finished, pop pending track request");
+                    DDLogVerbose(@"Session startup finished, setup tracker");
+                    
+                    // send queued events
                     [_prefetchClient refreshPendingRequests];
+                    
+                    // create push message service
+                    if (_pushMessageService != nil) {
+                        [_pushMessageService stopListening];
+                    }
+//                    _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
+                    
+                    // without this, local notes will not work
+                    [self requestLocalNotificationsPermissions];
+                    
+                    // subscribe to app state notifications
+                    [self subscribeToAppStateNotificationsOnce];
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");

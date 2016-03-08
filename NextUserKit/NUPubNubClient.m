@@ -42,12 +42,18 @@
 
 - (void)startListening
 {
-    [self subscribeToChannel:nil];
+    NSString *publicChannel = @"";
+    NSString *privateChannel = @"";
+    
+    [self.client subscribeToChannels:@[publicChannel, privateChannel] withPresence:NO];
 }
 
 - (void)stopListening
 {
-    [self unsubscribeFromChannel:nil];
+    NSString *publicChannel = @"";
+    NSString *privateChannel = @"";
+    
+    [self.client unsubscribeFromChannels: @[publicChannel, privateChannel] withPresence:NO];
 }
 
 - (void)fetchMissedMessages
@@ -72,18 +78,6 @@
                             // Request can be resent using: [status retry];
                         }
                     }];
-}
-
-#pragma mark - Private API
-
-- (void)subscribeToChannel:(NSString *)channel
-{
-    [self.client subscribeToChannels: @[channel] withPresence:NO];
-}
-
-- (void)unsubscribeFromChannel:(NSString *)channel
-{
-    [self.client unsubscribeFromChannels: @[channel] withPresence:NO];
 }
 
 #pragma mark - Object Event Listener

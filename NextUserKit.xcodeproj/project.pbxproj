@@ -51,6 +51,7 @@
 		316438E51BFC7D1D0092E067 /* NUPurchaseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E31BFC7D1D0092E067 /* NUPurchaseItem.m */; };
 		316438E81BFC7DF80092E067 /* NUPurchaseDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = 316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		316438E91BFC7DF80092E067 /* NUPurchaseDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 316438E71BFC7DF80092E067 /* NUPurchaseDetails.m */; };
+		31706BFF1C8EE27600364BCD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31706BFE1C8EE27600364BCD /* CoreLocation.framework */; };
 		31799FE61C52513D0081AB20 /* test_data_action.json in Resources */ = {isa = PBXBuildFile; fileRef = 31799FE51C52513D0081AB20 /* test_data_action.json */; };
 		31799FE81C525CDE0081AB20 /* test_data_purchase.json in Resources */ = {isa = PBXBuildFile; fileRef = 31799FE71C525CDE0081AB20 /* test_data_purchase.json */; };
 		318BFF261BECF49B00B2AA2A /* NextUserKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 318BFF251BECF49B00B2AA2A /* NextUserKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -329,6 +330,7 @@
 		316438E31BFC7D1D0092E067 /* NUPurchaseItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchaseItem.m; sourceTree = "<group>"; };
 		316438E61BFC7DF80092E067 /* NUPurchaseDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPurchaseDetails.h; sourceTree = "<group>"; };
 		316438E71BFC7DF80092E067 /* NUPurchaseDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPurchaseDetails.m; sourceTree = "<group>"; };
+		31706BFE1C8EE27600364BCD /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		31799FE51C52513D0081AB20 /* test_data_action.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_data_action.json; sourceTree = "<group>"; };
 		31799FE71C525CDE0081AB20 /* test_data_purchase.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_data_purchase.json; sourceTree = "<group>"; };
 		318BFF221BECF49B00B2AA2A /* NextUserKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NextUserKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -583,6 +585,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31706BFF1C8EE27600364BCD /* CoreLocation.framework in Frameworks */,
 				318BFF761BECFE5300B2AA2A /* MobileCoreServices.framework in Frameworks */,
 				318BFF741BECFE4D00B2AA2A /* SystemConfiguration.framework in Frameworks */,
 				318BFF2D1BECF49B00B2AA2A /* NextUserKit.framework in Frameworks */,
@@ -711,6 +714,7 @@
 				31614FBD1BF3880500F0535D /* NUTrackingHTTPRequestHelperTests.m */,
 				31E61C6C1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m */,
 				318BFF331BECF49B00B2AA2A /* Info.plist */,
+				31706BFE1C8EE27600364BCD /* CoreLocation.framework */,
 				318BFF751BECFE5300B2AA2A /* MobileCoreServices.framework */,
 				318BFF731BECFE4D00B2AA2A /* SystemConfiguration.framework */,
 			);

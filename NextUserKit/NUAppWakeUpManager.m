@@ -35,13 +35,13 @@
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
-        [self deserializeIsRunning];
         [self requestLocationUsageAuthorization];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidFinishLaunchingNotification:)
                                                      name:UIApplicationDidFinishLaunchingNotification
                                                    object:nil];
+        
 //        NSURL *settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 //        [[UIApplication sharedApplication] openURL:settingsURL];
     }
@@ -53,7 +53,7 @@
 
 - (void)applicationDidFinishLaunchingNotification:(NSNotification *)notification
 {
-    if (notification.userInfo[UIApplicationLaunchOptionsLocationKey] && _isRunning && [self.class isAppInBackground]) {
+    if (notification.userInfo[UIApplicationLaunchOptionsLocationKey] && [self deserializeIsRunning] && [self.class isAppInBackground]) {
         // our significant location change did wake up app
         [self notifyDelegateOnWakeUp];
     }
@@ -121,9 +121,9 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)deserializeIsRunning
+- (BOOL)deserializeIsRunning
 {
-    _isRunning = [[NSUserDefaults standardUserDefaults] boolForKey:@"com.nextuser.wakeupmanager.isrunning"];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"com.nextuser.wakeupmanager.isrunning"];
 }
 
 #pragma mark -
