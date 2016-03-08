@@ -18,7 +18,7 @@
 #import "NUTracker+Tests.h"
 
 
-@interface NUTracker () <NUAppWakeUpManagerDelegate>
+@interface NUTracker () <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
 
 @property (nonatomic) NUTrackerSession *session;
 @property (nonatomic) NUPrefetchTrackerClient *prefetchClient;
@@ -138,7 +138,7 @@ static NUTracker *instance;
     }
 }
 
-#pragma mark - App Wake Up Manager
+#pragma mark - App Wake Up Manager Delegate
 
 - (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)())completion
 {
@@ -161,15 +161,23 @@ static NUTracker *instance;
     });
 }
 
+#pragma mark - Push Message Service Delegate
+
+- (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
+{
+    NSLog(@"Received push messages. %@", messages);
+}
+
 #pragma mark - Push Messages Service Connect/Disconnect
 
-- (void)connectPushMessagesService
+- (void)connectPushMessageService
 {
     // connect push service
     if (_pushMessageService != nil) {
         [_pushMessageService stopListening];
     }
     _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
+    _pushMessageService.delegate = self;
     [_pushMessageService startListening];
     
     [self subscribeToAppStateNotificationsOnce];
@@ -178,7 +186,7 @@ static NUTracker *instance;
     [self requestLocalNotificationsPermissions];
 }
 
-- (void)disconnectPushMessagesService
+- (void)disconnectPushMessageService
 {
     // disconnect push service
     if (_pushMessageService != nil) {
@@ -216,9 +224,9 @@ static NUTracker *instance;
                     [_prefetchClient refreshPendingRequests];
                     
                     if (_session.shouldListenForPushMessages) {
-                        [self connectPushMessagesService];
+                        [self connectPushMessageService];
                     } else {
-                        [self disconnectPushMessagesService];
+                        [self disconnectPushMessageService];
                     }
                     
                 } else {

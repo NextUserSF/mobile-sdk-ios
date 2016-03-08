@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @class NUTrackerSession;
+@class NUPushMessageService;
 
 @protocol NUPushMessageServiceDelegate <NSObject>
 
-- (void)messagesReceived:(NSArray *)messages;
+- (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages;
 
 @end
 
