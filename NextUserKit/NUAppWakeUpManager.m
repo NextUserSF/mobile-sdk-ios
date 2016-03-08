@@ -53,7 +53,7 @@
 
 - (void)applicationDidFinishLaunchingNotification:(NSNotification *)notification
 {
-    if (notification.userInfo[UIApplicationLaunchOptionsLocationKey] && _isRunning) {
+    if (notification.userInfo[UIApplicationLaunchOptionsLocationKey] && _isRunning && [self.class isAppInBackground]) {
         // our significant location change did wake up app
         [self notifyDelegateOnWakeUp];
     }
@@ -196,7 +196,9 @@
     DDLogInfo(@"Location manager did update locations. Remaining time in background: %@",
           @([[UIApplication sharedApplication] backgroundTimeRemaining]));
     
-    [self notifyDelegateOnWakeUp];
+    if ([self.class isAppInBackground]) {
+        [self notifyDelegateOnWakeUp];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
