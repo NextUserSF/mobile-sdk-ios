@@ -27,12 +27,8 @@
                                                                          subscribeKey:subscribeKey];
         self.client = [PubNub clientWithConfiguration:configuration];
         [self.client addListener:self];
-
-        
-//        PNChannel *channel = [PNChannel channelWithName:@"demo_tutorial"];
         
         [PNLog enabled:YES];
-
     }
     
     return self;
@@ -58,7 +54,7 @@
 
 - (void)fetchMissedMessages
 {
-    [self.client historyForChannel: @"my_channel" start:nil end:nil limit:100
+    [self.client historyForChannel:@"my_channel" start:nil end:nil limit:100
                     withCompletion:^(PNHistoryResult *result, PNErrorStatus *status) {
                         
                         // Check whether request successfully completed or not.
