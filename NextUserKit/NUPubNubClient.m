@@ -21,12 +21,12 @@
 {
     if (self = [super initWithSession:session]) {
         
-        NSString *publishKey = nil;
-        NSString *subscribeKey = nil;
-        PNConfiguration *configuration = [PNConfiguration configurationWithPublishKey:publishKey
-                                                                         subscribeKey:subscribeKey];
-        self.client = [PubNub clientWithConfiguration:configuration];
-        [self.client addListener:self];
+//        NSString *publishKey = nil;
+//        NSString *subscribeKey = nil;
+//        PNConfiguration *configuration = [PNConfiguration configurationWithPublishKey:publishKey
+//                                                                         subscribeKey:subscribeKey];
+//        self.client = [PubNub clientWithConfiguration:configuration];
+//        [self.client addListener:self];
         
         [PNLog enabled:YES];
     }

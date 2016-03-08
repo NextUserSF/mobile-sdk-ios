@@ -118,7 +118,7 @@ static NUTracker *instance;
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
     NSLog(@"Application did enter background");
-    if (_session.isValid) {
+    if (_session.shouldListenForPushMessages) {
         [_wakeUpManager start];
     }
 }
@@ -126,14 +126,16 @@ static NUTracker *instance;
 - (void)applicationWillTerminateNotification:(NSNotification *)notification
 {
     NSLog(@"Application will terminate");
-    if (_session.isValid) {
+    if (_session.shouldListenForPushMessages) {
         [_wakeUpManager start];
     }}
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
     NSLog(@"Application did become active");
-    [_wakeUpManager stop];
+    if (_session.shouldListenForPushMessages) {
+        [_wakeUpManager stop];
+    }
 }
 
 #pragma mark - App Wake Up Manager
@@ -157,6 +159,34 @@ static NUTracker *instance;
         
         completion();
     });
+}
+
+#pragma mark - Push Messages Service Connect/Disconnect
+
+- (void)connectPushMessagesService
+{
+    // connect push service
+    if (_pushMessageService != nil) {
+        [_pushMessageService stopListening];
+    }
+    _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
+    [_pushMessageService startListening];
+    
+    [self subscribeToAppStateNotificationsOnce];
+    
+    // without this, local notes will not work
+    [self requestLocalNotificationsPermissions];
+}
+
+- (void)disconnectPushMessagesService
+{
+    // disconnect push service
+    if (_pushMessageService != nil) {
+        [_pushMessageService stopListening];
+    }
+    _pushMessageService = nil;
+    
+    [self unsubscribeFromAppStateNotifications];
 }
 
 #pragma mark - Initialization
@@ -185,17 +215,11 @@ static NUTracker *instance;
                     // send queued events
                     [_prefetchClient refreshPendingRequests];
                     
-                    // create push message service
-                    if (_pushMessageService != nil) {
-                        [_pushMessageService stopListening];
+                    if (_session.shouldListenForPushMessages) {
+                        [self connectPushMessagesService];
+                    } else {
+                        [self disconnectPushMessagesService];
                     }
-//                    _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
-                    
-                    // without this, local notes will not work
-                    [self requestLocalNotificationsPermissions];
-                    
-                    // subscribe to app state notifications
-                    [self subscribeToAppStateNotificationsOnce];
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");

@@ -66,6 +66,8 @@
                                                 _deviceCookie = responseObject[kDeviceCookieJSONKey];
                                                 _sessionCookie = responseObject[kSessionCookieJSONKey];
                                                 
+                                                _shouldListenForPushMessages = YES;
+                                                
                                                 // save new device cookie only if one does not already exists
                                                 if (currentDeviceCookie == nil && _deviceCookie != nil) {
                                                     [self serializeDeviceCookie:_deviceCookie];
