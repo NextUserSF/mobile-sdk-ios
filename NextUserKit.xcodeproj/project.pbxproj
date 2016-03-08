@@ -622,14 +622,11 @@
 				319C923F1C4CF29E0015F02D /* NSError+NextUser.m */,
 				312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */,
 				312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */,
-				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
-				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
-				313628B41C8717F300198551 /* NUAppWakeUpManager.h */,
-				313628B51C8717F300198551 /* NUAppWakeUpManager.m */,
+				31FFAF351C8ED90700C2E68E /* Prefetch Tracker Client */,
+				31FFAF341C8ED8FD00C2E68E /* App Wake Up Manager */,
 				313628A81C85DB4500198551 /* Push Message Service */,
 				31C0B12D1C19DCC900723558 /* Model Serialization Protocol */,
 				31E61C721BFDDA2D00AAD12B /* Utils */,
-				31F2752C1BFA044000D0D755 /* ServerAPI */,
 				31F2752B1BF9FC9B00D0D755 /* Logger */,
 				31F2752D1BFA056400D0D755 /* TestsCategory */,
 			);
@@ -1120,6 +1117,25 @@
 				31C0B13A1C19E24D00723558 /* NUPurchase+Tests.h */,
 			);
 			name = TestsCategory;
+			sourceTree = "<group>";
+		};
+		31FFAF341C8ED8FD00C2E68E /* App Wake Up Manager */ = {
+			isa = PBXGroup;
+			children = (
+				313628B41C8717F300198551 /* NUAppWakeUpManager.h */,
+				313628B51C8717F300198551 /* NUAppWakeUpManager.m */,
+			);
+			name = "App Wake Up Manager";
+			sourceTree = "<group>";
+		};
+		31FFAF351C8ED90700C2E68E /* Prefetch Tracker Client */ = {
+			isa = PBXGroup;
+			children = (
+				31F2752C1BFA044000D0D755 /* ServerAPI */,
+				31917A681C6B6E96008E21CA /* NUPrefetchTrackerClient.h */,
+				31917A691C6B6E96008E21CA /* NUPrefetchTrackerClient.m */,
+			);
+			name = "Prefetch Tracker Client";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
