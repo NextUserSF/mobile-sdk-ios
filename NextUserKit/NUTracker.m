@@ -117,23 +117,24 @@ static NUTracker *instance;
 
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
-    NSLog(@"Application did enter background");
     if (_session.shouldListenForPushMessages) {
+        DDLogInfo(@"Application did enter background, start app wake up manager");
         [_wakeUpManager start];
     }
 }
 
 - (void)applicationWillTerminateNotification:(NSNotification *)notification
 {
-    NSLog(@"Application will terminate");
     if (_session.shouldListenForPushMessages) {
+        DDLogInfo(@"Application will terminate, start app wake up manager");
         [_wakeUpManager start];
-    }}
+    }
+}
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
-    NSLog(@"Application did become active");
     if (_session.shouldListenForPushMessages) {
+        DDLogInfo(@"Application did become active, stop app wake up manager");
         [_wakeUpManager stop];
     }
 }
