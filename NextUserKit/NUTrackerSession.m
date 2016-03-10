@@ -91,13 +91,9 @@
 
 - (BOOL)isValid
 {
-//    return ![NSString lg_isEmptyString:_deviceCookie] &&
-//    ![NSString lg_isEmptyString:_sessionCookie] &&
-//    ![NSString lg_isEmptyString:_trackIdentifier];
-    // refactor to use above category calls. problems with linking category in static library (-all_load "OtherLinkerFlags")
-    return _deviceCookie != nil && _deviceCookie.length > 0
-    && _sessionCookie != nil && _sessionCookie.length > 0
-    && _trackIdentifier != nil && _trackIdentifier.length > 0;
+    return ![NSString lg_isEmptyString:_deviceCookie] &&
+    ![NSString lg_isEmptyString:_sessionCookie] &&
+    ![NSString lg_isEmptyString:_trackIdentifier];
 }
 
 #pragma mark - Private API
