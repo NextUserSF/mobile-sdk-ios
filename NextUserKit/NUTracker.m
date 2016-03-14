@@ -11,6 +11,8 @@
 #import "NUPrefetchTrackerClient.h"
 #import "NUPushMessageServiceFactory.h"
 #import "NUAppWakeUpManager.h"
+#import "NUPushMessage.h"
+#import "NUInAppMessageManager.h"
 
 #import "NSError+NextUser.h"
 #import "NUDDLog.h"
@@ -167,6 +169,10 @@ static NUTracker *instance;
 - (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
 {
     NSLog(@"Received push messages. %@", messages);
+    if (messages.count > 0) {
+        NUPushMessage *message = messages.firstObject;
+        [[NUInAppMessageManager sharedManager] showPushMessageAsInAppMessage:message];
+    }
 }
 
 #pragma mark - Push Messages Service Connect/Disconnect

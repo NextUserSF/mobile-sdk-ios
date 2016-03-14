@@ -16,3 +16,4 @@ FOUNDATION_EXPORT const unsigned char NextUserKitVersionString[];
 #import <NextUserKit/NUPurchase.h>
 #import <NextUserKit/NUPurchaseItem.h>
 #import <NextUserKit/NUPurchaseDetails.h>
+#import <NextUserKit/NUErrorDefinitions.h>

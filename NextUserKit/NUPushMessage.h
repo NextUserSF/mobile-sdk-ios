@@ -10,4 +10,6 @@
 
 @interface NUPushMessage : NSObject
 
+@property (nonatomic) NSString *messageText;
+
 @end

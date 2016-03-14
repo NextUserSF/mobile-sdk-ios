@@ -9,9 +9,9 @@
 /**
  *  NextUser default error domain.
  */
-NSString * const NUNextUserErrorDomain;
+extern NSString * const NUNextUserErrorDomain;
 
 /**
  *  NextUser general error code.
  */
-NSInteger const NUNextUserErrorCodeGeneral;
+extern NSInteger const NUNextUserErrorCodeGeneral;
