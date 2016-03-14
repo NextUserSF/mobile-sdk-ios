@@ -230,11 +230,11 @@ static NUTracker *instance;
                     // send queued events
                     [_prefetchClient refreshPendingRequests];
                     
-                    if (_session.shouldListenForPushMessages) {
-                        [self connectPushMessageService];
-                    } else {
-                        [self disconnectPushMessageService];
-                    }
+//                    if (_session.shouldListenForPushMessages) {
+//                        [self connectPushMessageService];
+//                    } else {
+//                        [self disconnectPushMessageService];
+//                    }
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");
