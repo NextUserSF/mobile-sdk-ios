@@ -17,12 +17,9 @@
 #define kIAMNotificationViewHeight 75
 #define kIAMNotificationViewCornerRadius 5
 
-#define kIAMContentViewSideInset 15
-
 @interface NUInAppMessageManager () <NUIAMNotificationViewDelegate, NUIAMContentViewDelegate>
 
 @property (nonatomic) NUIAMNotificationView *notificationView;
-@property (nonatomic) UIView *contentViewPlaceholder;
 @property (nonatomic) NUIAMContentView *contentView;
 
 @property (nonatomic) NSTimer *notificationViewDismissTimer;
@@ -81,23 +78,11 @@
         maskLayer.path = maskPath.CGPath;
         notificationView.layer.mask = maskLayer;
         
-        // 5. create IAM content view placeholder
-        UIView *contentViewPlaceholder = [[UIView alloc] initWithFrame:parentView.bounds];
-        
-        // 6. calculate IAM content view frame
-        CGFloat contentSideInsets = kIAMContentViewSideInset;
-        CGRect contentViewFrame = CGRectMake(contentSideInsets,
-                                             contentSideInsets,
-                                             contentViewPlaceholder.bounds.size.width - 2*contentSideInsets,
-                                             contentViewPlaceholder.bounds.size.height - 2*contentSideInsets);
-        
-        // 7. create IAM content view & add it to its placeholder
-        NUIAMContentView *contentView = [[NUIAMContentView alloc] initWithFrame:contentViewFrame];
+        // 5. create IAM content view
+        NUIAMContentView *contentView = [[NUIAMContentView alloc] initWithFrame:parentView.bounds];
         contentView.delegate = self;
-        [contentViewPlaceholder addSubview:contentView];
         
-        // 8. assign values to ivars
-        _contentViewPlaceholder = contentViewPlaceholder;
+        // 6. assign values to ivars
         _contentView = contentView;
         _notificationView = notificationView;
     }
@@ -140,25 +125,22 @@
     [self initializeIAMViewsOnce];
     
     _notificationView.transform = CGAffineTransformIdentity;
-    _contentViewPlaceholder.transform = CGAffineTransformIdentity;
+    _contentView.transform = CGAffineTransformIdentity;
     
     _notificationView.message = message;
     _contentView.message = message;
     
-    // don't forget to apply theme
-    _contentViewPlaceholder.backgroundColor = message.UITheme.backgroundColor;
-    
     // 2. add views to parent view
     UIView *parentView = [self parentView];
     [parentView addSubview:_notificationView];
-    [parentView addSubview:_contentViewPlaceholder];
+    [parentView addSubview:_contentView];
     
     // 3. hide content view from screen
-    CGRect contentViewPlaceholderFrame = CGRectMake(0,
-                                                    -_contentViewPlaceholder.bounds.size.height,
-                                                    _contentViewPlaceholder.bounds.size.width,
-                                                    _contentViewPlaceholder.bounds.size.height);
-    _contentViewPlaceholder.frame = contentViewPlaceholderFrame;
+    CGRect contentViewFrame = CGRectMake(0,
+                                         -_contentView.bounds.size.height,
+                                         _contentView.bounds.size.width,
+                                         _contentView.bounds.size.height);
+    _contentView.frame = contentViewFrame;
     
     // 4. animate notification view from screen top
     CGFloat xOffset = kIAMNotificationViewSideInset;
@@ -194,10 +176,10 @@
                         options:0
                      animations:^{
                          _notificationView.transform = transform;
-                         _contentViewPlaceholder.transform = transform;
+                         _contentView.transform = transform;
                      } completion:^(BOOL finished) {
                          [_notificationView removeFromSuperview];
-                         [_contentViewPlaceholder removeFromSuperview];
+                         [_contentView removeFromSuperview];
                          completion();
                      }];
 }
@@ -219,7 +201,7 @@
                         options:0
                      animations:^{
                          _notificationView.transform = notificationViewEndTransform;
-                         _contentViewPlaceholder.transform = contentViewEndTransform;
+                         _contentView.transform = contentViewEndTransform;
                      } completion:nil];
 }
 
@@ -233,7 +215,7 @@
                         options:0
                      animations:^{
                          _notificationView.transform = notificationViewEndTransform;
-                         _contentViewPlaceholder.transform = contentViewEndTransform;
+                         _contentView.transform = contentViewEndTransform;
                      } completion:^(BOOL finished) {
                          [self scheduleNotificationDismissTimer];
                      }];
@@ -292,7 +274,7 @@
         {
             CGAffineTransform transform = CGAffineTransformMakeTranslation(0, translation.y);
             _notificationView.transform = transform;
-            _contentViewPlaceholder.transform = transform;
+            _contentView.transform = transform;
         }
             break;
         case UIGestureRecognizerStateCancelled:

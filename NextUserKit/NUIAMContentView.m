@@ -9,6 +9,9 @@
 
 #import "NUIAMContentView.h"
 #import "NUPushMessage.h"
+#import "NUIAMUITheme.h"
+
+#define kIAMContentViewSideInset 15
 
 @interface NUIAMContentView () <UIWebViewDelegate>
 
@@ -26,6 +29,9 @@
         viewFromNib.frame = self.bounds;
         
         [self addSubview:viewFromNib];
+        
+        CGRect webViewFrame = CGRectInset(self.bounds, kIAMContentViewSideInset, kIAMContentViewSideInset);
+        _webView.frame = webViewFrame;
     }
     
     return self;
@@ -50,6 +56,10 @@
 - (void)setMessage:(NUPushMessage *)message
 {
     _message = message;
+    
+    if (message.UITheme.backgroundColor) {
+        self.backgroundColor = message.UITheme.backgroundColor;
+    }
     
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:message.contentURL                                                  cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 30];
     [_webView loadRequest:request];
