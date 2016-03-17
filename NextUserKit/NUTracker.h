@@ -185,3 +185,11 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 - (void)trackPurchases:(NSArray *)purchases;
 
 @end
+
+
+@interface NUTracker (Dev)
+
+- (void)fakePushReceived;
+
+@end
+

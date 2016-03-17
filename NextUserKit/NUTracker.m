@@ -12,6 +12,7 @@
 #import "NUPushMessageServiceFactory.h"
 #import "NUAppWakeUpManager.h"
 #import "NUPushMessage.h"
+#import "NUIAMUITheme.h"
 #import "NUInAppMessageManager.h"
 
 #import "NSError+NextUser.h"
@@ -168,7 +169,6 @@ static NUTracker *instance;
 
 - (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
 {
-    NSLog(@"Received push messages. %@", messages);
     if (messages.count > 0) {
         NUPushMessage *message = messages.firstObject;
         [[NUInAppMessageManager sharedManager] showPushMessageAsInAppMessage:message];
@@ -230,11 +230,11 @@ static NUTracker *instance;
                     // send queued events
                     [_prefetchClient refreshPendingRequests];
                     
-//                    if (_session.shouldListenForPushMessages) {
-//                        [self connectPushMessageService];
-//                    } else {
-//                        [self disconnectPushMessageService];
-//                    }
+                    if (_session.shouldListenForPushMessages) {
+                        [self connectPushMessageService];
+                    } else {
+                        [self disconnectPushMessageService];
+                    }
                     
                 } else {
                     DDLogError(@"Missing cookies in session initialization response");
@@ -343,6 +343,20 @@ static NUTracker *instance;
     [DDLog removeAllLoggers];
     [instance.session clearSerializedDeviceCookie];
     instance = nil;
+}
+
+
+#pragma mark - Dev Category
+
+- (void)fakePushReceived
+{
+    NUPushMessage *message = [[NUPushMessage alloc] init];
+    
+    message.messageText = @"Jednom davno iza to sto plavo je li ti mislis o dnevnom jucer. ";
+    message.contentURL = [NSURL URLWithString:@"http://www.nextuser.com"];
+    message.UITheme = [NUIAMUITheme defautTheme];
+    
+    [self pushMessageService:_pushMessageService didReceiveMessages:@[message]];
 }
 
 @end

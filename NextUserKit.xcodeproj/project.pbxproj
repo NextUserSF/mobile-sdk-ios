@@ -31,7 +31,7 @@
 		312029CC1BF22E8B00B7CCC6 /* NUTrackerSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */; };
 		312029CD1BF22E8B00B7CCC6 /* NUTrackerSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */; };
 		312029CE1BF2300C00B7CCC6 /* NUTrackerSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */; };
-		31302AD21C92CCE700D7AC4C /* NUInAppMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31302ACE1C92B5D600D7AC4C /* NUInAppMessageView.xib */; };
+		31302AD21C92CCE700D7AC4C /* NUIAMNotificationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31302ACE1C92B5D600D7AC4C /* NUIAMNotificationView.xib */; };
 		31302AD51C96D7BC00D7AC4C /* NUErrorDefinitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 319C92421C4D01250015F02D /* NUErrorDefinitions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		313628AB1C85DD6500198551 /* NUPushMessageServiceFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 313628A91C85DD6500198551 /* NUPushMessageServiceFactory.h */; };
 		313628AC1C85DD6500198551 /* NUPushMessageServiceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */; };
@@ -58,8 +58,8 @@
 		31706C051C902F0400364BCD /* NUPushMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 31706C031C902F0400364BCD /* NUPushMessage.m */; };
 		31706C081C90405A00364BCD /* NUInAppMessageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 31706C061C90405A00364BCD /* NUInAppMessageManager.h */; };
 		31706C091C90405A00364BCD /* NUInAppMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31706C071C90405A00364BCD /* NUInAppMessageManager.m */; };
-		31706C111C90421200364BCD /* NUInAppMessageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 31706C0F1C90421200364BCD /* NUInAppMessageView.h */; };
-		31706C121C90421200364BCD /* NUInAppMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31706C101C90421200364BCD /* NUInAppMessageView.m */; };
+		31706C111C90421200364BCD /* NUIAMNotificationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 31706C0F1C90421200364BCD /* NUIAMNotificationView.h */; };
+		31706C121C90421200364BCD /* NUIAMNotificationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31706C101C90421200364BCD /* NUIAMNotificationView.m */; };
 		31799FE61C52513D0081AB20 /* test_data_action.json in Resources */ = {isa = PBXBuildFile; fileRef = 31799FE51C52513D0081AB20 /* test_data_action.json */; };
 		31799FE81C525CDE0081AB20 /* test_data_purchase.json in Resources */ = {isa = PBXBuildFile; fileRef = 31799FE71C525CDE0081AB20 /* test_data_purchase.json */; };
 		318BFF261BECF49B00B2AA2A /* NextUserKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 318BFF251BECF49B00B2AA2A /* NextUserKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -283,6 +283,12 @@
 		319C92401C4CF29E0015F02D /* NSError+NextUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 319C923E1C4CF29E0015F02D /* NSError+NextUser.h */; };
 		319C92411C4CF29E0015F02D /* NSError+NextUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 319C923F1C4CF29E0015F02D /* NSError+NextUser.m */; };
 		319C92431C4D09270015F02D /* NSError+NextUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 319C923F1C4CF29E0015F02D /* NSError+NextUser.m */; };
+		31B78EAF1C996ECA00ACFC76 /* NUIAMContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 31B78EAD1C996ECA00ACFC76 /* NUIAMContentView.h */; };
+		31B78EB01C996ECA00ACFC76 /* NUIAMContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31B78EAE1C996ECA00ACFC76 /* NUIAMContentView.m */; };
+		31B78EB21C999FE000ACFC76 /* NUIAMContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31B78EB11C999FE000ACFC76 /* NUIAMContentView.xib */; };
+		31B78EBA1C9AC48D00ACFC76 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 31B78EB91C9AC48D00ACFC76 /* libz.tbd */; };
+		31B78EBE1C9AC57E00ACFC76 /* NUIAMUITheme.h in Headers */ = {isa = PBXBuildFile; fileRef = 31B78EBC1C9AC57E00ACFC76 /* NUIAMUITheme.h */; };
+		31B78EBF1C9AC57E00ACFC76 /* NUIAMUITheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 31B78EBD1C9AC57E00ACFC76 /* NUIAMUITheme.m */; };
 		31C0B1281C19DC3500723558 /* NUTrackable.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1271C19DC3500723558 /* NUTrackable.h */; };
 		31C0B12B1C19DCB200723558 /* NUAction+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B1291C19DCB200723558 /* NUAction+Serialization.h */; };
 		31C0B1301C19DCEC00723558 /* NUPurchase+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C0B12E1C19DCEC00723558 /* NUPurchase+Serialization.h */; };
@@ -319,7 +325,7 @@
 		312029C81BF2261D00B7CCC6 /* NUTrackerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerTests.m; sourceTree = "<group>"; };
 		312029CA1BF22E8B00B7CCC6 /* NUTrackerSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackerSession.h; sourceTree = "<group>"; };
 		312029CB1BF22E8B00B7CCC6 /* NUTrackerSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUTrackerSession.m; sourceTree = "<group>"; };
-		31302ACE1C92B5D600D7AC4C /* NUInAppMessageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NUInAppMessageView.xib; sourceTree = "<group>"; };
+		31302ACE1C92B5D600D7AC4C /* NUIAMNotificationView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NUIAMNotificationView.xib; sourceTree = "<group>"; };
 		313628A91C85DD6500198551 /* NUPushMessageServiceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPushMessageServiceFactory.h; sourceTree = "<group>"; };
 		313628AA1C85DD6500198551 /* NUPushMessageServiceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessageServiceFactory.m; sourceTree = "<group>"; };
 		313628AE1C85DED400198551 /* NUPushMessageService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUPushMessageService.h; sourceTree = "<group>"; };
@@ -344,8 +350,8 @@
 		31706C031C902F0400364BCD /* NUPushMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUPushMessage.m; sourceTree = "<group>"; };
 		31706C061C90405A00364BCD /* NUInAppMessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUInAppMessageManager.h; sourceTree = "<group>"; };
 		31706C071C90405A00364BCD /* NUInAppMessageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUInAppMessageManager.m; sourceTree = "<group>"; };
-		31706C0F1C90421200364BCD /* NUInAppMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUInAppMessageView.h; sourceTree = "<group>"; };
-		31706C101C90421200364BCD /* NUInAppMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUInAppMessageView.m; sourceTree = "<group>"; };
+		31706C0F1C90421200364BCD /* NUIAMNotificationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUIAMNotificationView.h; sourceTree = "<group>"; };
+		31706C101C90421200364BCD /* NUIAMNotificationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUIAMNotificationView.m; sourceTree = "<group>"; };
 		31799FE51C52513D0081AB20 /* test_data_action.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_data_action.json; sourceTree = "<group>"; };
 		31799FE71C525CDE0081AB20 /* test_data_purchase.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_data_purchase.json; sourceTree = "<group>"; };
 		318BFF221BECF49B00B2AA2A /* NextUserKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NextUserKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -573,6 +579,12 @@
 		319C923E1C4CF29E0015F02D /* NSError+NextUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+NextUser.h"; sourceTree = "<group>"; };
 		319C923F1C4CF29E0015F02D /* NSError+NextUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+NextUser.m"; sourceTree = "<group>"; };
 		319C92421C4D01250015F02D /* NUErrorDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NUErrorDefinitions.h; sourceTree = "<group>"; };
+		31B78EAD1C996ECA00ACFC76 /* NUIAMContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUIAMContentView.h; sourceTree = "<group>"; };
+		31B78EAE1C996ECA00ACFC76 /* NUIAMContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUIAMContentView.m; sourceTree = "<group>"; };
+		31B78EB11C999FE000ACFC76 /* NUIAMContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NUIAMContentView.xib; sourceTree = "<group>"; };
+		31B78EB91C9AC48D00ACFC76 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		31B78EBC1C9AC57E00ACFC76 /* NUIAMUITheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUIAMUITheme.h; sourceTree = "<group>"; };
+		31B78EBD1C9AC57E00ACFC76 /* NUIAMUITheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUIAMUITheme.m; sourceTree = "<group>"; };
 		31BD2B761BF4B36D00EC2DB3 /* AFNetworkingNameMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFNetworkingNameMapper.h; sourceTree = "<group>"; };
 		31C0B1271C19DC3500723558 /* NUTrackable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NUTrackable.h; sourceTree = "<group>"; };
 		31C0B1291C19DCB200723558 /* NUAction+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUAction+Serialization.h"; sourceTree = "<group>"; };
@@ -593,6 +605,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31B78EBA1C9AC48D00ACFC76 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,14 +664,6 @@
 			name = Private;
 			sourceTree = "<group>";
 		};
-		31302AD11C92C34A00D7AC4C /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Resources;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		313628A81C85DB4500198551 /* Push Message Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -708,9 +713,7 @@
 			children = (
 				31706C061C90405A00364BCD /* NUInAppMessageManager.h */,
 				31706C071C90405A00364BCD /* NUInAppMessageManager.m */,
-				31706C0F1C90421200364BCD /* NUInAppMessageView.h */,
-				31706C101C90421200364BCD /* NUInAppMessageView.m */,
-				31302ACE1C92B5D600D7AC4C /* NUInAppMessageView.xib */,
+				31B78EB81C9AC36C00ACFC76 /* IAM UI */,
 			);
 			name = "In App Message";
 			sourceTree = "<group>";
@@ -736,7 +739,6 @@
 		318BFF241BECF49B00B2AA2A /* NextUserKit */ = {
 			isa = PBXGroup;
 			children = (
-				31302AD11C92C34A00D7AC4C /* Resources */,
 				318BFF251BECF49B00B2AA2A /* NextUserKit.h */,
 				318BFF431BECF6AA00B2AA2A /* NUTracker.h */,
 				318BFF441BECF6AA00B2AA2A /* NUTracker.m */,
@@ -744,6 +746,7 @@
 				3107FB651C15B01100AC030B /* Model */,
 				312029C71BF221F200B7CCC6 /* Private */,
 				318BFF471BECF8A400B2AA2A /* lib_3rdParty */,
+				31B78EBB1C9AC49400ACFC76 /* Frameworks */,
 				318BFF271BECF49B00B2AA2A /* Info.plist */,
 			);
 			path = NextUserKit;
@@ -1120,6 +1123,46 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		31B78EB81C9AC36C00ACFC76 /* IAM UI */ = {
+			isa = PBXGroup;
+			children = (
+				31B78EBC1C9AC57E00ACFC76 /* NUIAMUITheme.h */,
+				31B78EBD1C9AC57E00ACFC76 /* NUIAMUITheme.m */,
+				31B78EC01C9AD3E500ACFC76 /* Notification View */,
+				31B78EC11C9AD3F700ACFC76 /* Content View */,
+			);
+			name = "IAM UI";
+			sourceTree = "<group>";
+		};
+		31B78EBB1C9AC49400ACFC76 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				31B78EB91C9AC48D00ACFC76 /* libz.tbd */,
+			);
+			name = Frameworks;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		31B78EC01C9AD3E500ACFC76 /* Notification View */ = {
+			isa = PBXGroup;
+			children = (
+				31706C0F1C90421200364BCD /* NUIAMNotificationView.h */,
+				31706C101C90421200364BCD /* NUIAMNotificationView.m */,
+				31302ACE1C92B5D600D7AC4C /* NUIAMNotificationView.xib */,
+			);
+			name = "Notification View";
+			sourceTree = "<group>";
+		};
+		31B78EC11C9AD3F700ACFC76 /* Content View */ = {
+			isa = PBXGroup;
+			children = (
+				31B78EAD1C996ECA00ACFC76 /* NUIAMContentView.h */,
+				31B78EAE1C996ECA00ACFC76 /* NUIAMContentView.m */,
+				31B78EB11C999FE000ACFC76 /* NUIAMContentView.xib */,
+			);
+			name = "Content View";
+			sourceTree = "<group>";
+		};
 		31C0B12D1C19DCC900723558 /* Model+Trackable */ = {
 			isa = PBXGroup;
 			children = (
@@ -1313,7 +1356,7 @@
 				31917A211C6A0A2D008E21CA /* PNData.h in Headers */,
 				31917A4B1C6A0A2D008E21CA /* PNMessagePublishParser.h in Headers */,
 				31917A101C6A0A2D008E21CA /* PNSubscriberResults.h in Headers */,
-				31706C111C90421200364BCD /* NUInAppMessageView.h in Headers */,
+				31706C111C90421200364BCD /* NUIAMNotificationView.h in Headers */,
 				319179EC1C6A0A2D008E21CA /* PNAPNSEnabledChannelsResult.h in Headers */,
 				3198D56F1BF9CC21006E88D1 /* CocoaLumberjack.h in Headers */,
 				31917A161C6A0A2D008E21CA /* FABAttributes.h in Headers */,
@@ -1327,6 +1370,7 @@
 				318BFF621BECF8A400B2AA2A /* AFNetworking.h in Headers */,
 				31917A0D1C6A0A2D008E21CA /* PNStatus+Private.h in Headers */,
 				319179E11C6A0A2D008E21CA /* PNAES.h in Headers */,
+				31B78EBE1C9AC57E00ACFC76 /* NUIAMUITheme.h in Headers */,
 				31C0B13C1C19E24D00723558 /* NUPurchase+Tests.h in Headers */,
 				31917A3F1C6A0A2D008E21CA /* PNChannelGroupModificationParser.h in Headers */,
 				31917A191C6A0A2D008E21CA /* Fabric.h in Headers */,
@@ -1335,6 +1379,7 @@
 				318BFF651BECF8A400B2AA2A /* AFSecurityPolicy.h in Headers */,
 				31917A431C6A0A2D008E21CA /* PNErrorParser.h in Headers */,
 				31917A171C6A0A2D008E21CA /* FABKitProtocol.h in Headers */,
+				31B78EAF1C996ECA00ACFC76 /* NUIAMContentView.h in Headers */,
 				31917A2A1C6A0A2D008E21CA /* PNNumber.h in Headers */,
 				3198D57A1BF9CC21006E88D1 /* DDLegacyMacros.h in Headers */,
 				31917A181C6A0A2D008E21CA /* Fabric+FABKits.h in Headers */,
@@ -1430,7 +1475,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				31302AD21C92CCE700D7AC4C /* NUInAppMessageView.xib in Resources */,
+				31B78EB21C999FE000ACFC76 /* NUIAMContentView.xib in Resources */,
+				31302AD21C92CCE700D7AC4C /* NUIAMNotificationView.xib in Resources */,
 				31614FA91BF3508C00F0535D /* SSKeychain.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1522,8 +1568,10 @@
 				319179FA1C6A0A2D008E21CA /* PNErrorStatus.m in Sources */,
 				31917A501C6A0A2D008E21CA /* PNPresenceWhereNowParser.m in Sources */,
 				31917A541C6A0A2D008E21CA /* PNPushNotificationsStateModificationParser.m in Sources */,
+				31B78EBF1C9AC57E00ACFC76 /* NUIAMUITheme.m in Sources */,
 				319179CE1C6A0A2D008E21CA /* PubNub+Presence.m in Sources */,
 				31917A001C6A0A2D008E21CA /* PNPresenceChannelHereNowResult.m in Sources */,
+				31B78EB01C996ECA00ACFC76 /* NUIAMContentView.m in Sources */,
 				318BFF641BECF8A400B2AA2A /* AFNetworkReachabilityManager.m in Sources */,
 				3198D5861BF9CC21006E88D1 /* DDMultiFormatter.m in Sources */,
 				31917A4C1C6A0A2D008E21CA /* PNMessagePublishParser.m in Sources */,
@@ -1535,7 +1583,7 @@
 				31917A2F1C6A0A2D008E21CA /* PNURLRequest.m in Sources */,
 				31917A2B1C6A0A2D008E21CA /* PNNumber.m in Sources */,
 				31E23D4A1C05F12D00BD9A81 /* NUHTTPRequestUtils.m in Sources */,
-				31706C121C90421200364BCD /* NUInAppMessageView.m in Sources */,
+				31706C121C90421200364BCD /* NUIAMNotificationView.m in Sources */,
 				31917A201C6A0A2D008E21CA /* PNClass.m in Sources */,
 				3198D5791BF9CC21006E88D1 /* DDFileLogger.m in Sources */,
 				31917A4E1C6A0A2D008E21CA /* PNPresenceHereNowParser.m in Sources */,
@@ -1737,8 +1785,9 @@
 				GENERATE_MASTER_OBJECT_FILE = NO;
 				INFOPLIST_FILE = NextUserKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextuser.NextUserKit;
@@ -1760,8 +1809,9 @@
 				GENERATE_MASTER_OBJECT_FILE = NO;
 				INFOPLIST_FILE = NextUserKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextuser.NextUserKit;

@@ -22,6 +22,9 @@
 {
     if (self = [super initWithSession:session]) {
         
+        [PNLog enabled:NO];
+
+        
         NSString *publishKey = @"pub-c-ee9da834-a089-4b5e-9133-ac36b6e7bdb6";
         NSString *subscribeKey = @"sub-c-77135d64-e6a9-11e5-b07b-02ee2ddab7fe";
         
@@ -33,7 +36,6 @@
         self.client = [PubNub clientWithConfiguration:configuration];
         [self.client addListener:self];
         
-//        [PNLog enabled:YES];
     }
     
     return self;
@@ -48,11 +50,11 @@
     
     [self.client subscribeToChannels:@[publicChannel, privateChannel] withPresence:NO];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NUPushMessage *message = [[NUPushMessage alloc] init];
-        message.messageText = @"tarot";
-        [self.delegate pushMessageService:self didReceiveMessages:@[message]];
-    });
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        NUPushMessage *message = [[NUPushMessage alloc] init];
+//        message.messageText = @"tarot";
+//        [self.delegate pushMessageService:self didReceiveMessages:@[message]];
+//    });
 }
 
 - (void)stopListening
@@ -102,14 +104,14 @@
         // Message has been received on channel stored in
         // message.data.subscribedChannel
     }
-    NSLog(@"Received message: %@ on channel %@ at %@", message.data.message,
-          message.data.subscribedChannel, message.data.timetoken);
+//    NSLog(@"Received message: %@ on channel %@ at %@", message.data.message,
+//          message.data.subscribedChannel, message.data.timetoken);
 }
 
 - (void)client:(PubNub *)client didReceiveStatus:(PNSubscribeStatus *)status {
     
-    NSLog(@"Received status: Actual channel %@, subscribed channel %@ at %@", status.data.actualChannel,
-          status.data.subscribedChannel, status.data.timetoken);
+//    NSLog(@"Received status: Actual channel %@, subscribed channel %@ at %@", status.data.actualChannel,
+//          status.data.subscribedChannel, status.data.timetoken);
 
     
     /* UNSUBSCRIBE

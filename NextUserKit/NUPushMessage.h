@@ -8,8 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class NUIAMUITheme;
+
 @interface NUPushMessage : NSObject
 
 @property (nonatomic) NSString *messageText;
+@property (nonatomic) NSURL *contentURL;
+@property (nonatomic) NUIAMUITheme *UITheme;
 
 @end
