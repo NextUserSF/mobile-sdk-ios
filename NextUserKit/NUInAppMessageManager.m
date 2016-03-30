@@ -15,7 +15,7 @@
 
 #define kIAMNotificationViewSideInset 20
 #define kIAMNotificationViewHeight 75
-#define kIAMNotificationViewCornerRadius 5
+#define kIAMNotificationViewCornerRadius 10
 
 @interface NUInAppMessageManager () <NUIAMNotificationViewDelegate, NUIAMContentViewDelegate>
 
@@ -81,7 +81,10 @@
         NUIAMContentView *contentView = [[NUIAMContentView alloc] initWithFrame:parentView.bounds];
         contentView.delegate = self;
         
-        // 6. assign values to ivars
+        // 6. style content view with rounded corners
+        contentView.layer.cornerRadius = kIAMNotificationViewCornerRadius;
+        
+        // 7. assign values to ivars
         _contentView = contentView;
         _notificationView = notificationView;
     }

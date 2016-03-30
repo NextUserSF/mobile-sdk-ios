@@ -11,7 +11,7 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 
-#define kIAMContentViewSideInset 15
+#define kIAMContentViewSideInset 20
 
 @interface NUIAMContentView () <UIWebViewDelegate>
 
