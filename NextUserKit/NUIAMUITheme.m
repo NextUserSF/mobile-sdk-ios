@@ -38,4 +38,27 @@
     return theme;
 }
 
+#pragma mark - NSCoding
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    _backgroundColor = [decoder decodeObjectForKey:@"backgroundColor"];
+    _textColor = [decoder decodeObjectForKey:@"textColor"];
+    _textFont = [decoder decodeObjectForKey:@"textFont"];
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+    [encoder encodeObject:_backgroundColor forKey:@"backgroundColor"];
+    [encoder encodeObject:_textColor forKey:@"textColor"];
+    [encoder encodeObject:_textFont forKey:@"textFont"];
+}
+
 @end

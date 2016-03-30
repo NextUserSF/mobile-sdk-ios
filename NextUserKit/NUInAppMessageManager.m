@@ -42,9 +42,9 @@
     return instance;
 }
 
-- (void)showPushMessageAsInAppMessage:(NUPushMessage *)message
+- (void)showPushMessage:(NUPushMessage *)message skipNotificationUI:(BOOL)skipNotificationUI
 {
-    [self showNotificationViewForMessage:message];
+    [self showIAMViewForMessage:message skipNotificationUI:skipNotificationUI];
 }
 
 #pragma mark - Private
@@ -56,29 +56,28 @@
         // 1. grab the parent view
         UIView *parentView = [self parentView];
         
-        // 2. calculate IAM notification view frame
+        // 2. calculate notification view frame
         CGFloat notificationSideInsets = kIAMNotificationViewSideInset;
         CGRect notificationViewFrame = CGRectMake(notificationSideInsets,
                                                   0,
                                                   parentView.bounds.size.width - 2*notificationSideInsets,
                                                   kIAMNotificationViewHeight);
         
-        // 3. create IAM notification view
+        // 3. create notification view
         NUIAMNotificationView *notificationView = [[NUIAMNotificationView alloc] initWithFrame:notificationViewFrame];
         notificationView.delegate = self;
         
-        // 4. style IAM notification view with mask (bottom rounded corners)
-        UIBezierPath *maskPath;
-        maskPath = [UIBezierPath bezierPathWithRoundedRect:notificationView.bounds
-                                         byRoundingCorners:(UIRectCornerBottomLeft|UIRectCornerBottomRight)
-                                               cornerRadii:CGSizeMake(kIAMNotificationViewCornerRadius, kIAMNotificationViewCornerRadius)];
+        // 4. style notification view with mask (bottom rounded corners)
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:notificationView.bounds
+                                                       byRoundingCorners:(UIRectCornerBottomLeft|UIRectCornerBottomRight)
+                                                             cornerRadii:CGSizeMake(kIAMNotificationViewCornerRadius, kIAMNotificationViewCornerRadius)];
         
         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
         maskLayer.frame = notificationView.bounds;
         maskLayer.path = maskPath.CGPath;
         notificationView.layer.mask = maskLayer;
         
-        // 5. create IAM content view
+        // 5. create content view
         NUIAMContentView *contentView = [[NUIAMContentView alloc] initWithFrame:parentView.bounds];
         contentView.delegate = self;
         
@@ -88,40 +87,9 @@
     }
 }
 
-- (UIView *)parentView
+- (void)prepareIAMViewsForMessage:(NUPushMessage *)message
 {
-    return [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-}
-
-#pragma mark - IAM Notification Show/Hide
-
-- (void)showNotificationViewForMessage:(NUPushMessage *)message
-{
-    if (!_isIAMNotificationPresented) {
-        
-        _isIAMNotificationPresented = YES;
-        [self revealIAMNotificationViewForMessage:message withCompletion:^{
-            [self scheduleNotificationDismissTimer];
-        }];
-        
-    } else {
-        DDLogWarn(@"Already showing IAM!");
-    }
-}
-
-- (void)dismissNotificationView
-{
-    [self invalidateNotificationDismissTimer];
-    [self unrevealIAMNotificationViewWithCompletion:^{
-        _isIAMNotificationPresented = NO;
-    }];
-}
-
-#pragma mark -
-
-- (void)revealIAMNotificationViewForMessage:(NUPushMessage *)message withCompletion:(void(^)())completion
-{
-    // 1. create IAM notification & content views
+    // 1. create notification & content views
     [self initializeIAMViewsOnce];
     
     _notificationView.transform = CGAffineTransformIdentity;
@@ -141,8 +109,49 @@
                                          _contentView.bounds.size.width,
                                          _contentView.bounds.size.height);
     _contentView.frame = contentViewFrame;
-    
-    // 4. animate notification view from screen top
+}
+
+- (UIView *)parentView
+{
+    return [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
+}
+
+#pragma mark - IAM Show/Hide
+
+- (void)showIAMViewForMessage:(NUPushMessage *)message skipNotificationUI:(BOOL)skipNotificationUI
+{
+    if (!_isIAMNotificationPresented) {
+        
+        _isIAMNotificationPresented = YES;
+        
+        [self prepareIAMViewsForMessage:message];
+        
+        if (skipNotificationUI) {
+            [self showContentViewAnimated:NO];
+        } else {
+            [self revealNotificationViewWithCompletion:^{
+                [self scheduleNotificationDismissTimer];
+            }];
+        }
+        
+    } else {
+        DDLogWarn(@"Already showing IAM!");
+    }
+}
+
+- (void)dismissIAMView
+{
+    [self invalidateNotificationDismissTimer];
+    [self unrevealNotificationViewWithCompletion:^{
+        _isIAMNotificationPresented = NO;
+    }];
+}
+
+#pragma mark - Notification View Reveal/Unreveal
+
+- (void)revealNotificationViewWithCompletion:(void(^)())completion
+{
+    // animate notification view from screen top
     CGFloat xOffset = kIAMNotificationViewSideInset;
     CGRect notificationViewEndFrame = CGRectMake(xOffset,
                                                  0,
@@ -165,10 +174,11 @@
                      }];
 }
 
-- (void)unrevealIAMNotificationViewWithCompletion:(void(^)())completion
+- (void)unrevealNotificationViewWithCompletion:(void(^)())completion
 {
     NSAssert(_notificationView != nil, @"notification view can not be nil");
     
+    // hide from screen (move up) both notification & content views
     CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -_notificationView.bounds.size.height);
     
     [UIView animateWithDuration:0.3
@@ -184,9 +194,9 @@
                      }];
 }
 
-#pragma mark - IAM Content Show/Hide
+#pragma mark - Content View Show/Hide
 
-- (void)showContentFully
+- (void)showContentViewAnimated:(BOOL)animated
 {
     [self invalidateNotificationDismissTimer];
     
@@ -196,13 +206,18 @@
     CGAffineTransform notificationViewEndTransform = transform;
     CGAffineTransform contentViewEndTransform = transform;
     
-    [UIView animateWithDuration:0.3
-                          delay:0
-                        options:0
-                     animations:^{
-                         _notificationView.transform = notificationViewEndTransform;
-                         _contentView.transform = contentViewEndTransform;
-                     } completion:nil];
+    if (animated) {
+        [UIView animateWithDuration:0.3
+                              delay:0
+                            options:0
+                         animations:^{
+                             _notificationView.transform = notificationViewEndTransform;
+                             _contentView.transform = contentViewEndTransform;
+                         } completion:nil];
+    } else {
+        _notificationView.transform = notificationViewEndTransform;
+        _contentView.transform = contentViewEndTransform;
+    }
 }
 
 - (void)resetIAMViewsOnTouchEnd
@@ -240,21 +255,21 @@
 
 - (void)notificationDismissTimerFired:(NSTimer *)timer
 {
-    [self dismissNotificationView];
+    [self dismissIAMView];
 }
 
 #pragma mark - IAM Content View Delegate
 
 - (void)IAMContentViewDidDismiss:(NUIAMContentView *)view
 {
-    [self dismissNotificationView];
+    [self dismissIAMView];
 }
 
 #pragma mark - IAM Notification View Delegate
 
 - (void)IAMNotificationView:(NUIAMNotificationView *)view didTapWithRecognizer:(UITapGestureRecognizer *)gesture
 {
-    [self showContentFully];
+    [self showContentViewAnimated:YES];
 }
 
 - (void)IAMNotificationView:(NUIAMNotificationView *)view didPanWithRecognizer:(UIPanGestureRecognizer *)gesture
@@ -286,9 +301,9 @@
             BOOL shouldUnrevealNotificationView = translation.y < (-_notificationView.bounds.size.height/2.0);
             
             if (shouldShowContentViewFully) {
-                [self showContentFully];
+                [self showContentViewAnimated:YES];
             } else if (shouldUnrevealNotificationView) {
-                [self dismissNotificationView];
+                [self dismissIAMView];
             } else {
                 [self resetIAMViewsOnTouchEnd];
             }

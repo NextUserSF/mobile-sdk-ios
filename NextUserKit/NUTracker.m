@@ -21,6 +21,11 @@
 #import "NUTracker+Tests.h"
 
 
+#define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
+#define kPushMessageContentURLKey @"nu_content_url"
+#define kPushMessageUIThemeDataKey @"nu_ui_theme_data"
+
+
 @interface NUTracker () <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
 
 @property (nonatomic) NUTrackerSession *session;
@@ -34,7 +39,7 @@
 
 @implementation NUTracker
 
-#pragma mark - Public API
+#pragma mark - Shared Tracker Setup
 
 static NUTracker *instance;
 + (NUTracker *)sharedTracker
@@ -70,6 +75,86 @@ static NUTracker *instance;
 - (void)dealloc
 {
     [self unsubscribeFromAppStateNotifications];
+}
+
+#pragma mark -
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    DDLogInfo(@"Did finish launching with options: %@", launchOptions);
+    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    if (localNotification && [self isNextUserLocalNotification:localNotification]) {
+        [self handleLocalNotification:localNotification application:application];
+    }
+    
+    return YES;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    DDLogInfo(@"Did receive local notification: %@", notification);
+    if ([self isNextUserLocalNotification:notification]) {
+        [self handleLocalNotification:notification application:application];
+    }
+}
+
+#pragma mark - Local Notifications
+
+- (UILocalNotification *)localNotificationFromPushMessage:(NUPushMessage *)message
+{
+    UILocalNotification *note = [[UILocalNotification alloc] init];
+    note.timeZone = [NSTimeZone defaultTimeZone];
+    note.alertBody = message.messageText;
+    note.fireDate = message.fireDate;
+
+    NSData *UIThemeData = [NSKeyedArchiver archivedDataWithRootObject:message.UITheme];
+    
+    NSDictionary *userInfo = @{kPushMessageLocalNoteTypeKey : @YES,
+                               kPushMessageContentURLKey : message.contentURL.absoluteString,
+                               kPushMessageUIThemeDataKey : UIThemeData};
+    note.userInfo = userInfo;
+    
+    return note;
+}
+
+- (NUPushMessage *)pushMessageFromLocalNotification:(UILocalNotification *)notification
+{
+    NUPushMessage *message = [[NUPushMessage alloc] init];
+    message.messageText = notification.alertBody;
+    message.contentURL = [NSURL URLWithString:notification.userInfo[kPushMessageContentURLKey]];
+    message.UITheme = [NSKeyedUnarchiver unarchiveObjectWithData:notification.userInfo[kPushMessageUIThemeDataKey]];
+    
+    return message;
+}
+
+- (BOOL)isNextUserLocalNotification:(UILocalNotification *)note
+{
+    return note.userInfo[kPushMessageLocalNoteTypeKey] != nil;
+}
+
+#pragma mark -
+
+- (void)scheduleLocalNotificationForMessage:(NUPushMessage *)message
+{
+    DDLogInfo(@"Schedule local note for message: %@", message);
+    UILocalNotification *note = [self localNotificationFromPushMessage:message];
+    [[UIApplication sharedApplication] scheduleLocalNotification:note];
+}
+
+- (void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application
+{
+    if ([self isNextUserLocalNotification:notification]) {
+
+        DDLogInfo(@"Handle local notification. App state: %@", @(application.applicationState));
+        NUPushMessage *message = [self pushMessageFromLocalNotification:notification];
+        
+        if (application.applicationState == UIApplicationStateActive) {
+            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:NO];
+        } else if (application.applicationState == UIApplicationStateInactive ||
+                   application.applicationState == UIApplicationStateBackground) {
+            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:YES];
+        }
+    }
 }
 
 #pragma mark - User Permissions
@@ -169,9 +254,8 @@ static NUTracker *instance;
 
 - (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
 {
-    if (messages.count > 0) {
-        NUPushMessage *message = messages.firstObject;
-        [[NUInAppMessageManager sharedManager] showPushMessageAsInAppMessage:message];
+    for (NUPushMessage *message in messages) {
+        [self scheduleLocalNotificationForMessage:message];
     }
 }
 
@@ -253,7 +337,7 @@ static NUTracker *instance;
     }
 }
 
-#pragma mark - Configuration
+#pragma mark - Logging
 
 - (void)setLogLevel:(NULogLevel)logLevel
 {
@@ -345,18 +429,21 @@ static NUTracker *instance;
     instance = nil;
 }
 
+#pragma mark - Tracker + Dev Category
 
-#pragma mark - Dev Category
-
-- (void)fakePushReceived
+- (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay
 {
     NUPushMessage *message = [[NUPushMessage alloc] init];
     
     message.messageText = @"Jednom davno iza to sto plavo je li ti mislis o dnevnom jucer. ";
     message.contentURL = [NSURL URLWithString:@"http://www.nextuser.com"];
+    message.UITheme = [NUIAMUITheme themeWithBackgroundColor:[UIColor redColor]
+                                                   textColor:nil
+                                                    textFont:nil];
     message.UITheme = [NUIAMUITheme defautTheme];
+    message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
-    [self pushMessageService:_pushMessageService didReceiveMessages:@[message]];
+    [self scheduleLocalNotificationForMessage:message];
 }
 
 @end

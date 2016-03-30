@@ -61,7 +61,9 @@
         self.backgroundColor = message.UITheme.backgroundColor;
     }
     
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:message.contentURL                                                  cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 30];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:message.contentURL
+                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                              timeoutInterval:30];
     [_webView loadRequest:request];
 }
 

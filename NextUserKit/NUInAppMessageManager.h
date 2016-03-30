@@ -14,6 +14,6 @@
 
 + (instancetype)sharedManager;
 
-- (void)showPushMessageAsInAppMessage:(NUPushMessage *)message;
+- (void)showPushMessage:(NUPushMessage *)message skipNotificationUI:(BOOL)skipNotificationUI;
 
 @end

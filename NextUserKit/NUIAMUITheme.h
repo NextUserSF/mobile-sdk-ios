@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NUIAMUITheme : NSObject
+@interface NUIAMUITheme : NSObject <NSCoding>
 
 + (instancetype)defautTheme;
 + (instancetype)themeWithBackgroundColor:(UIColor *)backgroundColor

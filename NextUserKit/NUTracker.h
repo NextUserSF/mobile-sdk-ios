@@ -6,7 +6,7 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class NUPurchase;
 @class NUAction;
@@ -49,13 +49,12 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  * Before you can track any events, you need to start tracking session. Do this by calling one of two
  * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
  * It is important to initialize sharedTracker tracker in application:didFinishLaunchingWithOptions:
- *
  */
 @interface NUTracker : NSObject
 
-#pragma mark - Tracker Singleton
+#pragma mark - Tracker Singleton Setup
 /**
- * @name Tracker Singleton
+ * @name Tracker Singleton Setup
  */
 
 /**
@@ -64,6 +63,24 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  *  @return Shared instance of NUTracker.
  */
 + (NUTracker *)sharedTracker;
+
+/**
+ *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
+ *
+ *  @param application   Host Application
+ *  @param launchOptions Dictionary with launching options
+ *
+ *  @return NO if the app cannot handle the URL resource or continue a user activity, otherwise return YES.
+ */
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+
+/**
+ *  Called when application receives local notification. Call this method from your AppDelegate's -application:didReceiveLocalNotification:
+ *
+ *  @param application  Host Application
+ *  @param notification Received notification
+ */
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
 #pragma mark - Initialization
 /**
@@ -97,9 +114,9 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 - (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 
-#pragma mark - Configuration
+#pragma mark - Logging
 /**
- * @name Configuration
+ * @name Logging
  */
 
 /**
@@ -189,7 +206,7 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
 
 @interface NUTracker (Dev)
 
-- (void)fakePushReceived;
+- (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay;
 
 @end
 

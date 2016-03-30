@@ -15,5 +15,6 @@
 @property (nonatomic) NSString *messageText;
 @property (nonatomic) NSURL *contentURL;
 @property (nonatomic) NUIAMUITheme *UITheme;
+@property (nonatomic) NSDate *fireDate;
 
 @end
