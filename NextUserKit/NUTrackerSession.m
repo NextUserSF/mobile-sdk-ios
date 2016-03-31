@@ -13,6 +13,8 @@
 #import "SSKeychain.h"
 #import "NSString+LGUtils.h"
 
+#pragma mark - Session Keys
+
 #define kDeviceCookieSerializationKey @"nu_device_ide"
 
 #define kDeviceCookieJSONKey @"device_cookie"
@@ -20,6 +22,23 @@
 
 #define kKeychainServiceName @"com.nextuser.nextuserkit"
 
+
+#pragma mark - PubNub Configuration
+
+@interface NUPubNubConfiguration ()
+
+@property (nonatomic) NSString *subscribeKey;
+@property (nonatomic) NSString *publishKey;
+
+@property (nonatomic) NSString *publicChannel;
+@property (nonatomic) NSString *privateChannel;
+
+@end
+
+@implementation NUPubNubConfiguration
+@end
+
+#pragma mark - Tracker Session
 
 @implementation NUTrackerSession
 
@@ -66,7 +85,7 @@
                                                 _deviceCookie = responseObject[kDeviceCookieJSONKey];
                                                 _sessionCookie = responseObject[kSessionCookieJSONKey];
                                                 
-                                                _shouldListenForPushMessages = YES;
+                                                [self setupPushMessageServiceInfoWithSessionResponseObject:responseObject];
                                                 
                                                 // save new device cookie only if one does not already exists
                                                 if (currentDeviceCookie == nil && _deviceCookie != nil) {
@@ -94,6 +113,19 @@
     return ![NSString lg_isEmptyString:_deviceCookie] &&
     ![NSString lg_isEmptyString:_sessionCookie] &&
     ![NSString lg_isEmptyString:_trackIdentifier];
+}
+
+#pragma mark -
+
+- (void)setupPushMessageServiceInfoWithSessionResponseObject:(id)responseObject
+{
+    _shouldListenForPushMessages = YES;
+    
+    _pubNubConfiguration = [[NUPubNubConfiguration alloc] init];
+    _pubNubConfiguration.publishKey = @"pub-c-ee9da834-a089-4b5e-9133-ac36b6e7bdb6";
+    _pubNubConfiguration.subscribeKey = @"sub-c-77135d64-e6a9-11e5-b07b-02ee2ddab7fe";
+    _pubNubConfiguration.privateChannel = @"Channel-Demo";
+    _pubNubConfiguration.publicChannel = @"Channel-Demo";
 }
 
 #pragma mark - Private API

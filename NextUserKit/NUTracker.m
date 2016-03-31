@@ -254,6 +254,7 @@ static NUTracker *instance;
 
 - (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
 {
+    // TODO: figure out scheduling logic. Schedule all messages or skip some of them if they are overlapping.
     for (NUPushMessage *message in messages) {
         [self scheduleLocalNotificationForMessage:message];
     }
@@ -287,6 +288,8 @@ static NUTracker *instance;
     
     [self unsubscribeFromAppStateNotifications];
 }
+
+#pragma mark - Public API
 
 #pragma mark - Initialization
 

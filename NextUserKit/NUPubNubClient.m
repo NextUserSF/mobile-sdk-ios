@@ -7,8 +7,10 @@
 //
 
 #import "NUPubNubClient.h"
+#import "NUTrackerSession.h"
 #import "PubNub.h"
 #import "NUPushMessage.h"
+#import "NUIAMUITheme.h"
 
 @interface NUPubNubClient () <PNObjectEventListener>
 
@@ -23,13 +25,9 @@
     if (self = [super initWithSession:session]) {
         
         [PNLog enabled:NO];
-
         
-        NSString *publishKey = @"pub-c-ee9da834-a089-4b5e-9133-ac36b6e7bdb6";
-        NSString *subscribeKey = @"sub-c-77135d64-e6a9-11e5-b07b-02ee2ddab7fe";
-        
-        publishKey = @"demo";
-        subscribeKey = @"demo";
+        NSString *publishKey = session.pubNubConfiguration.publishKey;
+        NSString *subscribeKey = session.pubNubConfiguration.subscribeKey;
         
         PNConfiguration *configuration = [PNConfiguration configurationWithPublishKey:publishKey
                                                                          subscribeKey:subscribeKey];
@@ -45,24 +43,15 @@
 
 - (void)startListening
 {
-    NSString *publicChannel = @"";
-    NSString *privateChannel = @"hello_world";
+    NSString *publicChannel = self.session.pubNubConfiguration.publicChannel;
+    NSString *privateChannel = self.session.pubNubConfiguration.privateChannel;
     
     [self.client subscribeToChannels:@[publicChannel, privateChannel] withPresence:NO];
-    
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        NUPushMessage *message = [[NUPushMessage alloc] init];
-//        message.messageText = @"tarot";
-//        [self.delegate pushMessageService:self didReceiveMessages:@[message]];
-//    });
 }
 
 - (void)stopListening
 {
-    NSString *publicChannel = @"";
-    NSString *privateChannel = @"";
-    
-    [self.client unsubscribeFromChannels: @[publicChannel, privateChannel] withPresence:NO];
+    [self.client unsubscribeFromAll];
 }
 
 - (void)fetchMissedMessages
@@ -89,30 +78,59 @@
                     }];
 }
 
+#pragma mark - Private
+
+- (void)onMessageReceived:(id)message
+{
+    NUPushMessage *pushMessage = [self.class pushMessageFromPubNubMessageContent:message];
+    [self.delegate pushMessageService:self didReceiveMessages:@[pushMessage]];
+}
+
++ (NUPushMessage *)pushMessageFromPubNubMessageContent:(id)messageContent
+{
+    NUPushMessage *message = [[NUPushMessage alloc] init];
+    
+    // message text
+    message.messageText = messageContent[@"message_text"];
+    
+    // message content
+    message.contentURL = [NSURL URLWithString:messageContent[@"content_url"]];
+    
+    // fire date
+    NSDate *fireDate = [NSDate dateWithTimeIntervalSinceNow:5];
+    message.fireDate = fireDate;
+
+    // IAM UI Theme
+    // TODO: parse color codes from message content
+    UIColor *backgroundColor = nil;
+    UIColor *textColor = nil;
+    UIFont *textFont = nil;
+    NUIAMUITheme *UITheme = [NUIAMUITheme themeWithBackgroundColor:backgroundColor
+                                                         textColor:textColor
+                                                          textFont:textFont];
+    message.UITheme = UITheme;
+    
+    return message;
+}
+
 #pragma mark - Object Event Listener
 
 - (void)client:(PubNub *)client didReceiveMessage:(PNMessageResult *)message {
     
-    // Handle new message stored in message.data.message
-    if (message.data.actualChannel) {
-        
-        // Message has been received on channel group stored in
-        // message.data.subscribedChannel
+    NSLog(@"Did receive message:");
+    NSLog(@"%@", message.data.message);
+    NSLog(@"Subscribed channel: %@", message.data.subscribedChannel);
+    NSLog(@"Actual channel:     %@", message.data.actualChannel);
+    
+    id messageContent = message.data.message;
+    if (messageContent) {
+        [self onMessageReceived:messageContent];
     }
-    else {
-        
-        // Message has been received on channel stored in
-        // message.data.subscribedChannel
-    }
-//    NSLog(@"Received message: %@ on channel %@ at %@", message.data.message,
-//          message.data.subscribedChannel, message.data.timetoken);
 }
 
 - (void)client:(PubNub *)client didReceiveStatus:(PNSubscribeStatus *)status {
     
-//    NSLog(@"Received status: Actual channel %@, subscribed channel %@ at %@", status.data.actualChannel,
-//          status.data.subscribedChannel, status.data.timetoken);
-
+    NSLog(@"Did receive status: %@", status.stringifiedCategory);
     
     /* UNSUBSCRIBE
     if (status.category == PNUnexpectedDisconnectCategory) {
@@ -148,23 +166,23 @@
         // Or just use the connected event to confirm you are subscribed for
         // UI / internal notifications, etc
         
-        [self.client publish: @"Hello from the PubNub Objective-C SDK" toChannel:@"my_channel"
-              withCompletion:^(PNPublishStatus *status) {
-                  
-                  // Check whether request successfully completed or not.
-                  if (!status.isError) {
-                      
-                      // Message successfully published to specified channel.
-                  }
-                  // Request processing failed.
-                  else {
-                      
-                      // Handle message publish error. Check 'category' property to find out possible issue
-                      // because of which request did fail.
-                      //
-                      // Request can be resent using: [status retry];
-                  }
-              }];
+//        [self.client publish: @"Hello from the PubNub Objective-C SDK" toChannel:@"my_channel"
+//              withCompletion:^(PNPublishStatus *status) {
+//                  
+//                  // Check whether request successfully completed or not.
+//                  if (!status.isError) {
+//                      
+//                      // Message successfully published to specified channel.
+//                  }
+//                  // Request processing failed.
+//                  else {
+//                      
+//                      // Handle message publish error. Check 'category' property to find out possible issue
+//                      // because of which request did fail.
+//                      //
+//                      // Request can be resent using: [status retry];
+//                  }
+//              }];
     }
     else if (status.category == PNReconnectedCategory) {
         
@@ -180,7 +198,7 @@
 
 - (void)client:(PubNub *)client didReceivePresenceEvent:(PNPresenceEventResult *)event
 {
-    
+    NSLog(@"Presence event");
 }
 
 @end

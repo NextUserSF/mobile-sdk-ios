@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class NUPubNubConfiguration;
+
 @interface NUTrackerSession : NSObject
 
 @property (nonatomic, readonly) NSString *sessionCookie;
@@ -21,6 +23,7 @@
 
 @property (nonatomic, readonly) BOOL isValid;
 
+@property (nonatomic, readonly) NUPubNubConfiguration *pubNubConfiguration;
 
 // property serialization
 - (NSString *)serializedDeviceCookie;
@@ -30,5 +33,16 @@
 - (void)startWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
 // YES if request to start the session is being made already and not yet finished
 @property (nonatomic, readonly) BOOL startupRequestInProgress;
+
+@end
+
+
+@interface NUPubNubConfiguration : NSObject
+
+@property (nonatomic, readonly) NSString *subscribeKey;
+@property (nonatomic, readonly) NSString *publishKey;
+
+@property (nonatomic, readonly) NSString *publicChannel;
+@property (nonatomic, readonly) NSString *privateChannel;
 
 @end

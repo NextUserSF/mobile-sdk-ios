@@ -20,7 +20,7 @@
 
 @interface NUPushMessageService : NSObject
 
-- (id)initWithSession:(NUTrackerSession *)session; // subclassers should call this initializer
+- (id)initWithSession:(NUTrackerSession *)session; // subclassers must call this initializer
 
 @property (nonatomic) id <NUPushMessageServiceDelegate> delegate;
 @property (nonatomic, readonly) NUTrackerSession *session;

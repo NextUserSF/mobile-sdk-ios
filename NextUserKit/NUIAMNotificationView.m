@@ -47,6 +47,7 @@
     _message = message;
     
     _messageTextLabel.text = message.messageText;
+    
     if (message.UITheme.backgroundColor) {
         _nibMasterView.backgroundColor = message.UITheme.backgroundColor;
     }
@@ -56,7 +57,6 @@
     if (message.UITheme.textFont) {
         _messageTextLabel.font = message.UITheme.textFont;
     }
-    
 }
 
 #pragma mark - Gesture Recognizer

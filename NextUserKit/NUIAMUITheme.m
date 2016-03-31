@@ -20,9 +20,9 @@
 
 + (instancetype)defautTheme
 {
-    return [self themeWithBackgroundColor:[UIColor grayColor]
-                                textColor:[UIColor whiteColor]
-                                 textFont:[UIFont systemFontOfSize:15]];
+    return [self themeWithBackgroundColor:[self defaultBackgroundColor]
+                                textColor:[self defaultTextColor]
+                                 textFont:[self defaultTextFont]];
 }
 
 + (instancetype)themeWithBackgroundColor:(UIColor *)backgroundColor
@@ -36,6 +36,52 @@
     theme.textFont = textFont;
     
     return theme;
+}
+
+#pragma mark -
+
+- (UIColor *)backgroundColor
+{
+    if (_backgroundColor) {
+        return _backgroundColor;
+    } else {
+        return [self.class defaultBackgroundColor];
+    }
+}
+
+- (UIColor *)textColor
+{
+    if (_textColor) {
+        return _textColor;
+    } else {
+        return [self.class defaultTextColor];
+    }
+}
+
+- (UIFont *)textFont
+{
+    if (_textFont) {
+        return _textFont;
+    } else {
+        return [self.class defaultTextFont];
+    }
+}
+
+#pragma mark - Private
+
++ (UIColor *)defaultBackgroundColor
+{
+    return [UIColor grayColor];
+}
+
++ (UIColor *)defaultTextColor
+{
+    return [UIColor whiteColor];
+}
+
++ (UIFont *)defaultTextFont
+{
+    return [UIFont systemFontOfSize:15];
 }
 
 #pragma mark - NSCoding
