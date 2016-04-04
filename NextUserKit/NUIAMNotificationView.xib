@@ -24,7 +24,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" id="tPW-Yr-s8h">
-                    <rect key="frame" x="200" y="63" width="20" height="6"/>
+                    <rect key="frame" x="197" y="63" width="26" height="6"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
