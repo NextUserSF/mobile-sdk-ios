@@ -11,11 +11,14 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 
-#define kIAMContentViewSideInset 20
+#define kIAMContentViewSideInset 5
+#define kIAMContentViewCornerRadius 5
 
 @interface NUIAMContentView () <UIWebViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
+@property (weak, nonatomic) IBOutlet UIView *backgroundView;
+@property (weak, nonatomic) IBOutlet UIButton *dismissButton;
 
 @end
 
@@ -30,8 +33,10 @@
         
         [self addSubview:viewFromNib];
         
-        CGRect webViewFrame = CGRectInset(self.bounds, kIAMContentViewSideInset, kIAMContentViewSideInset);
+        CGRect webViewFrame = CGRectInset(_backgroundView.bounds, kIAMContentViewSideInset, kIAMContentViewSideInset);
         _webView.frame = webViewFrame;
+        
+        _backgroundView.layer.cornerRadius = kIAMContentViewCornerRadius;
     }
     
     return self;
@@ -58,7 +63,8 @@
     _message = message;
     
     if (message.UITheme.backgroundColor) {
-        self.backgroundColor = message.UITheme.backgroundColor;
+        _backgroundView.backgroundColor = message.UITheme.backgroundColor;
+        _dismissButton.tintColor = message.UITheme.backgroundColor;
     }
     
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:message.contentURL

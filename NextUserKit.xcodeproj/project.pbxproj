@@ -303,6 +303,7 @@
 		31E61C701BFDD95100AAD12B /* NSString+LGUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 31E61C6E1BFDD95100AAD12B /* NSString+LGUtils.h */; };
 		31E61C711BFDD95100AAD12B /* NSString+LGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E61C6F1BFDD95100AAD12B /* NSString+LGUtils.m */; };
 		31E61C731BFDDE4700AAD12B /* NSString+LGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E61C6F1BFDD95100AAD12B /* NSString+LGUtils.m */; };
+		31F270831CB2970F00231CA8 /* nu_assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31F270821CB2970F00231CA8 /* nu_assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -598,6 +599,7 @@
 		31E61C6C1BFDCF0A00AAD12B /* NUObjectPropertyStatusUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NUObjectPropertyStatusUtilsTests.m; sourceTree = "<group>"; };
 		31E61C6E1BFDD95100AAD12B /* NSString+LGUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+LGUtils.h"; sourceTree = "<group>"; };
 		31E61C6F1BFDD95100AAD12B /* NSString+LGUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+LGUtils.m"; sourceTree = "<group>"; };
+		31F270821CB2970F00231CA8 /* nu_assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = nu_assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -711,6 +713,7 @@
 		31706C0E1C9041BB00364BCD /* In App Message */ = {
 			isa = PBXGroup;
 			children = (
+				31F270821CB2970F00231CA8 /* nu_assets.xcassets */,
 				31706C061C90405A00364BCD /* NUInAppMessageManager.h */,
 				31706C071C90405A00364BCD /* NUInAppMessageManager.m */,
 				31B78EB81C9AC36C00ACFC76 /* IAM UI */,
@@ -1478,6 +1481,7 @@
 				31B78EB21C999FE000ACFC76 /* NUIAMContentView.xib in Resources */,
 				31302AD21C92CCE700D7AC4C /* NUIAMNotificationView.xib in Resources */,
 				31614FA91BF3508C00F0535D /* SSKeychain.strings in Resources */,
+				31F270831CB2970F00231CA8 /* nu_assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

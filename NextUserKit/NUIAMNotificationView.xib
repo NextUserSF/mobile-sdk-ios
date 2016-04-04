@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NUIAMNotificationView">
             <connections>
+                <outlet property="dragView" destination="tPW-Yr-s8h" id="ZUJ-wX-ItY"/>
                 <outlet property="messageTextLabel" destination="amU-QP-QzH" id="7Ta-GI-czb"/>
             </connections>
         </placeholder>
@@ -16,12 +17,17 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="In App Message" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="amU-QP-QzH">
-                    <rect key="frame" x="8" y="8" width="403" height="58"/>
+                    <rect key="frame" x="8" y="8" width="403" height="51"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <view contentMode="scaleToFill" id="tPW-Yr-s8h">
+                    <rect key="frame" x="200" y="63" width="20" height="6"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" red="0.91372549020000005" green="0.57647058819999997" blue="0.66666666669999997" alpha="1" colorSpace="calibratedRGB"/>
             <nil key="simulatedStatusBarMetrics"/>

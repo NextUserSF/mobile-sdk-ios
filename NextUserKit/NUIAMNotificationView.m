@@ -14,6 +14,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *messageTextLabel;
 @property (nonatomic) UIView *nibMasterView;
+@property (weak, nonatomic) IBOutlet UIView *dragView;
 
 @end
 
@@ -30,6 +31,8 @@
         
         _nibMasterView = viewFromNib;
         
+        [self styleDragView];
+        
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
         [self addGestureRecognizer:tap];
         
@@ -38,6 +41,11 @@
     }
     
     return self;
+}
+
+- (void)styleDragView
+{
+    _dragView.layer.cornerRadius = _dragView.bounds.size.height/2.0;
 }
 
 #pragma mark - Public

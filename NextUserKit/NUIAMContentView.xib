@@ -7,6 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NUIAMContentView">
             <connections>
+                <outlet property="backgroundView" destination="FfH-U4-ktz" id="d7e-cs-5FR"/>
+                <outlet property="dismissButton" destination="aJf-Ya-c8H" id="WMC-IY-EzV"/>
                 <outlet property="webView" destination="ogL-ge-Kfr" id="ufp-s0-U8V"/>
             </connections>
         </placeholder>
@@ -15,18 +17,27 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <webView contentMode="scaleToFill" id="ogL-ge-Kfr">
-                    <rect key="frame" x="14" y="15" width="348" height="638"/>
+                <view contentMode="scaleToFill" id="FfH-U4-ktz" userLabel="Background View">
+                    <rect key="frame" x="0.0" y="63" width="375" height="604"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="OQa-km-qmr"/>
-                    </connections>
-                </webView>
+                    <subviews>
+                        <webView contentMode="scaleToFill" id="ogL-ge-Kfr">
+                            <rect key="frame" x="5" y="46" width="365" height="545"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="OQa-km-qmr"/>
+                            </connections>
+                        </webView>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="aJf-Ya-c8H">
-                    <rect key="frame" x="315" y="24" width="40" height="40"/>
+                    <rect key="frame" x="326" y="20" width="44" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                    <state key="normal" title="X"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                    <state key="normal" image="dismiss"/>
                     <connections>
                         <action selector="dismissAction:" destination="-1" eventType="touchUpInside" id="Kyt-jl-jOH"/>
                     </connections>
@@ -37,4 +48,7 @@
             <point key="canvasLocation" x="522.5" y="367.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="dismiss" width="256" height="256"/>
+    </resources>
 </document>
