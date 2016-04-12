@@ -130,7 +130,7 @@
         [self prepareIAMViewsForMessage:message];
         
         if (skipNotificationUI) {
-            [self showContentViewAnimated:NO];
+            [self showContentViewAnimated:NO duration:0.0];
         } else {
             [self revealNotificationViewWithCompletion:^{
                 [self scheduleNotificationDismissTimer];
@@ -142,10 +142,10 @@
     }
 }
 
-- (void)dismissIAMView
+- (void)dismissIAMViewWithDuration:(NSTimeInterval)duration
 {
     [self invalidateNotificationDismissTimer];
-    [self unrevealNotificationViewWithCompletion:^{
+    [self unrevealNotificationViewWithDuration:duration completion:^{
         _isIAMNotificationPresented = NO;
     }];
 }
@@ -177,14 +177,15 @@
                      }];
 }
 
-- (void)unrevealNotificationViewWithCompletion:(void(^)())completion
+- (void)unrevealNotificationViewWithDuration:(NSTimeInterval)duration
+                                  completion:(void(^)())completion
 {
     NSAssert(_notificationView != nil, @"notification view can not be nil");
     
     // hide from screen (move up) both notification & content views
     CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -_notificationView.bounds.size.height);
     
-    [UIView animateWithDuration:0.3
+    [UIView animateWithDuration:duration
                           delay:0
                         options:0
                      animations:^{
@@ -199,7 +200,7 @@
 
 #pragma mark - Content View Show/Hide
 
-- (void)showContentViewAnimated:(BOOL)animated
+- (void)showContentViewAnimated:(BOOL)animated duration:(NSTimeInterval)duration
 {
     [self invalidateNotificationDismissTimer];
     
@@ -210,7 +211,7 @@
     CGAffineTransform contentViewEndTransform = transform;
     
     if (animated) {
-        [UIView animateWithDuration:0.3
+        [UIView animateWithDuration:duration
                               delay:0
                             options:0
                          animations:^{
@@ -223,12 +224,12 @@
     }
 }
 
-- (void)resetIAMViewsOnTouchEnd
+- (void)resetIAMViewsOnTouchEndWithDuration:(NSTimeInterval)duration
 {
     CGAffineTransform notificationViewEndTransform = CGAffineTransformIdentity;
     CGAffineTransform contentViewEndTransform = CGAffineTransformIdentity;
     
-    [UIView animateWithDuration:0.3
+    [UIView animateWithDuration:duration
                           delay:0
                         options:0
                      animations:^{
@@ -258,27 +259,28 @@
 
 - (void)notificationDismissTimerFired:(NSTimer *)timer
 {
-    [self dismissIAMView];
+    [self dismissIAMViewWithDuration:0.3];
 }
 
 #pragma mark - IAM Content View Delegate
 
 - (void)IAMContentViewDidDismiss:(NUIAMContentView *)view
 {
-    [self dismissIAMView];
+    [self dismissIAMViewWithDuration:0.3];
 }
 
 #pragma mark - IAM Notification View Delegate
 
 - (void)IAMNotificationView:(NUIAMNotificationView *)view didTapWithRecognizer:(UITapGestureRecognizer *)gesture
 {
-    [self showContentViewAnimated:YES];
+    [self showContentViewAnimated:YES duration:0.3];
 }
 
 - (void)IAMNotificationView:(NUIAMNotificationView *)view didPanWithRecognizer:(UIPanGestureRecognizer *)gesture
 {
     UIView *parentView = [self parentView];
     CGPoint translation = [gesture translationInView:parentView];
+    CGPoint velocity = [gesture velocityInView:parentView];
 
     switch (gesture.state) {
         case UIGestureRecognizerStatePossible:
@@ -300,15 +302,54 @@
             break;
         case UIGestureRecognizerStateRecognized:
         {
-            BOOL shouldShowContentViewFully = translation.y >= parentView.bounds.size.height/2.0;
-            BOOL shouldUnrevealNotificationView = translation.y < (-_notificationView.bounds.size.height/2.0);
+            BOOL shouldShowContentViewFully = NO;
+            BOOL shouldUnrevealNotificationView = NO;
+            NSTimeInterval duration = 0.3;
+            
+            if (velocity.y >= 100) {
+            
+                // show no matter where you are on the screen currently
+                CGFloat verticalTripFinish = parentView.bounds.size.height - translation.y;
+                duration = verticalTripFinish / fabs(velocity.y);
+                
+                shouldShowContentViewFully = YES;
+
+            } else if (velocity.y >= 0 && velocity.y < 100) {
+
+                // if more than half revealed, show with default duration else scroll back
+                if (translation.y >= parentView.bounds.size.height/2.0) {
+                    shouldShowContentViewFully = YES;
+                }
+                
+            } else {
+                
+                // moving up
+                if (translation.y >= 0) {
+
+                    // reset views
+                    CGFloat verticalTripFinish = translation.y;
+                    duration = verticalTripFinish / fabs(velocity.y);
+                    
+                } else {
+                    
+                    // hide views
+                    CGFloat verticalTripFinish = _notificationView.bounds.size.height + translation.y;
+                    duration = verticalTripFinish / fabs(velocity.y);
+                    
+                    shouldUnrevealNotificationView = YES;
+                }
+            }
+            
+            if (duration > 0.3) {
+                duration = 0.3;
+            }
             
             if (shouldShowContentViewFully) {
-                [self showContentViewAnimated:YES];
+                [self showContentViewAnimated:YES duration:duration];
             } else if (shouldUnrevealNotificationView) {
-                [self dismissIAMView];
+                [self dismissIAMViewWithDuration:duration];
             } else {
-                [self resetIAMViewsOnTouchEnd];
+                [self resetIAMViewsOnTouchEndWithDuration:duration];
             }
         }
             break;
