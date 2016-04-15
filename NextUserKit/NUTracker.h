@@ -82,6 +82,24 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
+/**
+ *  Triggers system alert view which asks user for permissions to use notifications. This method requests all notifications type alerts.
+ *  For requesting only specific notification type alerts use -requestNotificationPermissionsForNotificationTypes: method.
+ * 
+ *  @warning Without calling this method (or expanded version of it bellow) IAMs will not work.
+ */
+- (void)requestNotificationPermissions;
+
+/**
+ *  Triggers system alert view which asks user for permissions to use notifications. This method requests specific notifications type alerts.
+ *  For requesting all notification type alerts use -requestNotificationPermissions: method.
+ *
+ *  @param types Requested notification types
+ *
+ *  @warning Without calling this method (or shorter one above) IAMs will not work.
+ */
+- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
+
 #pragma mark - Initialization
 /**
  * @name Initialization

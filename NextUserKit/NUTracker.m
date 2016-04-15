@@ -77,27 +77,6 @@ static NUTracker *instance;
     [self unsubscribeFromAppStateNotifications];
 }
 
-#pragma mark -
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    DDLogInfo(@"Did finish launching with options: %@", launchOptions);
-    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localNotification && [self isNextUserLocalNotification:localNotification]) {
-        [self handleLocalNotification:localNotification application:application];
-    }
-    
-    return YES;
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    DDLogInfo(@"Did receive local notification: %@", notification);
-    if ([self isNextUserLocalNotification:notification]) {
-        [self handleLocalNotification:notification application:application];
-    }
-}
-
 #pragma mark - Local Notifications
 
 - (UILocalNotification *)localNotificationFromPushMessage:(NUPushMessage *)message
@@ -157,15 +136,16 @@ static NUTracker *instance;
     }
 }
 
-#pragma mark - User Permissions
+#pragma mark - Notification Permissions
 
-- (void)requestLocalNotificationsPermissions
+- (UIUserNotificationSettings *)userNotificationSettingsForNotificationTypes:(UIUserNotificationType)types
 {
-    // register local notifications
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-    }
+    return [UIUserNotificationSettings settingsForTypes:types categories:nil];
+}
+
+- (UIUserNotificationType)allNotificationTypes
+{
+    return  UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 }
 
 #pragma mark - App State Subscribe/Unsubscribe
@@ -273,9 +253,6 @@ static NUTracker *instance;
     [_pushMessageService startListening];
     
     [self subscribeToAppStateNotificationsOnce];
-    
-    // without this, local notes will not work
-    [self requestLocalNotificationsPermissions];
 }
 
 - (void)disconnectPushMessageService
@@ -290,6 +267,42 @@ static NUTracker *instance;
 }
 
 #pragma mark - Public API
+
+#pragma mark - Setup
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    DDLogInfo(@"Did finish launching with options: %@", launchOptions);
+    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    if (localNotification && [self isNextUserLocalNotification:localNotification]) {
+        [self handleLocalNotification:localNotification application:application];
+    }
+    
+    return YES;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    DDLogInfo(@"Did receive local notification: %@", notification);
+    if ([self isNextUserLocalNotification:notification]) {
+        [self handleLocalNotification:notification application:application];
+    }
+}
+
+#pragma mark -
+
+- (void)requestNotificationPermissions
+{
+    [self requestNotificationPermissionsForNotificationTypes:[self allNotificationTypes]];
+}
+
+- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
+{
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationSettings *settings = [self userNotificationSettingsForNotificationTypes:types];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }
+}
 
 #pragma mark - Initialization
 
