@@ -35,8 +35,6 @@
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
-        [self requestLocationUsageAuthorization];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidFinishLaunchingNotification:)
                                                      name:UIApplicationDidFinishLaunchingNotification
@@ -85,6 +83,14 @@
     }
 }
 
+- (void)requestLocationUsageAuthorization
+{
+    // iOS8 and above only
+    if([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [_locationManager requestAlwaysAuthorization];
+    }
+}
+
 + (BOOL)isAppInBackground
 {
     return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
@@ -127,14 +133,6 @@
 }
 
 #pragma mark -
-
-- (void)requestLocationUsageAuthorization
-{
-    // iOS8 and above only
-    if([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [_locationManager requestAlwaysAuthorization];
-    }
-}
 
 + (BOOL)areLocationServicesEnabled
 {

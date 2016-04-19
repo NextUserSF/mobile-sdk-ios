@@ -291,6 +291,17 @@ static NUTracker *instance;
 
 #pragma mark -
 
+- (void)requestDefaultPermissions
+{
+    [self requestLocationPersmissions];
+    [self requestNotificationPermissions];
+}
+
+- (void)requestLocationPersmissions
+{
+    [_wakeUpManager requestLocationUsageAuthorization];
+}
+
 - (void)requestNotificationPermissions
 {
     [self requestNotificationPermissionsForNotificationTypes:[self allNotificationTypes]];

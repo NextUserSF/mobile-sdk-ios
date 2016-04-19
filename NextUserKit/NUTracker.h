@@ -64,6 +64,8 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 + (NUTracker *)sharedTracker;
 
+#pragma mark -
+
 /**
  *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
  *
@@ -82,21 +84,45 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
+#pragma mark - Tracker Singleton Setup - User Persmissions
+
+/**
+ *  Convenient method which requests all needed user permissions. This method will trigger system alerts for accepting Location and Notification permissions. If you call this method
+ *  you don't need to call anything more regarding user permissions requesting.
+ */
+- (void)requestDefaultPermissions;
+
+#pragma mark -
+
+/**
+ *  Triggers system alert view which asks user for permissions to use location. NUTracker is monitoring for significant location changes in order to wake up application
+ *  in periods when it is in background or turned off. This is because app can not receive HTTP messages while in background.
+ *  
+ *  @warning Without calling this method (or expanded version of it bellow) IAMs will not work properly (you will miss messages that arrived during app's background time).
+ */
+- (void)requestLocationPersmissions;
+
+#pragma mark -
+
 /**
  *  Triggers system alert view which asks user for permissions to use notifications. This method requests all notifications type alerts.
  *  For requesting only specific notification type alerts use -requestNotificationPermissionsForNotificationTypes: method.
  * 
  *  @warning Without calling this method (or expanded version of it bellow) IAMs will not work.
+ *  @see requestNotificationPermissionsForNotificationTypes:
+ *  @see requestLocationPersmissions
  */
 - (void)requestNotificationPermissions;
 
 /**
  *  Triggers system alert view which asks user for permissions to use notifications. This method requests specific notifications type alerts.
- *  For requesting all notification type alerts use -requestNotificationPermissions: method.
+ *  For requesting all notification type alerts use -requestNotificationPermissions method.
  *
  *  @param types Requested notification types
  *
  *  @warning Without calling this method (or shorter one above) IAMs will not work.
+ *  @see requestNotificationPermissions
+ *  @see requestLocationPersmissions
  */
 - (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
 

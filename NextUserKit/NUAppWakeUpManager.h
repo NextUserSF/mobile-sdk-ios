@@ -29,6 +29,8 @@ didWakeUpAppInBackgroundWithTaskCompletion:(void(^)())completion;
 - (void)start;
 - (void)stop;
 
+- (void)requestLocationUsageAuthorization;
+
 + (BOOL)isAppInBackground;
 + (BOOL)appWakeUpAvailable;
 
