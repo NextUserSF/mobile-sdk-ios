@@ -11,6 +11,7 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 #import "NURoundedDismissButton.h"
+#import "NUDDLog.h"
 
 #define kIAMContentViewSideInset 10
 #define kIAMContentViewCornerRadius 4
@@ -60,7 +61,7 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    NSLog(@"webView fail: %@", error);
+    DDLogError(@"webView fail: %@", error);
 }
 
 #pragma mark - Public
