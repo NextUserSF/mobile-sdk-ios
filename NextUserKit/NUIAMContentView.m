@@ -10,15 +10,19 @@
 #import "NUIAMContentView.h"
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
+#import "NURoundedDismissButton.h"
 
-#define kIAMContentViewSideInset 5
-#define kIAMContentViewCornerRadius 5
+#define kIAMContentViewSideInset 10
+#define kIAMContentViewCornerRadius 4
 
 @interface NUIAMContentView () <UIWebViewDelegate>
 
+#pragma mark - Main Views
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *backgroundView;
-@property (weak, nonatomic) IBOutlet UIButton *dismissButton;
+
+#pragma mark - Dismiss Button
+@property (weak, nonatomic) IBOutlet NURoundedDismissButton *dismissButton;
 
 @end
 
@@ -33,7 +37,10 @@
         
         [self addSubview:viewFromNib];
         
-        CGRect webViewFrame = CGRectInset(_backgroundView.bounds, kIAMContentViewSideInset, kIAMContentViewSideInset);
+        CGRect webViewFrame = CGRectMake(0,
+                                         kIAMContentViewSideInset,
+                                         _backgroundView.bounds.size.width,
+                                         _backgroundView.bounds.size.height - 2*kIAMContentViewSideInset);
         _webView.frame = webViewFrame;
         
         _backgroundView.layer.cornerRadius = kIAMContentViewCornerRadius;
@@ -64,7 +71,7 @@
     
     if (message.UITheme.backgroundColor) {
         _backgroundView.backgroundColor = message.UITheme.backgroundColor;
-        _dismissButton.tintColor = message.UITheme.backgroundColor;
+        _dismissButton.color = message.UITheme.backgroundColor;
     }
     
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:message.contentURL

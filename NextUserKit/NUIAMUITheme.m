@@ -71,7 +71,7 @@
 
 + (UIColor *)defaultBackgroundColor
 {
-    return [UIColor grayColor];
+    return [UIColor lightGrayColor];
 }
 
 + (UIColor *)defaultTextColor
