@@ -4,13 +4,13 @@ NextUser is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "NextUser", '~> 0.1.9'
+pod "NextUser", '~> 0.0.1'
 ```
 
 You also need to add this into the Podfile:
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
-source 'https://github.com/Dino4674/NUPodSpecsTestPod.git'
+source 'https://github.com/NextUserSF/NextUserPodSpecs.git'
 ```
 
 # Setup

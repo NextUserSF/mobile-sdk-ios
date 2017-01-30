@@ -1,15 +1,15 @@
 Pod::Spec.new do |s|
   s.name             = 'NextUser'
-  s.version          = '0.1.9'
+  s.version          = '0.0.1'
   s.summary          = 'NextUser analytics for iOS.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/Dino4674/NextUserKitTestPod'
+  s.homepage         = 'https://github.com/NextUserSF/mobile-sdk-ios'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Next User' => 'dino.bartosak@gmail.com' }
-  s.source           = { :git => 'https://github.com/Dino4674/NextUserKitTestPod.git', :tag => s.version.to_s }
+  s.author           = { 'Next User' => 'm@nextuser.com' }
+  s.source           = { :git => 'https://github.com/NextUserSF/mobile-sdk-ios.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'
 
