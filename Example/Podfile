@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'NextUser_Example' do
+  pod 'NextUser', :path => '../'
+
+  target 'NextUser_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

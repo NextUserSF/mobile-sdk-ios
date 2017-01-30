@@ -1,0 +1,6 @@
+framework module NextUser {
+  umbrella header "NextUser-umbrella.h"
+
+  export *
+  module * { export * }
+}
