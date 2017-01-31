@@ -128,7 +128,7 @@ NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:78.97 items:@[item1]]
 
 ## Author
 
-Next User, m@nextuser.com
+Next User, marin@nextuser.com
 
 ## License
 
