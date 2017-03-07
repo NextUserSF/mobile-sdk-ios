@@ -159,6 +159,7 @@
         parameters[@"nutm_sc"] = session.sessionCookie;
         parameters[@"tid"] = [self trackIdentifierParameterForSession:session appendUserIdentifier:includeUserIdentifier];
         parameters[@"nuv"] = @"m1";
+        parameters[@"mobile"] = @"ios";
     }
     
     return parameters;
