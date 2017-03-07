@@ -4,7 +4,22 @@ NextUser is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "NextUser", '~> 0.0.1'
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://github.com/NextUserSF/NextUserPodSpecs.git'
+
+target 'MyApp' do
+    pod "NextUser", '~> 0.0.3'
+end
+```
+
+To install the pod:
+```shell
+pod install
+```
+
+To update the pod:
+```shell
+pod update NextUser
 ```
 
 You also need to add this into the Podfile:
