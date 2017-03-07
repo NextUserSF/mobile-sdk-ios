@@ -126,6 +126,28 @@ NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:78.97 items:@[item1] 
 NUPurchase *purchase = [NUPurchase purchaseWithTotalAmount:78.97 items:@[item1]];
 ```
 
+# Full minimal example
+
+### Pod file section
+```
+target 'BeaconsDemo' do
+    pod "NextUser", '~> 0.0.3'
+end
+```
+
+### Objective-C tracking
+```objective-c
+    @import NextUser;
+
+    NUTracker *tracker = [NUTracker sharedTracker];
+    tracker.logLevel = NULogLevelVerbose;
+    [tracker startSessionWithTrackIdentifier:@"my_wid"];
+    [tracker identifyUserWithIdentifier:@"marin+ios2@test.com"];
+    
+    NUAction *action = [NUAction actionWithName:@"test_action"];
+    [tracker trackAction:action];
+ ```
+
 ## Author
 
 Next User, marin@nextuser.com
