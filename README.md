@@ -22,12 +22,6 @@ To update the pod:
 pod update NextUser
 ```
 
-You also need to add this into the Podfile:
-```ruby
-source 'https://github.com/CocoaPods/Specs.git'
-source 'https://github.com/NextUserSF/NextUserPodSpecs.git'
-```
-
 # Setup
 Import *NextUserKit* into the file where you will be using it: 
 
