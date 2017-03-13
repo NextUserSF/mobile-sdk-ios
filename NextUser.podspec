@@ -13,7 +13,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'NextUser/Classes/**/*'
+  s.source_files = 'NextUser/Classes/**/*.{h,m}'
   s.public_header_files = 'NextUser/Classes/Public/**/*.h'
   s.resource_bundles = {
     'NextUser' => ['NextUser/Assets/*.png']
