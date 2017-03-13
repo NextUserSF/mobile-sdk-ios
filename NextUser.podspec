@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NextUser'
-  s.version          = '0.0.1'
+  s.version          = '0.0.4'
   s.summary          = 'NextUser analytics for iOS.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
@@ -13,7 +13,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'NextUser/Classes/**/*'
+  s.source_files = 'NextUser/Classes/**/*.{h,m}'
   s.public_header_files = 'NextUser/Classes/Public/**/*.h'
   s.resource_bundles = {
     'NextUser' => ['NextUser/Assets/*.png']

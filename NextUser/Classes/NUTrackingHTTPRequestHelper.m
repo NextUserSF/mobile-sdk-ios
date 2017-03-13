@@ -13,7 +13,7 @@
 #import "NSString+LGUtils.h"
 
 // Uncomment this when building release version of the SDK
-//#define IS_PRODUCTION_BUILD
+#define IS_PRODUCTION_BUILD
 
 #define END_POINT_PROD @"https://track.nextuser.com"
 #define END_POINT_DEV @"https://track-dev.nextuser.com"
