@@ -1,4 +1,4 @@
-use_frameworks!
+#use_frameworks!
 
 target 'NextUser_Example' do
   pod 'NextUser', :path => '../'

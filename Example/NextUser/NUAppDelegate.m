@@ -8,9 +8,9 @@
 
 #import "NUAppDelegate.h"
 
-@import PubNub;
-@import CocoaLumberjack;
-@import NextUser;
+#import <PubNub.h>
+#import <CocoaLumberjack.h>
+//@import NextUser; FIXME: Didn't know the correct public header
 
 @implementation NUAppDelegate
 

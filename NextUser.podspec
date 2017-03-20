@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NextUser'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = 'NextUser analytics for iOS.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
@@ -20,7 +20,7 @@ TODO: Add long description of the pod here.
   }
 
   # s.frameworks = 'UIKit', 'MapKit'
-    s.libraries = 'z'
+# s.libraries = 'z'
 
     s.dependency 'CocoaLumberjack'
     s.dependency 'AFNetworking', '~> 3.0'

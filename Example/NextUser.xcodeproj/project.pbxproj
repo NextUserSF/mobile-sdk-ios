@@ -20,10 +20,10 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
-		6D4F4E1ED1893B87021F4094 /* Pods_NextUser_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 417B1F05F8EAD45FBE2B72DD /* Pods_NextUser_Example.framework */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		CBA1055E036487807BDB4D4D /* Pods_NextUser_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E018A6F637E6A7734769FCA /* Pods_NextUser_Tests.framework */; };
+		96CF134FF4EF00ED4DA7FE35 /* libPods-NextUser_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0CC27595A871AD0FA54BB0D /* libPods-NextUser_Tests.a */; };
+		981CAF0731B721B3A0E8E46E /* libPods-NextUser_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A58D21DB10F2F520555CF5 /* libPods-NextUser_Example.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,12 +38,11 @@
 
 /* Begin PBXFileReference section */
 		028754B2AD16E54990949CDB /* Pods-NextUser_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NextUser_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-NextUser_Example/Pods-NextUser_Example.release.xcconfig"; sourceTree = "<group>"; };
+		06A58D21DB10F2F520555CF5 /* libPods-NextUser_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NextUser_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1532BDB48192E8A2F58C38B4 /* Pods-NextUser_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NextUser_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NextUser_Tests/Pods-NextUser_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		1D98A88BA79F28934E8EA9FE /* Pods-NextUser_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NextUser_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NextUser_Example/Pods-NextUser_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		1F5FD3C65B49194B5A872F71 /* NextUser.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = NextUser.podspec; path = ../NextUser.podspec; sourceTree = "<group>"; };
 		297661076F8707BB10697E24 /* Pods-NextUser_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NextUser_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NextUser_Tests/Pods-NextUser_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		417B1F05F8EAD45FBE2B72DD /* Pods_NextUser_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NextUser_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E018A6F637E6A7734769FCA /* Pods_NextUser_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NextUser_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* NextUser_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextUser_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -67,6 +66,7 @@
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8B4CA7DAB4777EF6C16FD92C /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		EDEED15DBFCCED230253EBE1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		F0CC27595A871AD0FA54BB0D /* libPods-NextUser_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NextUser_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +77,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				6D4F4E1ED1893B87021F4094 /* Pods_NextUser_Example.framework in Frameworks */,
+				981CAF0731B721B3A0E8E46E /* libPods-NextUser_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +88,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				CBA1055E036487807BDB4D4D /* Pods_NextUser_Tests.framework in Frameworks */,
+				96CF134FF4EF00ED4DA7FE35 /* libPods-NextUser_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,8 +134,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				417B1F05F8EAD45FBE2B72DD /* Pods_NextUser_Example.framework */,
-				5E018A6F637E6A7734769FCA /* Pods_NextUser_Tests.framework */,
+				06A58D21DB10F2F520555CF5 /* libPods-NextUser_Example.a */,
+				F0CC27595A871AD0FA54BB0D /* libPods-NextUser_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

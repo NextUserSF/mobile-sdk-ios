@@ -7,7 +7,7 @@
 //
 
 //#import "CocoaLumberjack.h"
-@import CocoaLumberjack;
+#import <CocoaLumberjack.h>;
 
 extern DDLogLevel ddLogLevel;
 
