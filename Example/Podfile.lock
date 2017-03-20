@@ -14,35 +14,33 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - CocoaLumberjack (3.0.0):
-    - CocoaLumberjack/Default (= 3.0.0)
-    - CocoaLumberjack/Extensions (= 3.0.0)
-  - CocoaLumberjack/Core (3.0.0)
-  - CocoaLumberjack/Default (3.0.0):
-    - CocoaLumberjack/Core
-  - CocoaLumberjack/Extensions (3.0.0):
+  - CocoaLumberjack (3.1.0):
+    - CocoaLumberjack/Default (= 3.1.0)
+    - CocoaLumberjack/Extensions (= 3.1.0)
+  - CocoaLumberjack/Default (3.1.0)
+  - CocoaLumberjack/Extensions (3.1.0):
     - CocoaLumberjack/Default
-  - NextUser (0.0.2):
+  - NextUser (0.0.4):
     - AFNetworking (~> 3.0)
     - CocoaLumberjack
     - PubNub (~> 4)
-  - PubNub (4.5.11):
-    - PubNub/Core (= 4.5.11)
-  - PubNub/Core (4.5.11)
+  - PubNub (4.5.15):
+    - PubNub/Core (= 4.5.15)
+  - PubNub/Core (4.5.15)
 
 DEPENDENCIES:
   - NextUser (from `../`)
 
 EXTERNAL SOURCES:
   NextUser:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  CocoaLumberjack: c823149bccc5519a9447aeb433be7b1212a7d6a5
-  NextUser: 9515093138683d9e85f29f570964cee761e071f7
-  PubNub: bf767a13b65f0492f8a2f141d6af27d1e8746f2b
+  CocoaLumberjack: 8311463ddf9ee86a06ef92a071dd656c89244500
+  NextUser: 07046e72150ae92fa7f4d16cb8c7fe8e3963555c
+  PubNub: 5080a9cb739435e1efe0b47a00fd45d1188b5150
 
-PODFILE CHECKSUM: 080d7bd06ee919f9de3f71f8d2449297ab83e55d
+PODFILE CHECKSUM: 67e916b0e4816e63dd4d6b9286ac697203daac41
 
 COCOAPODS: 1.1.1

@@ -10,7 +10,8 @@
 #import "NUTrackerSession.h"
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
-@import PubNub;
+//@import PubNub;
+#import <PubNub.h>
 
 @interface NUPubNubClient () <PNObjectEventListener>
 

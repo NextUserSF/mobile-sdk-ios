@@ -6,7 +6,7 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-@import AFNetworking;
+#import <AFNetworking.h>
 
 #import "NUHTTPRequestUtils.h"
 #import "NUDDLog.h"
