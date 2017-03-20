@@ -2,9 +2,7 @@ Pod::Spec.new do |s|
   s.name             = 'NextUser'
   s.version          = '0.0.5'
   s.summary          = 'NextUser analytics for iOS.'
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+  s.description      = 'NextUser SDK for iOS platform'
 
   s.homepage         = 'https://github.com/NextUserSF/mobile-sdk-ios'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -18,9 +16,6 @@ TODO: Add long description of the pod here.
   s.resource_bundles = {
     'NextUser' => ['NextUser/Assets/*.png']
   }
-
-  # s.frameworks = 'UIKit', 'MapKit'
-# s.libraries = 'z'
 
     s.dependency 'CocoaLumberjack'
     s.dependency 'AFNetworking', '~> 3.0'

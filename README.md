@@ -8,7 +8,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 source 'https://github.com/NextUserSF/NextUserPodSpecs.git'
 
 target 'MyApp' do
-    pod "NextUser", '~> 0.0.3'
+    pod "NextUser", '~> 0.0.5'
 end
 ```
 
