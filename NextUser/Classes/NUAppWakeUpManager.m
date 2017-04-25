@@ -7,9 +7,9 @@
 //
 
 #import "NUAppWakeUpManager.h"
-#import "NUDDLog.h"
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import <NUDDLog.h>
 
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)

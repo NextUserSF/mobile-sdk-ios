@@ -6,8 +6,7 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-//#import "CocoaLumberjack.h"
-#import <CocoaLumberjack.h>;
+#import "CocoaLumberjack.h"
 
 extern DDLogLevel ddLogLevel;
 

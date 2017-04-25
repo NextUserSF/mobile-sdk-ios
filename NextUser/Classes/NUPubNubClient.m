@@ -11,7 +11,7 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 //@import PubNub;
-#import <PubNub.h>
+#import "PubNub.h"
 
 @interface NUPubNubClient () <PNObjectEventListener>
 
