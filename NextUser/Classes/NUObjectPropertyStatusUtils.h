@@ -17,5 +17,6 @@
 + (BOOL)isUnsignedIntegerValueSet:(double)doubleValue;
 
 + (BOOL)isStringValueSet:(NSString *)stringValue;
++ (NSString *)toURLEncodedString:(NSString *)toEncode;
 
 @end

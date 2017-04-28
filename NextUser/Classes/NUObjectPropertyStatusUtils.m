@@ -7,6 +7,7 @@
 //
 
 #import "NUObjectPropertyStatusUtils.h"
+#import "NSString+LGUtils.h"
 
 @implementation NUObjectPropertyStatusUtils
 
@@ -33,6 +34,11 @@
 + (BOOL)isStringValueSet:(NSString *)stringValue
 {
     return stringValue != nil;
+}
+
++ (NSString *)toURLEncodedString:(NSString *)toEncode
+{
+    return [toEncode URLEncodedString];
 }
 
 @end
