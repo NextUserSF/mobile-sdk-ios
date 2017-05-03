@@ -28,7 +28,7 @@
 
 - (BOOL) hasVariable:(NSString *)variableName;
 
-- (void)addVariable:(NSString*)name withValue:(NSString*)value;
+- (void) addVariable:(NSString*)name withValue:(NSString*)value;
 
 #pragma mark - User Properties
 /**
@@ -53,17 +53,17 @@
 /**
  *  User First Name.
  */
-@property (nonatomic) NSString *firstName;
+@property (nonatomic) NSString *firstname;
 
 /**
  *  User Last Name.
  */
-@property (nonatomic) NSString *lastName;
+@property (nonatomic) NSString *lastname;
 
 /**
  *  User Birth Year.
  */
-@property (nonatomic) NSString *birthYear;
+@property (nonatomic) NSString *birthyear;
 
 /**
  *  User Country.

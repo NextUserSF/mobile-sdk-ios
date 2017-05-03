@@ -10,6 +10,7 @@
 
 @class NUPurchase;
 @class NUAction;
+@class NUUser;
 
 /**
  *  Log level used by the tracker.
@@ -174,13 +175,17 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 
 /**
- *  Call this method if you want to track particular user.
- *
- *  Each tracking request will be associated with this user identifier.
- *
- *  @param userIdentifier User identifier that is currently using the application. Can be an email or username or any other identifier which identifies a particular user.
+ *  Call this method if you want to track a particular user.
+ *  Check NUUser.h interface for available user fileds for tracking.
+ *  @param user that is currently using the application. 
  */
-- (void)identifyUserWithIdentifier:(NSString *)userIdentifier;
+- (void)trackUser:(NUUser *)user;
+
+/**
+ *  Call this method if you want to add user identification to your track requestes
+ *  This is for cases when an already identified user is reusing the application.
+ */
+- (void)setUser:(NUUser *)user;
 
 /**
  *  Gets current user identifier. This value will be *nil* or the one that you passed in -identifyUserWithIdentifier: method.

@@ -11,6 +11,7 @@
 @class NUTrackerSession;
 @class NUPurchase;
 @class NUAction;
+@class NUUser;
 
 @interface NUPrefetchTrackerClient : NSObject
 
@@ -23,6 +24,7 @@
 - (void)trackScreenWithName:(NSString *)screenName completion:(void(^)(NSError *error))completion;
 - (void)trackActions:(NSArray *)actions completion:(void(^)(NSError *error))completion;
 - (void)trackPurchases:(NSArray *)purchases completion:(void(^)(NSError *error))completion;
+- (void)trackUser:(NUUser *)user completion:(void(^)(NSError *error))completion;
 
 - (void)refreshPendingRequests;
 

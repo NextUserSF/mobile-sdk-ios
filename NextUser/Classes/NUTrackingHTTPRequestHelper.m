@@ -11,9 +11,10 @@
 #import "NUPurchase+Serialization.h"
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
+#import "NUUser+Serialization.h"
 
 // Uncomment this when building release version of the SDK
-#define IS_PRODUCTION_BUILD
+//#define IS_PRODUCTION_BUILD
 
 #define END_POINT_PROD @"https://track.nextuser.com"
 #define END_POINT_DEV @"https://track-dev.nextuser.com"
@@ -79,6 +80,24 @@
         parameters[purchaseKey] = purchaseValue;
     }
     
+    return parameters;
+}
+
++ (NSDictionary *)trackUserParametersWithVariables:(NUUser *)user
+{
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"s"] = [user httpRequestParameterRepresentation];
+    
+    if (user.userVariables != nil) {
+        int index = 0;
+        for (id key in user.userVariables.allKeys) {
+            NSString *userVariableTrackKey = [NSString stringWithFormat:@"sv%d", index];
+            NSString *userVariableTrackValue = [NSString stringWithFormat:@"%@=%@", key, [user.userVariables[key] URLEncodedString]];
+            parameters[userVariableTrackKey] = userVariableTrackValue;
+            index++;
+        }
+    }
+
     return parameters;
 }
 

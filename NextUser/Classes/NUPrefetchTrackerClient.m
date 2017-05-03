@@ -13,6 +13,8 @@
 #import "NSError+NextUser.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
+#import "Base64.h"
+
 
 @interface NUPrefetchTrackerClient ()
 
@@ -54,6 +56,12 @@
     [self sendTrackRequestWithParameters:parameters completion:completion];
 }
 
+- (void)trackUser:(NUUser *)user completion:(void(^)(NSError *error))completion
+{
+    NSDictionary *parameters = [NUTrackingHTTPRequestHelper trackUserParametersWithVariables:user];
+    [self sendTrackRequestWithParameters:parameters completion:completion];
+}
+
 - (void)refreshPendingRequests
 {
     [self popPendingTrackRequest];
@@ -78,7 +86,7 @@
         
         NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
         NSMutableDictionary *parameters = [self.class defaultTrackingParametersForSession:_session
-                                                                    includeUserIdentifier:!_session.userIdentifierRegistered];
+                                                                    includeUserIdentifier: _session.user != nil];
         
         // add track parameters
         for (id key in trackParameters.allKeys) {
@@ -91,10 +99,6 @@
             // we want to make sure that request was successful and that we registered user identifier.
             // only if request was successful we will not send user identifier anymore
             if (error == nil) {
-                if ([self.class isUserIdentifierValidForSession:_session]) {
-                    _session.userIdentifierRegistered = YES;
-                }
-                
                 DDLogVerbose(@"Track request finished, pop pending track request.");
                 [self popPendingTrackRequest];
             } else {
@@ -174,7 +178,8 @@
 {
     NSString *trackIdentifier = session.trackIdentifier;
     if (appendUserIdentifier && [self isUserIdentifierValidForSession:session]) {
-        trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", session.userIdentifier];
+        NSString *base64Id = [session.user.userIdentifier base64EncodedStringWithWrapWidth:0];
+        trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", [base64Id URLEncodedString]];
     }
     
     return trackIdentifier;
@@ -182,7 +187,7 @@
 
 + (BOOL)isUserIdentifierValidForSession:(NUTrackerSession *)session
 {
-    return ![NSString lg_isEmptyString:session.userIdentifier];
+    return session.user != nil && ![NSString lg_isEmptyString:session.user.userIdentifier];
 }
 
 @end

@@ -14,6 +14,7 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 #import "NUInAppMessageManager.h"
+#import "NUUser.h"
 
 #import "NSError+NextUser.h"
 #import "NUDDLog.h"
@@ -399,16 +400,21 @@ static NUTracker *instance;
 
 #pragma mark - User Identification
 
-- (void)identifyUserWithIdentifier:(NSString *)userIdentifier
+- (void)trackUser:(NUUser *)user
 {
-    DDLogInfo(@"Identify user with identifer: %@", userIdentifier);
-    _session.userIdentifier = userIdentifier;
-    _session.userIdentifierRegistered = NO;
+    DDLogInfo(@"Tracking user with identifier: %@", user.userIdentifier);
+    _session.user = user;
+    [_prefetchClient trackUser:user completion:NULL];
+}
+
+- (void)setUser:(NUUser *)user
+{
+    _session.user = user;
 }
 
 - (NSString *)currentUserIdenifier
 {
-    return _session.userIdentifier;
+    return _session.user.userIdentifier;
 }
 
 #pragma mark - Tracking

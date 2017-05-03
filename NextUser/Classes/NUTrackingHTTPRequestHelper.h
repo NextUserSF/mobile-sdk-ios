@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NUUser.h"
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
@@ -18,5 +19,6 @@
 + (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
 + (NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
 + (NSDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
++ (NSDictionary *)trackUserParametersWithVariables:(NUUser *)user;
 
 @end

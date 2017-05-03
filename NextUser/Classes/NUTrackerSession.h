@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class NUPubNubConfiguration;
+@class NUUser;
 
 @interface NUTrackerSession : NSObject
 
@@ -18,8 +19,7 @@
 
 @property (nonatomic, readonly) BOOL shouldListenForPushMessages;
 
-@property (nonatomic) NSString *userIdentifier; // username, email or something else
-@property (nonatomic) BOOL userIdentifierRegistered;
+@property (nonatomic) NUUser *user;
 
 @property (nonatomic, readonly) BOOL isValid;
 
