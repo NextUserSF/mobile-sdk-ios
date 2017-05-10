@@ -124,7 +124,7 @@
 
 - (BOOL)shouldPostponeTrackRequest
 {
-    return ![_session isValid] && _session.startupRequestInProgress;
+    return ![_session isValid];
 }
 
 - (void)addPostponedTrackRequestWithTrackParameters:(NSDictionary *)trackParameters completion:(void(^)(NSError *error))completion
@@ -176,7 +176,7 @@
 
 + (NSString *)trackIdentifierParameterForSession:(NUTrackerSession *)session appendUserIdentifier:(BOOL)appendUserIdentifier
 {
-    NSString *trackIdentifier = session.trackIdentifier;
+    NSString *trackIdentifier = session.trackerProperties.wid;
     if (appendUserIdentifier && [self isUserIdentifierValidForSession:session]) {
         NSString *base64Id = [session.user.userIdentifier base64EncodedStringWithWrapWidth:0];
         trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", [base64Id URLEncodedString]];

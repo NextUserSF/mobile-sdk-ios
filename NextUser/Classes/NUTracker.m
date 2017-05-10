@@ -20,6 +20,7 @@
 #import "NUDDLog.h"
 
 #import "NUTracker+Tests.h"
+#import "NULogLevel.h"
 
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
@@ -318,51 +319,49 @@ static NUTracker *instance;
 
 #pragma mark - Initialization
 
-- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier
+- (void)initialize
 {
-    [self startSessionWithTrackIdentifier:trackIdentifier completion:nil];
+    [self initialize: nil];
 }
 
-- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
+- (void)initialize:(void(^)(NSError *error))completion;
 {
-    if (trackIdentifier == nil || trackIdentifier.length == 0) {
-        @throw [NSException exceptionWithName:@"Tracker session start exception"
-                                       reason:@"Track identifier must be a non-empty string"
-                                     userInfo:nil];
+    
+    if (_session != nil && [_session sessionState] == Initializing) {
+        DDLogWarn(@"Startup session request already in progress");
+        
+        return;
     }
     
-    DDLogInfo(@"Start tracker session with identifier: %@", trackIdentifier);
-    if (!_session.startupRequestInProgress) {
-        [_session startWithTrackIdentifier:trackIdentifier completion:^(NSError *error) {
-            if (error == nil) {
-                if (_session.sessionCookie != nil && _session.deviceCookie != nil) {
-                    
-                    DDLogVerbose(@"Session startup finished, setup tracker");
-                    
-                    // send queued events
-                    [_prefetchClient refreshPendingRequests];
-                    
-                    if (_session.shouldListenForPushMessages) {
-                        [self connectPushMessageService];
-                    } else {
-                        [self disconnectPushMessageService];
-                    }
-                    
+    [_session initialize:^(NSError *error) {
+        if (error == nil) {
+            if ([_session isValid]) {
+                
+                [self setLogLevel: [_session logLevel]];
+                
+                DDLogVerbose(@"Session startup finished, setup tracker");
+                
+                // send queued events
+                [_prefetchClient refreshPendingRequests];
+                
+                if (_session.shouldListenForPushMessages) {
+                    [self connectPushMessageService];
                 } else {
-                    DDLogError(@"Missing cookies in session initialization response");
-                    error = [NSError nextUserErrorWithMessage:@"Missing cookies"];
+                    [self disconnectPushMessageService];
                 }
+                
             } else {
-                DDLogError(@"Error initializing tracker: %@", error);
+                DDLogError(@"Missing cookies in session initialization response");
+                error = [NSError nextUserErrorWithMessage:@"Missing cookies"];
             }
-            
-            if (completion != NULL) {
-                completion(error);
-            }
-        }];
-    } else {
-        DDLogWarn(@"Startup session request already in progress");
-    }
+        } else {
+            DDLogError(@"Error initializing tracker: %@", error);
+        }
+        
+        if (completion != NULL) {
+            completion(error);
+        }
+    }];
 }
 
 #pragma mark - Logging

@@ -7,32 +7,38 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NULogLevel.h"
+#import "NUUser.h"
+#import "NUTrackerProperties.h"
+#import "NUTrackerProperties.h"
 
 @class NUPubNubConfiguration;
-@class NUUser;
+
+typedef NS_ENUM(NSUInteger, NUSessionState) {
+    Initialized,
+    Initializing,
+    Failed,
+    None
+};
+
 
 @interface NUTrackerSession : NSObject
 
-@property (nonatomic, readonly) NSString *sessionCookie;
-@property (nonatomic, readonly) NSString *deviceCookie; // gets serialized when retrieved from server
-@property (nonatomic, readonly) NSString *trackIdentifier;
-
-@property (nonatomic, readonly) BOOL shouldListenForPushMessages;
-
 @property (nonatomic) NUUser *user;
-
-@property (nonatomic, readonly) BOOL isValid;
-
+@property (nonatomic) NUSessionState sessionState;
+@property (nonatomic, readonly) NSString *sessionCookie;
+@property (nonatomic, readonly) NSString *deviceCookie;
+@property (nonatomic, readonly) NUTrackerProperties *trackerProperties;
+@property (nonatomic, readonly) BOOL shouldListenForPushMessages;
 @property (nonatomic, readonly) NUPubNubConfiguration *pubNubConfiguration;
 
-// property serialization
-- (NSString *)serializedDeviceCookie;
-- (void)clearSerializedDeviceCookie;
 
-// starts session (triggers call to fetch device & session cookies)
-- (void)startWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
-// YES if request to start the session is being made already and not yet finished
-@property (nonatomic, readonly) BOOL startupRequestInProgress;
+- (NSString *) serializedDeviceCookie;
+- (void) clearSerializedDeviceCookie;
+- (NUSessionState) sessionState;
+- (void) initialize:(void(^)(NSError *error))completion;
+- (BOOL)isValid;
+- (NULogLevel) logLevel;
 
 @end
 
@@ -41,7 +47,6 @@
 
 @property (nonatomic, readonly) NSString *subscribeKey;
 @property (nonatomic, readonly) NSString *publishKey;
-
 @property (nonatomic, readonly) NSString *publicChannel;
 @property (nonatomic, readonly) NSString *privateChannel;
 

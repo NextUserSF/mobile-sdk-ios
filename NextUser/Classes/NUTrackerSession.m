@@ -7,21 +7,20 @@
 //
 
 #import "NUTrackerSession.h"
+#import "NUTrackerProperties.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
 #import "NUHTTPRequestUtils.h"
 #import "SSKeychain.h"
 #import "NSString+LGUtils.h"
+#import "NULogLevel.h"
 
 #pragma mark - Session Keys
 
 #define kDeviceCookieSerializationKey @"nu_device_ide"
-
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
-
 #define kKeychainServiceName @"com.nextuser.nextuserkit"
-
 
 #pragma mark - PubNub Configuration
 
@@ -29,7 +28,6 @@
 
 @property (nonatomic) NSString *subscribeKey;
 @property (nonatomic) NSString *publishKey;
-
 @property (nonatomic) NSString *publicChannel;
 @property (nonatomic) NSString *privateChannel;
 
@@ -47,7 +45,6 @@
 - (id)init
 {
     if (self = [super init]) {
-        
         // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
@@ -55,19 +52,23 @@
     return self;
 }
 
-- (void)startWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
+- (void)initialize:(void(^)(NSError *error))completion;
 {
     DDLogInfo(@"Start tracker session");
-    if (!_startupRequestInProgress) {
+    if (_sessionState != Initializing) {
         
-        _startupRequestInProgress = YES;
-
+        _sessionState = Initializing;
         _deviceCookie = nil;
         _sessionCookie = nil;
-        _trackIdentifier = trackIdentifier;
+        _trackerProperties = [NUTrackerProperties properties];
+        
+        if ([_trackerProperties validProps] == NO) {
+            @throw [NSException exceptionWithName:@"Tracker session start exception"
+                                           reason:@"Invalid properties"
+                                         userInfo:nil];
+        }
         
         NSString *currentDeviceCookie = [self serializedDeviceCookie];
-        
         NSDictionary *parameters = nil;
         NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie URLParameters:&parameters];
         
@@ -75,16 +76,24 @@
         [NUHTTPRequestUtils sendGETRequestWithPath:path
                                         parameters:parameters
                                         completion:^(id responseObject, NSError *error) {
-                                            
-                                            _startupRequestInProgress = NO;
-
+    
                                             if (error == nil) {
                                                 
                                                 DDLogVerbose(@"Start tracker session response: %@", responseObject);
                                                 
                                                 _deviceCookie = responseObject[kDeviceCookieJSONKey];
                                                 _sessionCookie = responseObject[kSessionCookieJSONKey];
+                                                if (_sessionCookie == nil) {
+                                                    _sessionState = Failed;
+                                                    DDLogError(@"Setup tracker error: %@", @"Server Error.");
+                                                    if (completion != NULL) {
+                                                        completion(nil);
+                                                    }
+                                                    
+                                                    return;
+                                                }
                                                 
+                                                _sessionState = Initialized;
                                                 [self setupPushMessageServiceInfoWithSessionResponseObject:responseObject];
                                                 
                                                 // save new device cookie only if one does not already exists
@@ -105,14 +114,12 @@
                                                 }
                                             }
                                         }];
-            }
+    }
 }
 
 - (BOOL)isValid
 {
-    return ![NSString lg_isEmptyString:_deviceCookie] &&
-    ![NSString lg_isEmptyString:_sessionCookie] &&
-    ![NSString lg_isEmptyString:_trackIdentifier];
+    return _sessionState == Initialized;
 }
 
 #pragma mark -
@@ -136,7 +143,7 @@
     NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"sdk.js"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[@"tid"] = _trackIdentifier;
+    parameters[@"tid"] = _trackerProperties.wid;
     if (deviceCookie) {
         parameters[@"dc"] = deviceCookie;
     }
@@ -190,5 +197,15 @@
         DDLogError(@"Error while deleting device cookie from keychain. %@", error);
     }
 }
+
+- (NULogLevel) logLevel
+{
+    if (_trackerProperties.isProduction) {
+        return _trackerProperties.prodLogLevel;
+    }
+    
+    return _trackerProperties.devLogLevel;
+}
+
 
 @end

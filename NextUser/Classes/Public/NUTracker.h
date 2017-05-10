@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+
 @class NUPurchase;
 @class NUAction;
 @class NUUser;
@@ -15,32 +16,7 @@
 /**
  *  Log level used by the tracker.
  */
-typedef NS_ENUM(NSUInteger, NULogLevel) {
-    /**
-     *  Logging is turned off. No messages.
-     */
-    NULogLevelOff,
-    
-    /**
-     *  Logging of error messages only.
-     */
-    NULogLevelError,
-    
-    /**
-     *  Logging od error and warning messages.
-     */
-    NULogLevelWarning,
-    
-    /**
-     *  Logging of error, warning and info messages.
-     */
-    NULogLevelInfo,
-    
-    /**
-     *  Logging of error, warning, info and verbose messages.
-     */
-    NULogLevelVerbose
-};
+
 
 /**
  * This class is the primary interface for user tracking which communicates with the NextUser API.
@@ -133,41 +109,20 @@ typedef NS_ENUM(NSUInteger, NULogLevel) {
  */
 
 /**
- *  Starts the session for tracker.
+ *  Initialize the tracker.
  *
- *  Call this method once, preferably on app startup. Also see startSessionWithTrackIdentifier:completion:
- *  for the version of this method with an optional completion handler which gets called when session is successfully
- *  started or if starting failed. Call only one of them. Note that without calling one of these two methods, tracker won't
+ *  Call this method once, preferably on app startup. Also see initialize:completion:
+ *  for the version of this method with an optional completion handler which gets called when tracker is initialized. 
+ *  Call only one of them. Note that without calling one of these two methods, tracker won't
  *  be able to track any events.
- *
- *  @param trackIdentifier Track identifier used to associate this session with.
- *  @warning Throws an exception if trackIdentifier is invalid (empty or nil).
- *  @see startSessionWithTrackIdentifier:completion:
  */
-- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier;
+- (void)initialize;
 
 /**
  *  Starts the session for tracker.
- *
- *  Call this method once, preferably on app startup. Also see startSessionWithTrackIdentifier:
- *  for the version of this method without the completion handler. Call only one of them. Note that without calling one 
- *  of these two methods, tracker won't be able to track any events.
- *
- *  @param trackIdentifier Track Identifier used to associate this session with.
- *  @param completion      Optional completion handler which will notify you if session started successfully.
- *  @see startSessionWithTrackIdentifier:
+ *  @param completion :Optional completion handler which will notify you if tracker was successfully initialized or not.
  */
-- (void)startSessionWithTrackIdentifier:(NSString *)trackIdentifier completion:(void(^)(NSError *error))completion;
-
-#pragma mark - Logging
-/**
- * @name Logging
- */
-
-/**
- *  Defines the NULogLevel being used. Defaults to NULogLevelWarning.
- */
-@property (nonatomic) NULogLevel logLevel;
+- (void)initialize:(void(^)(NSError *error))completion;
 
 #pragma mark - User Identification
 /**

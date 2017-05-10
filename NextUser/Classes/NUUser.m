@@ -54,7 +54,7 @@
     //}
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_uid]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"uid=", [ _uid URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", [ _uid URLEncodedString]]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_subscription]) {
