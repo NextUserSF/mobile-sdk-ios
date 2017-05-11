@@ -12,6 +12,9 @@
 #import "NUTrackerProperties.h"
 #import "NUTrackerProperties.h"
 
+#define END_POINT_PROD @"https://track.nextuser.com"
+#define END_POINT_DEV @"https://track-dev.nextuser.com"
+
 @class NUPubNubConfiguration;
 
 typedef NS_ENUM(NSUInteger, NUSessionState) {
@@ -39,6 +42,8 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (void) initialize:(void(^)(NSError *error))completion;
 - (BOOL)isValid;
 - (NULogLevel) logLevel;
+- (NSString *)basePath;
+- (NSString *)pathWithAPIName:(NSString *)APIName;
 
 @end
 

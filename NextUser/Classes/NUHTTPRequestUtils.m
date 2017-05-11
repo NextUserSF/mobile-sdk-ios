@@ -20,12 +20,10 @@
                     parameters:(NSDictionary *)parameters
                     completion:(void (^)(id responseObject, NSError *error))completion
 {
-//    DDLogVerbose(@"Fire HTTP GET request. Path: %@, Parameters: %@", path, parameters);
-    DDLogVerbose(@"");
+    
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    
-    
+
     NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:path parameters:parameters error:nil];
 
     NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {

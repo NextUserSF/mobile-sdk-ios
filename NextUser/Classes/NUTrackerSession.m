@@ -139,9 +139,7 @@
 
 - (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie URLParameters:(NSDictionary **)URLParameters
 {
-    // e.g. https://track-dev.nextuser.com/sdk.js?tid=internal_tests
-    NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"sdk.js"];
-    
+    NSString *path = [self pathWithAPIName:@"sdk.js"];
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[@"tid"] = _trackerProperties.wid;
     if (deviceCookie) {
@@ -207,5 +205,18 @@
     return _trackerProperties.devLogLevel;
 }
 
+- (NSString *)basePath
+{
+    if (_trackerProperties.isProduction) {
+        return END_POINT_PROD;
+    }
+    
+    return END_POINT_DEV;
+}
+
+- (NSString *)pathWithAPIName:(NSString *)APIName
+{
+    return [[self basePath] stringByAppendingFormat:@"/%@", APIName];
+}
 
 @end

@@ -49,48 +49,48 @@
 {
     NSMutableArray *paramsArray = [NSMutableArray array];
     
-    //if ([NUObjectPropertyStatusUtils isStringValueSet:_email]) {
-    //    [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"email=", [_email URLEncodedString]]];
-    //}
+    if ([NUObjectPropertyStatusUtils isStringValueSet:_email]) {
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"email=", _email]];
+    }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_uid]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", [ _uid URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", _uid]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_subscription]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"subscription=", [_subscription URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"subscription=", _subscription]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_firstname]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"firstname=", [_firstname URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"firstname=", _firstname]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_lastname]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"lastname=", [_lastname URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"lastname=", _lastname]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_birthyear]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"birthyear=", [_birthyear URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"birthyear=", _birthyear]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_country]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"country=", [_country URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"country=", _country]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_state]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"state=", [_state URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"state=", _state]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_zipcode]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"zipcode=", [_zipcode URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"zipcode=", _zipcode]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_locale]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"locale=", [_locale URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"locale=", _locale]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_gender]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=", [_gender URLEncodedString]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=", _gender]];
     }
     
     return [paramsArray componentsJoinedByString:@","];

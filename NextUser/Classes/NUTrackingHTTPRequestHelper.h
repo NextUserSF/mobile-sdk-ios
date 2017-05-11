@@ -11,10 +11,6 @@
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
-#pragma mark - Path
-+ (NSString *)basePath;
-+ (NSString *)pathWithAPIName:(NSString *)APIName;
-
 #pragma mark - Track Request URL Parameters
 + (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
 + (NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions;

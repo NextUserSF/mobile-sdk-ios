@@ -71,6 +71,8 @@
 
 #pragma mark - Track Generic
 
+
+
 - (void)sendTrackRequestWithParameters:(NSDictionary *)trackParameters
                             completion:(void(^)(NSError *error))completion
 {
@@ -84,7 +86,7 @@
         
     } else if ([_session isValid]) {
         
-        NSString *path = [NUTrackingHTTPRequestHelper pathWithAPIName:@"__nutm.gif"];
+        NSString *path = [_session pathWithAPIName:@"__nutm.gif"];
         NSMutableDictionary *parameters = [self.class defaultTrackingParametersForSession:_session
                                                                     includeUserIdentifier: _session.user != nil];
         
@@ -124,7 +126,7 @@
 
 - (BOOL)shouldPostponeTrackRequest
 {
-    return ![_session isValid];
+    return ![_session isValid] && _session.sessionState != Failed;
 }
 
 - (void)addPostponedTrackRequestWithTrackParameters:(NSDictionary *)trackParameters completion:(void(^)(NSError *error))completion
@@ -163,6 +165,7 @@
         parameters[@"nutm_sc"] = session.sessionCookie;
         parameters[@"tid"] = [self trackIdentifierParameterForSession:session appendUserIdentifier:includeUserIdentifier];
         parameters[@"nuv"] = @"m1";
+        parameters[@"version"] = @"1.0";
         parameters[@"mobile"] = @"ios";
     }
     
@@ -179,7 +182,7 @@
     NSString *trackIdentifier = session.trackerProperties.wid;
     if (appendUserIdentifier && [self isUserIdentifierValidForSession:session]) {
         NSString *base64Id = [session.user.userIdentifier base64EncodedStringWithWrapWidth:0];
-        trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", [base64Id URLEncodedString]];
+        trackIdentifier = [trackIdentifier stringByAppendingFormat:@"+%@", base64Id];
     }
     
     return trackIdentifier;

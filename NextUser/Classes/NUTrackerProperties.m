@@ -45,7 +45,7 @@
             NSDictionary *props = (NSDictionary *)plist;
             _devApiKey       = props[kDevApiKey];
             _prodApiKey      = props[kProdApiKey];
-            _isProduction    = props[kProdMode];
+            _isProduction    = [[props objectForKey:kProdMode] boolValue];
             _devLogLevel     = [[props objectForKey:kDevLogLvl] intValue];
             _prodLogLevel    = [[props objectForKey:kProdLogLvl] intValue];
             _wid             = props[kWidKey];
