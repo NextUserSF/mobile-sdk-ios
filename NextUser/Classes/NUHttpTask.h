@@ -20,10 +20,11 @@
 @property (nonatomic) NSError *error;
 
 
-+ (instancetype)createWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters;
-+ (instancetype)createGetRequesWithPath: (NSString *)url withParameters:(NSDictionary *)parameters;
+
+- (instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters;
+- (instancetype)initGetRequesWithPath:(NSString *)url withParameters:(NSDictionary *)parameters;
 
 - (NSURLRequest*)createNSURLRequest;
-- (void)setResponseObject:(id) data;
+- (void)setResponseObject:(NSData *) data;
 
 @end

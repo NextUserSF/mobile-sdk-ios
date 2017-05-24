@@ -14,7 +14,6 @@
 
 @property (nonatomic) NUTaskType taskType;
 
-+ (instancetype)createForType:(NUTaskType)taskType withPath:(NSString *)path withParameters:(NSDictionary *)parameters;
-
+-(instancetype)initForType:(NUTaskType)taskType withPath:(NSString *)path withParameters:(NSDictionary *)parameters;
 
 @end

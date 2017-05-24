@@ -16,12 +16,14 @@
     return _taskType;
 }
 
-+(instancetype)createForType:(NUTaskType)taskType withPath:(NSString *)path withParameters:(NSDictionary *)parameters
+-(instancetype)initForType:(NUTaskType)taskType withPath:(NSString *)path withParameters:(NSDictionary *)parameters
 {
-    NUTrackerTask *instance = [self createGetRequesWithPath:path withParameters:parameters];
-    instance.taskType = taskType;
+    self = [super initGetRequesWithPath:path withParameters:parameters];
+    if (self) {
+        self.taskType = taskType;
+    }
     
-    return instance;
+    return self;
 }
 
 @end

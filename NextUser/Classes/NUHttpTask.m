@@ -9,25 +9,27 @@
 #import <Foundation/Foundation.h>
 #import "NUHttpTask.h"
 
+@interface NUHttpTask()
+@property (nonatomic) NSData *responseData;
+@end
 
 @implementation NUHttpTask
 
-NSData *responseObject;
-
-+ (instancetype)createWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters
+-(instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters
 {
-    
-    NUHttpTask *task = [NUHttpTask alloc];
-    task.requestMethod = method;
-    task.url = url;
-    task.parameters = parameters;
-    
-    return task;
+    self = [super init];
+    if (self) {
+        self.requestMethod = method;
+        self.url = url;
+        self.parameters = parameters;
+    }
+
+    return self;
 }
 
-+ (instancetype)createGetRequesWithPath: (NSString *)url withParameters:(NSDictionary *)parameters
+-(instancetype)initGetRequesWithPath: (NSString *)url withParameters:(NSDictionary *)parameters
 {
-    return [self createWithMethod:@"Get" withPath:url withParameters:parameters];
+    return [self initWithMethod:@"Get" withPath:url withParameters:parameters];
 }
 
 - (NSURLRequest*)createNSURLRequest
@@ -38,7 +40,7 @@ NSData *responseObject;
 
 - (void)setResponseObject:(id) data
 {
-    responseObject = data;
+    _responseData = data;
 }
 
 - (BOOL) successfull
@@ -53,7 +55,7 @@ NSData *responseObject;
 
 - (id) responseObject
 {
-    return responseObject;
+    return _responseData;
 }
 
 - (NUTaskType) taskType

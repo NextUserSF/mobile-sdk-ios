@@ -103,7 +103,8 @@
     
     NSString *tid = [_session.trackerProperties apiKey];
     if (_session.user != nil && ![NSString lg_isEmptyString:_session.user.userIdentifier]) {
-        NSString *base64Id = [NSString stringWithBase64EncodedString: _session.user.userIdentifier];
+        NSData *inputData = [_session.user.userIdentifier dataUsingEncoding:NSUTF8StringEncoding];
+        NSString *base64Id = [inputData base64EncodedStringWithWrapWidth:0];
         tid = [tid stringByAppendingFormat:@"+%@", base64Id];
     }
     
@@ -139,7 +140,7 @@
 
 - (NSString *)pathWithAPIName:(NSString *)APIName
 {
-    return [[self basePath] stringByAppendingFormat:@"/%@", APIName];
+    return [[self basePath] stringByAppendingFormat:@"%@", APIName];
 }
 
 @end

@@ -22,40 +22,48 @@
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
 
+@interface NextUserManager()
+
+@property NSMutableArray *pendingTrackRequests;
+@property (nonatomic) NUTrackingHTTPRequestHelper *helper;
+
+@property (nonatomic) BOOL disabled;
+@property (nonatomic) Reachability* reachability;
+@property (nonatomic) NUPushMessageService *pushMessageService;
+@property (nonatomic) NUAppWakeUpManager *wakeUpManager;
+@property (nonatomic) BOOL subscribedToAppStatusNotifications;
+@property (nonatomic) NSLock *sessionRequestLock;
+
+@end
+
 @implementation NextUserManager
 
-NSLock *sessionRequestLock;
-
-#pragma mark - Factory
-
-+ (instancetype)initialize
+- (instancetype)initManager
 {
-    NextUserManager *instance = [[NextUserManager alloc] init];
-    instance.pendingTrackRequests = [NSMutableArray array];
-    instance.initializationFailed = NO;
-    instance.disabled = NO;
-    instance.wakeUpManager = [NUAppWakeUpManager manager];
-    instance.wakeUpManager.delegate = instance;
-    
-    return instance;
+    return [[NextUserManager alloc] init];
 }
 
-- (id) init
+-(instancetype)init
 {
     self = [super init];
-    if (!self) return nil;
-    
-    sessionRequestLock = [[NSLock alloc] init];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(receiveTaskManagerTrackNotification:)
-                                                 name:COMPLETION_TRACKER_NOTIFICATION_NAME
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-    
-    _reachability = [Reachability reachabilityForInternetConnection];
-    [_reachability startNotifier];
+    if (self) {
+        self.pendingTrackRequests = [NSMutableArray array];
+        self.initializationFailed = NO;
+        self.disabled = NO;
+        self.wakeUpManager = [NUAppWakeUpManager manager];
+        self.wakeUpManager.delegate = self;
+        self.sessionRequestLock = [[NSLock alloc] init];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(receiveTaskManagerTrackNotification:)
+                                                     name:COMPLETION_TRACKER_NOTIFICATION_NAME
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+        
+        self.reachability = [Reachability reachabilityForInternetConnection];
+        [self.reachability startNotifier];
+    }
     
     return self;
 }
@@ -96,9 +104,7 @@ NSLock *sessionRequestLock;
 -(void)reachabilityChanged: (NSNotification*) notification
 {
     if(_reachability.currentReachabilityStatus != NotReachable) {
-        
         [self requestSession];
-        
     }
 }
 
@@ -200,11 +206,12 @@ NSLock *sessionRequestLock;
             break;
         case SESSION_INITIALIZATION:
             params = [_helper sessionInitializationParameters];
+            break;
         default:
             return nil;
     }
     
-    return [NUTrackerTask createForType:taskType withPath:path withParameters:params];
+    return [[NUTrackerTask alloc] initForType:taskType withPath:path withParameters:params];
 }
 
 - (void)refreshPendingRequests
@@ -225,12 +232,12 @@ NSLock *sessionRequestLock;
 
 -(void)requestSession
 {
-    if ([sessionRequestLock tryLock]) {
+    if ([_sessionRequestLock tryLock]) {
         @try
         {
             if (_session && ([_session sessionState] == None || [_session sessionState] == Failed)) {
                 _session.sessionState = Initializing;
-                DDLogVerbose(@"Start tracker session for sendTrackTask identifier: %@", [_session apiKey]);
+                DDLogVerbose(@"Start tracker session for apikey: %@", [_session apiKey]);
                 NUTrackerTask *sessionStartTask = [self trackerTaskForType:SESSION_INITIALIZATION withPath:[_helper sessionInitPath]
                                                            withTrackObject:nil];
                 [self submitTrackerTask:sessionStartTask];
@@ -239,7 +246,7 @@ NSLock *sessionRequestLock;
         } @catch (NSException *exception) {
             DDLogError(@"Request tracker session exception: %@", [exception reason]);
         } @finally {
-            [sessionRequestLock unlock];
+            [_sessionRequestLock unlock];
         }
     }
 

@@ -21,6 +21,7 @@
 #import "NUTrackerInitializationTask.h"
 #import "NUTrackerTask.h"
 
+
 @implementation NUTracker
 
 NextUserManager *nextUserManager;
@@ -34,9 +35,9 @@ static NUTracker *instance;
         instance = [[NUTracker alloc] init];
         [DDLog addLogger:[DDASLLogger sharedInstance]];
         [DDLog addLogger:[DDTTYLogger sharedInstance]];
-        nextUserManager = [NextUserManager initialize];
+        nextUserManager = [[NextUserManager alloc] initManager];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
+        [[NSNotificationCenter defaultCenter] addObserver:instance
                                                  selector:@selector(receiveTaskManagerCustomNotification:)
                                                      name:COMPLETION_CUSTOM_NOTIFICATION_NAME
                                                    object:nil];
@@ -72,6 +73,7 @@ static NUTracker *instance;
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [nextUserManager unsubscribeFromAppStateNotifications];
 }
 
@@ -99,8 +101,6 @@ static NUTracker *instance;
         DDLogError(@"Initialization Exception: %@", initResponse.error);
     }
 }
-
-
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {

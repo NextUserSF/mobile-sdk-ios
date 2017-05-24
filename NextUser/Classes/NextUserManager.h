@@ -17,18 +17,11 @@
 
 @interface NextUserManager : NSObject <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
 
-@property (nonatomic) NUTrackerSession *session;
-@property (nonatomic) NSMutableArray *pendingTrackRequests;
-@property (nonatomic) NUTrackingHTTPRequestHelper *helper;
-@property (nonatomic) BOOL initializationFailed;
-@property (nonatomic) BOOL disabled;
-@property (nonatomic) Reachability* reachability;
-@property (nonatomic) NUPushMessageService *pushMessageService;
-@property (nonatomic) NUAppWakeUpManager *wakeUpManager;
-@property (nonatomic) BOOL subscribedToAppStatusNotifications;
+@property NUTrackerSession *session;
+@property BOOL initializationFailed;
 
 
-+ (instancetype)initialize;
+-(instancetype)initManager;
 
 -(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType;
 -(void)refreshPendingRequests;

@@ -65,8 +65,9 @@
 
 - (void)setDeviceCookie:(NSString *)deviceCookie
 {
-    NSAssert(deviceCookie, @"deviceCookie can not be nil");
+    _deviceCookie = deviceCookie;
     
+    NSAssert(deviceCookie, @"deviceCookie can not be nil");
     NSError *error = nil;
     [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
@@ -115,7 +116,8 @@
 - (NSString *)serializedDeviceCookie
 {
     NSError *error = nil;
-    NSString *password = [SSKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    NSString *password = [SSKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey
+                                                  error:&error];
     if (error != nil) {
         DDLogError(@"Error while fetching device cookie from keychain. %@", error);
     }

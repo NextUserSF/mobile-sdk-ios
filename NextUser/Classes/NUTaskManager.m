@@ -53,14 +53,14 @@ NSString * const COMPLETION_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerNotifObject
     [_queue addOperation:operation];
 }
 
-- (void)submitHttpTask:(NUHttpTask *) task {
-    
-    
+- (void)submitHttpTask:(NUHttpTask *) task
+{
+    [self submitHttpTask:task withNUHttpCompetionBlock:nil];
 }
 
 - (void)submitHttpTask:(NUHttpTask *) task withNUHttpCompetionBlock:(nuHttpCompletionBlock)completionBlock {
 
-    __block __weak __typeof__(task) weakTask = task;
+    __block __typeof__(task) taskRef = task;
     [NSURLConnection sendAsynchronousRequest:[task createNSURLRequest] queue:_queue
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                BOOL success = error || !response || !data ? NO : YES;
@@ -68,11 +68,11 @@ NSString * const COMPLETION_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerNotifObject
                                    completionBlock(success, data, error);
                                }
                                
-                               weakTask.successfull = success;
-                               weakTask.error = error;
-                               weakTask.responseObject = data;
+                               taskRef.successfull = success;
+                               taskRef.error = error;
+                               taskRef.responseObject = data;
                                
-                               [self dispatchCompletionNotification: weakTask];
+                               [self dispatchCompletionNotification: taskRef];
                            }];
 }
 
