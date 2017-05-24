@@ -8,13 +8,44 @@
 
 #import <Foundation/Foundation.h>
 #import "NUUser.h"
+#import "NUTrackerSession.h"
+
+#define TRACK_PARAM_NUTMS @"nutm_s"
+#define TRACK_PARAM_NUTMSC @"nutm_sc"
+#define TRACK_PARAM_VERSION @"nuv"
+#define TRACK_PARAM_BUILD_VERSION @"version"
+#define TRACK_PARAM_DEVICE_TYPE @"mobile"
+#define TRACK_PARAM_DEVICE_TYPE_IOS @"ios"
+#define TRACK_PARAM_TID @"tid"
+#define TRACK_PARAM_DC @"dc"
+#define TRACK_PARAM_DOT @"_dot_"
+#define TRACK_PARAM_PV @"pv0"
+#define TRACK_PARAM_A @"a"
+#define TRACK_PARAM_PU @"pu"
+#define TRACK_SUBSCRIBER_PARAM @"s"
+#define TRACK_SUBSCRIBER_VARIABLE_PARAM @"sv"
+#define TRACK_DEVICE_PARAM @"dt"
+#define TRACKER_VERSION @"m1"
+#define TRACKER_PROD @"https://track.nextuser.com"
+#define TRACKER_DEV @"https://track-dev.nextuser.com"
+#define SESSION_INIT_ENDPOINT @"/sdk.js"
+#define TRACK_ENDPOINT @"/__nutm.gif"
+#define TRACK_DEVICE_ENDPOINT @"/dt.js"
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
-#pragma mark - Track Request URL Parameters
-+ (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
-+ (NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
-+ (NSDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
-+ (NSDictionary *)trackUserParametersWithVariables:(NUUser *)user;
+@property NUTrackerSession *session;
+
++(instancetype)createWithSession:(NUTrackerSession *)session;
+
+-(NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
+-(NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
+-(NSDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
+-(NSDictionary *)trackUserParametersWithVariables:(NUUser *)user;
+-(NSDictionary *)sessionInitializationParameters;
+-(NSString *)trackPath;
+-(NSString *)sessionInitPath;
+-(NSString *)trackDevicePath;
+
 
 @end

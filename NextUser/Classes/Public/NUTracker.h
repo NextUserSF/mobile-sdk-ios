@@ -39,19 +39,17 @@
  *
  *  @return Shared instance of NUTracker.
  */
-+ (NUTracker *)sharedTracker;
-
-#pragma mark -
++ (instancetype)sharedTracker;
 
 /**
- *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
- *
- *  @param application   Host Application
- *  @param launchOptions Dictionary with launching options
- *
- *  @return NO if the app cannot handle the URL resource or continue a user activity, otherwise return YES.
- */
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+*  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
+*
+*  @param application   Host Application
+*  @param launchOptions Dictionary with launching options
+*
+*/
+- (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
+
 
 /**
  *  Called when application receives local notification. Call this method from your AppDelegate's -application:didReceiveLocalNotification:
@@ -102,27 +100,6 @@
  *  @see requestLocationPersmissions
  */
 - (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
-
-#pragma mark - Initialization
-/**
- * @name Initialization
- */
-
-/**
- *  Initialize the tracker.
- *
- *  Call this method once, preferably on app startup. Also see initialize:completion:
- *  for the version of this method with an optional completion handler which gets called when tracker is initialized. 
- *  Call only one of them. Note that without calling one of these two methods, tracker won't
- *  be able to track any events.
- */
-- (void)initialize;
-
-/**
- *  Starts the session for tracker.
- *  @param completion :Optional completion handler which will notify you if tracker was successfully initialized or not.
- */
-- (void)initialize:(void(^)(NSError *error))completion;
 
 #pragma mark - User Identification
 /**

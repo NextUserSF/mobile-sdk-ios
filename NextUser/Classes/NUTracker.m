@@ -8,12 +8,8 @@
 
 #import "NUTracker.h"
 #import "NUTrackerSession.h"
-#import "NUPrefetchTrackerClient.h"
-#import "NUPushMessageServiceFactory.h"
-#import "NUAppWakeUpManager.h"
-#import "NUPushMessage.h"
-#import "NUIAMUITheme.h"
-#import "NUInAppMessageManager.h"
+#import "NextUserManager.h"
+
 #import "NUUser.h"
 
 #import "NSError+NextUser.h"
@@ -21,273 +17,96 @@
 
 #import "NUTracker+Tests.h"
 #import "NULogLevel.h"
-
-
-#define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
-#define kPushMessageContentURLKey @"nu_content_url"
-#define kPushMessageUIThemeDataKey @"nu_ui_theme_data"
-
-
-@interface NUTracker () <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
-
-@property (nonatomic) NUTrackerSession *session;
-@property (nonatomic) NUPrefetchTrackerClient *prefetchClient;
-@property (nonatomic) NUPushMessageService *pushMessageService;
-
-@property (nonatomic) NUAppWakeUpManager *wakeUpManager;
-@property (nonatomic) BOOL subscribedToAppStatusNotifications;
-
-@end
+#import "NUTaskManager.h"
+#import "NUTrackerInitializationTask.h"
+#import "NUTrackerTask.h"
 
 @implementation NUTracker
 
-#pragma mark - Shared Tracker Setup
-
+NextUserManager *nextUserManager;
+BOOL initialized;
 static NUTracker *instance;
-+ (NUTracker *)sharedTracker
+
++ (instancetype)sharedTracker
 {
-    if (instance == nil) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         instance = [[NUTracker alloc] init];
-    }
+        [DDLog addLogger:[DDASLLogger sharedInstance]];
+        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        nextUserManager = [NextUserManager initialize];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(receiveTaskManagerCustomNotification:)
+                                                     name:COMPLETION_CUSTOM_NOTIFICATION_NAME
+                                                   object:nil];
+    });
     
     return instance;
 }
 
-- (instancetype)init
+- (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 {
-    if (self = [super init]) {
-        // setup logger
-        [DDLog addLogger:[DDASLLogger sharedInstance]];
-        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    if (initialized) {
+        DDLogWarn(@"NextUser Tracker already initialized...");
         
-        _session = [[NUTrackerSession alloc] init];
-        _prefetchClient = [NUPrefetchTrackerClient clientWithSession:_session];
-        
-        // create app wake up manager (importat to create it in tracker initializer since
-        // wake up manager listens for app finished launching notification)
-        _wakeUpManager = [NUAppWakeUpManager manager];
-        _wakeUpManager.delegate = self;
-        
-        self.logLevel = NULogLevelWarning;
+        return;
     }
     
-    return self;
+    initialized = YES;
+    DDLogInfo(@"Did finish launching with options: %@", launchOptions);
+    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    if (localNotification && [nextUserManager isNextUserLocalNotification:localNotification]) {
+        [nextUserManager handleLocalNotification:localNotification application:application];
+    }
+    
+    [self dispatchInitializationTask];
+}
+
+-(void) dispatchInitializationTask
+{
+    NUTrackerInitializationTask *initTask = [[NUTrackerInitializationTask alloc] init];
+    NUTaskManager *manager = [NUTaskManager sharedManager];
+    [manager addOperation:initTask];
 }
 
 - (void)dealloc
 {
-    [self unsubscribeFromAppStateNotifications];
+    [nextUserManager unsubscribeFromAppStateNotifications];
 }
 
-#pragma mark - Local Notifications
-
-- (UILocalNotification *)localNotificationFromPushMessage:(NUPushMessage *)message
+-(void)receiveTaskManagerCustomNotification:(NSNotification *) notification
 {
-    UILocalNotification *note = [[UILocalNotification alloc] init];
-    note.timeZone = [NSTimeZone defaultTimeZone];
-    note.alertBody = message.messageText;
-    note.fireDate = message.fireDate;
-
-    NSData *UIThemeData = [NSKeyedArchiver archivedDataWithRootObject:message.UITheme];
+    NSDictionary *userInfo = notification.userInfo;
+    __weak NSObject *task = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
     
-    NSDictionary *userInfo = @{kPushMessageLocalNoteTypeKey : @YES,
-                               kPushMessageContentURLKey : message.contentURL.absoluteString,
-                               kPushMessageUIThemeDataKey : UIThemeData};
-    note.userInfo = userInfo;
-    
-    return note;
-}
-
-- (NUPushMessage *)pushMessageFromLocalNotification:(UILocalNotification *)notification
-{
-    NUPushMessage *message = [[NUPushMessage alloc] init];
-    message.messageText = notification.alertBody;
-    message.contentURL = [NSURL URLWithString:notification.userInfo[kPushMessageContentURLKey]];
-    message.UITheme = [NSKeyedUnarchiver unarchiveObjectWithData:notification.userInfo[kPushMessageUIThemeDataKey]];
-    
-    return message;
-}
-
-- (BOOL)isNextUserLocalNotification:(UILocalNotification *)note
-{
-    return note.userInfo[kPushMessageLocalNoteTypeKey] != nil;
-}
-
-#pragma mark -
-
-- (void)scheduleLocalNotificationForMessage:(NUPushMessage *)message
-{
-    DDLogInfo(@"Schedule local note for message: %@", message);
-    UILocalNotification *note = [self localNotificationFromPushMessage:message];
-    [[UIApplication sharedApplication] scheduleLocalNotification:note];
-}
-
-- (void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application
-{
-    if ([self isNextUserLocalNotification:notification]) {
-
-        DDLogInfo(@"Handle local notification. App state: %@", @(application.applicationState));
-        NUPushMessage *message = [self pushMessageFromLocalNotification:notification];
+    if ([task class] == [NUTrackerInitializationTaskResponse class]) {
+        __weak NUTrackerInitializationTaskResponse *initResponse = (NUTrackerInitializationTaskResponse *)task;
+        [self onInitialization:initResponse];
         
-        if (application.applicationState == UIApplicationStateActive) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:NO];
-        } else if (application.applicationState == UIApplicationStateInactive ||
-                   application.applicationState == UIApplicationStateBackground) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:YES];
-        }
+        return;
     }
 }
 
-#pragma mark - Notification Permissions
-
-- (UIUserNotificationSettings *)userNotificationSettingsForNotificationTypes:(UIUserNotificationType)types
+-(void)onInitialization:(NUTrackerInitializationTaskResponse *) initResponse
 {
-    return [UIUserNotificationSettings settingsForTypes:types categories:nil];
-}
-
-- (UIUserNotificationType)allNotificationTypes
-{
-    return  UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-}
-
-#pragma mark - App State Subscribe/Unsubscribe
-
-- (void)subscribeToAppStateNotificationsOnce
-{
-    if (!_subscribedToAppStatusNotifications) {
-        _subscribedToAppStatusNotifications = YES;
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidBecomeActiveNotification:)
-                                                     name:UIApplicationDidBecomeActiveNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackgroundNotification:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillTerminateNotification:)
-                                                     name:UIApplicationWillTerminateNotification
-                                                   object:nil];
+    if ([initResponse successfull]) {
+        NUTrackerSession *session = initResponse.responseObject;
+        [self setLogLevel: [session logLevel]];
+        [nextUserManager addSession:session];
+    } else {
+        nextUserManager.initializationFailed = YES;
+        DDLogError(@"Initialization Exception: %@", initResponse.error);
     }
 }
 
-- (void)unsubscribeFromAppStateNotifications
-{
-    if (_subscribedToAppStatusNotifications) {
-        _subscribedToAppStatusNotifications = NO;
-        
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-    }
-}
 
-#pragma mark - Application State Notifications
-
-- (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
-{
-    if (_session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did enter background, start app wake up manager");
-        [_wakeUpManager start];
-    }
-}
-
-- (void)applicationWillTerminateNotification:(NSNotification *)notification
-{
-    if (_session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application will terminate, start app wake up manager");
-        [_wakeUpManager start];
-    }
-}
-
-- (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
-{
-    if (_session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did become active, stop app wake up manager");
-        [_wakeUpManager stop];
-    }
-}
-
-#pragma mark - App Wake Up Manager Delegate
-
-- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)())completion
-{
-    // fetch missed messages (history)
-    // schedule local notes
-    // call completion
-    
-    NSLog(@"Did wake up application");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSString *text = [NSString stringWithFormat:@"AS: %@, BG time: %@", @([[UIApplication sharedApplication] applicationState]), @([[UIApplication sharedApplication] backgroundTimeRemaining])];
-        
-        UILocalNotification *note = [[UILocalNotification alloc] init];
-        note.timeZone = [NSTimeZone defaultTimeZone];
-        note.alertBody = text;
-        note.fireDate = [NSDate dateWithTimeIntervalSinceNow:5];
-        
-        [[UIApplication sharedApplication] presentLocalNotificationNow:note];
-        
-        completion();
-    });
-}
-
-#pragma mark - Push Message Service Delegate
-
-- (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
-{
-    // TODO: figure out scheduling logic. Schedule all messages or skip some of them if they are overlapping.
-    for (NUPushMessage *message in messages) {
-        [self scheduleLocalNotificationForMessage:message];
-    }
-}
-
-#pragma mark - Push Messages Service Connect/Disconnect
-
-- (void)connectPushMessageService
-{
-    // connect push service
-    if (_pushMessageService != nil) {
-        [_pushMessageService stopListening];
-    }
-    _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
-    _pushMessageService.delegate = self;
-    [_pushMessageService startListening];
-    
-    [self subscribeToAppStateNotificationsOnce];
-}
-
-- (void)disconnectPushMessageService
-{
-    // disconnect push service
-    if (_pushMessageService != nil) {
-        [_pushMessageService stopListening];
-    }
-    _pushMessageService = nil;
-    
-    [self unsubscribeFromAppStateNotifications];
-}
-
-#pragma mark - Public API
-
-#pragma mark - Setup
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    DDLogInfo(@"Did finish launching with options: %@", launchOptions);
-    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localNotification && [self isNextUserLocalNotification:localNotification]) {
-        [self handleLocalNotification:localNotification application:application];
-    }
-    
-    return YES;
-}
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
-    if ([self isNextUserLocalNotification:notification]) {
-        [self handleLocalNotification:notification application:application];
+    if ([nextUserManager isNextUserLocalNotification:notification]) {
+        [nextUserManager handleLocalNotification:notification application:application];
     }
 }
 
@@ -301,70 +120,18 @@ static NUTracker *instance;
 
 - (void)requestLocationPersmissions
 {
-    [_wakeUpManager requestLocationUsageAuthorization];
+    [nextUserManager requestLocationPersmissions];
 }
 
 - (void)requestNotificationPermissions
 {
-    [self requestNotificationPermissionsForNotificationTypes:[self allNotificationTypes]];
+    [nextUserManager requestNotificationPermissionsForNotificationTypes:[nextUserManager allNotificationTypes]];
 }
 
 - (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
 {
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [self userNotificationSettingsForNotificationTypes:types];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-    }
+    [nextUserManager requestNotificationPermissionsForNotificationTypes: types];
 }
-
-#pragma mark - Initialization
-
-- (void)initialize
-{
-    [self initialize: nil];
-}
-
-- (void)initialize:(void(^)(NSError *error))completion;
-{
-    
-    if (_session != nil && [_session sessionState] == Initializing) {
-        DDLogWarn(@"Startup session request already in progress");
-        
-        return;
-    }
-    
-    [_session initialize:^(NSError *error) {
-        if (error == nil) {
-            if ([_session isValid]) {
-                
-                [self setLogLevel: [_session logLevel]];
-                
-                DDLogVerbose(@"Session startup finished, setup tracker");
-                
-                // send queued events
-                [_prefetchClient refreshPendingRequests];
-                
-                if (_session.shouldListenForPushMessages) {
-                    [self connectPushMessageService];
-                } else {
-                    [self disconnectPushMessageService];
-                }
-                
-            } else {
-                DDLogError(@"Missing cookies in session initialization response");
-                error = [NSError nextUserErrorWithMessage:@"Missing cookies"];
-            }
-        } else {
-            DDLogError(@"Error initializing tracker: %@", error);
-        }
-        
-        if (completion != NULL) {
-            completion(error);
-        }
-    }];
-}
-
-#pragma mark - Logging
 
 - (void)setLogLevel:(NULogLevel)logLevel
 {
@@ -397,71 +164,70 @@ static NUTracker *instance;
     return level;
 }
 
-#pragma mark - User Identification
-
 - (void)trackUser:(NUUser *)user
 {
+    if (!nextUserManager.session) {
+        return;
+    }
+    
     DDLogInfo(@"Tracking user with identifier: %@", user.userIdentifier);
-    _session.user = user;
-    [_prefetchClient trackUser:user completion:NULL];
+    [self setUser:user];
+    [nextUserManager trackWithObject:user withType:(TRACK_USER)];
 }
 
 - (void)setUser:(NUUser *)user
 {
-    _session.user = user;
+    if (!nextUserManager.session) {
+        return;
+    }
+    
+    nextUserManager.session.user = user;
 }
 
 - (NSString *)currentUserIdenifier
 {
-    return _session.user.userIdentifier;
+    if (!nextUserManager.session) {
+        return nil;
+    }
+    
+    return [nextUserManager.session.user userIdentifier];
 }
-
-#pragma mark - Tracking
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
     DDLogInfo(@"Track screen with name: %@", screenName);
-    [_prefetchClient trackScreenWithName:screenName completion:NULL];
+    [nextUserManager trackWithObject:screenName withType:TRACK_SCREEN];
 }
-
-#pragma mark -
 
 - (void)trackAction:(NUAction *)action
 {
     DDLogInfo(@"Track action: %@", action);
-    [_prefetchClient trackActions:@[action] completion:NULL];
+    [nextUserManager trackWithObject:@[action] withType:TRACK_ACTION];
 }
 
 - (void)trackActions:(NSArray *)actions
 {
     DDLogInfo(@"Track actions: %@", actions);
-    [_prefetchClient trackActions:actions completion:NULL];
+    [nextUserManager trackWithObject:actions withType:TRACK_ACTION];
 }
-
-#pragma mark -
 
 - (void)trackPurchase:(NUPurchase *)purchase
 {
     DDLogInfo(@"Track purchase: %@", purchase);
-    [_prefetchClient trackPurchases:@[purchase] completion:NULL];
+    [nextUserManager trackWithObject:@[purchase] withType:TRACK_PURCHASE];
 }
 
 - (void)trackPurchases:(NSArray *)purchases
 {
     DDLogInfo(@"Track purchases: %@", purchases);
-    [_prefetchClient trackPurchases:purchases completion:NULL];
+    [nextUserManager trackWithObject:purchases withType:TRACK_PURCHASE];
 }
-
-#pragma mark - Tracker + Tests Category
 
 + (void)releaseSharedInstance
 {
     [DDLog removeAllLoggers];
-    [instance.session clearSerializedDeviceCookie];
     instance = nil;
 }
-
-#pragma mark - Tracker + Dev Category
 
 - (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay
 {
@@ -475,7 +241,7 @@ static NUTracker *instance;
     message.UITheme = [NUIAMUITheme defautTheme];
     message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
-    [self scheduleLocalNotificationForMessage:message];
+    [nextUserManager scheduleLocalNotificationForMessage:message];
 }
 
 @end

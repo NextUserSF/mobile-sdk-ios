@@ -18,8 +18,7 @@
 #pragma mark - Session Keys
 
 #define kDeviceCookieSerializationKey @"nu_device_ide"
-#define kDeviceCookieJSONKey @"device_cookie"
-#define kSessionCookieJSONKey @"session_cookie"
+
 #define kKeychainServiceName @"com.nextuser.nextuserkit"
 
 #pragma mark - PubNub Configuration
@@ -40,81 +39,53 @@
 
 @implementation NUTrackerSession
 
-#pragma mark - Public API
++ (instancetype) initializeWithProperties:(NUTrackerProperties *) trackerProperties
+{
+    NUTrackerSession *instance = [[NUTrackerSession alloc] init];
+    instance.trackerProperties = trackerProperties;
+    instance.sessionState = None;
+    instance.deviceCookie = [instance serializedDeviceCookie];
+    
+    return instance;
+}
 
 - (id)init
 {
     if (self = [super init]) {
-        // this makes sure that we never migrate keychain data to another device (e.g. iTunes restore from backup)
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
     
     return self;
 }
 
-- (void)initialize:(void(^)(NSError *error))completion;
+- (NSString *) apiKey
 {
-    DDLogInfo(@"Start tracker session");
-    if (_sessionState != Initializing) {
-        
-        _sessionState = Initializing;
-        _deviceCookie = nil;
-        _sessionCookie = nil;
-        _trackerProperties = [NUTrackerProperties properties];
-        
-        if ([_trackerProperties validProps] == NO) {
-            @throw [NSException exceptionWithName:@"Tracker session start exception"
-                                           reason:@"Invalid properties"
-                                         userInfo:nil];
-        }
-        
-        NSString *currentDeviceCookie = [self serializedDeviceCookie];
-        NSDictionary *parameters = nil;
-        NSString *path = [self sessionURLPathWithDeviceCookie:currentDeviceCookie URLParameters:&parameters];
-        
-        DDLogVerbose(@"Fire HTTP request to start the session. Path: %@, Parameters: %@", path, parameters);
-        [NUHTTPRequestUtils sendGETRequestWithPath:path
-                                        parameters:parameters
-                                        completion:^(id responseObject, NSError *error) {
-    
-                                            if (error == nil) {
-                                                
-                                                DDLogVerbose(@"Start tracker session response: %@", responseObject);
-                                                
-                                                _deviceCookie = responseObject[kDeviceCookieJSONKey];
-                                                _sessionCookie = responseObject[kSessionCookieJSONKey];
-                                                if (_sessionCookie == nil) {
-                                                    _sessionState = Failed;
-                                                    DDLogError(@"Setup tracker error: %@", @"Server Error.");
-                                                    if (completion != NULL) {
-                                                        completion(nil);
-                                                    }
-                                                    
-                                                    return;
-                                                }
-                                                
-                                                _sessionState = Initialized;
-                                                [self setupPushMessageServiceInfoWithSessionResponseObject:responseObject];
-                                                
-                                                // save new device cookie only if one does not already exists
-                                                if (currentDeviceCookie == nil && _deviceCookie != nil) {
-                                                    [self serializeDeviceCookie:_deviceCookie];
-                                                }
-                                                
-                                                if (completion != NULL) {
-                                                    completion(nil);
-                                                }
+    return [_trackerProperties apiKey];
+}
 
-                                            } else {
-                                                
-                                                DDLogError(@"Setup tracker error: %@", error);
-                                                
-                                                if (completion != NULL) {
-                                                    completion(error);
-                                                }
-                                            }
-                                        }];
+- (void)setDeviceCookie:(NSString *)deviceCookie
+{
+    NSAssert(deviceCookie, @"deviceCookie can not be nil");
+    
+    NSError *error = nil;
+    [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    if (error != nil) {
+        DDLogError(@"Error while setting device cookie in keychain. %@", error);
     }
+}
+
+- (void)clearSerializedDeviceCookie
+{
+    NSError *error = nil;
+    [SSKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    if (error != nil) {
+        DDLogError(@"Error while deleting device cookie from keychain. %@", error);
+    }
+}
+
+- (NUSessionState) sessionState
+{
+    return _sessionState;
 }
 
 - (BOOL)isValid
@@ -122,38 +93,14 @@
     return _sessionState == Initialized;
 }
 
-#pragma mark -
-
-- (void)setupPushMessageServiceInfoWithSessionResponseObject:(id)responseObject
+- (NULogLevel) logLevel
 {
-    _shouldListenForPushMessages = YES;
-    
-    _pubNubConfiguration = [[NUPubNubConfiguration alloc] init];
-    _pubNubConfiguration.publishKey = @"pub-c-ee9da834-a089-4b5e-9133-ac36b6e7bdb6";
-    _pubNubConfiguration.subscribeKey = @"sub-c-77135d64-e6a9-11e5-b07b-02ee2ddab7fe";
-    _pubNubConfiguration.privateChannel = @"Channel-Demo";
-    _pubNubConfiguration.publicChannel = @"Channel-Demo";
-}
-
-#pragma mark - Private API
-
-- (NSString *)sessionURLPathWithDeviceCookie:(NSString *)deviceCookie URLParameters:(NSDictionary **)URLParameters
-{
-    NSString *path = [self pathWithAPIName:@"sdk.js"];
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[@"tid"] = _trackerProperties.wid;
-    if (deviceCookie) {
-        parameters[@"dc"] = deviceCookie;
+    if (_trackerProperties.isProduction) {
+        return _trackerProperties.prodLogLevel;
     }
     
-    if (URLParameters != NULL) {
-         *URLParameters = parameters;
-    }
-    
-    return path;
+    return _trackerProperties.devLogLevel;
 }
-
-#pragma mark - Serialization
 
 - (NSString *)keychainSerivceName
 {
@@ -176,47 +123,15 @@
     return password;
 }
 
-- (void)serializeDeviceCookie:(NSString *)deviceCookie
+- (void)setupPushMessageServiceInfoWithSessionResponseObject:(id)responseObject
 {
-    NSAssert(deviceCookie, @"deviceCookie can not be nil");
+    _shouldListenForPushMessages = YES;
     
-    NSError *error = nil;
-    [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
-    if (error != nil) {
-        DDLogError(@"Error while setting device cookie in keychain. %@", error);
-    }
-}
-
-- (void)clearSerializedDeviceCookie
-{
-    NSError *error = nil;
-    [SSKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
-    if (error != nil) {
-        DDLogError(@"Error while deleting device cookie from keychain. %@", error);
-    }
-}
-
-- (NULogLevel) logLevel
-{
-    if (_trackerProperties.isProduction) {
-        return _trackerProperties.prodLogLevel;
-    }
-    
-    return _trackerProperties.devLogLevel;
-}
-
-- (NSString *)basePath
-{
-    if (_trackerProperties.isProduction) {
-        return END_POINT_PROD;
-    }
-    
-    return END_POINT_DEV;
-}
-
-- (NSString *)pathWithAPIName:(NSString *)APIName
-{
-    return [[self basePath] stringByAppendingFormat:@"/%@", APIName];
+    _pubNubConfiguration = [[NUPubNubConfiguration alloc] init];
+    _pubNubConfiguration.publishKey = @"pub-c-ee9da834-a089-4b5e-9133-ac36b6e7bdb6";
+    _pubNubConfiguration.subscribeKey = @"sub-c-77135d64-e6a9-11e5-b07b-02ee2ddab7fe";
+    _pubNubConfiguration.privateChannel = @"Channel-Demo";
+    _pubNubConfiguration.publicChannel = @"Channel-Demo";
 }
 
 @end

@@ -12,9 +12,6 @@
 #import "NUTrackerProperties.h"
 #import "NUTrackerProperties.h"
 
-#define END_POINT_PROD @"https://track.nextuser.com"
-#define END_POINT_DEV @"https://track-dev.nextuser.com"
-
 @class NUPubNubConfiguration;
 
 typedef NS_ENUM(NSUInteger, NUSessionState) {
@@ -29,24 +26,23 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 
 @property (nonatomic) NUUser *user;
 @property (nonatomic) NUSessionState sessionState;
-@property (nonatomic, readonly) NSString *sessionCookie;
-@property (nonatomic, readonly) NSString *deviceCookie;
-@property (nonatomic, readonly) NUTrackerProperties *trackerProperties;
-@property (nonatomic, readonly) BOOL shouldListenForPushMessages;
-@property (nonatomic, readonly) NUPubNubConfiguration *pubNubConfiguration;
+@property (nonatomic) NSString *sessionCookie;
+@property (nonatomic) NSString *deviceCookie;
+@property (nonatomic) NUTrackerProperties *trackerProperties;
+@property (nonatomic) BOOL shouldListenForPushMessages;
+@property (nonatomic) NUPubNubConfiguration *pubNubConfiguration;
 
++ (instancetype) initializeWithProperties:(NUTrackerProperties *) trackerProperties;
 
+- (NSString *) apiKey;
 - (NSString *) serializedDeviceCookie;
 - (void) clearSerializedDeviceCookie;
 - (NUSessionState) sessionState;
-- (void) initialize:(void(^)(NSError *error))completion;
 - (BOOL)isValid;
 - (NULogLevel) logLevel;
-- (NSString *)basePath;
-- (NSString *)pathWithAPIName:(NSString *)APIName;
+- (void)setDeviceCookie:(NSString *)deviceCookie;
 
 @end
-
 
 @interface NUPubNubConfiguration : NSObject
 

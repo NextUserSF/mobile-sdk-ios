@@ -7,15 +7,15 @@
 //
 
 #import "NUTracker.h"
+#import "NextUserManager.h"
 
 @class NUTrackerSession;
-@class NUPrefetchTrackerClient;
 
 @interface NUTracker (Tests)
 
 + (void)releaseSharedInstance;
 
 - (NUTrackerSession *)session;
-- (NUPrefetchTrackerClient *)prefetchClient;
+- (NextUserManager *)nextUserManager;
 
 @end

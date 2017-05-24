@@ -20,4 +20,5 @@ Pod::Spec.new do |s|
     s.dependency 'CocoaLumberjack'
     s.dependency 'AFNetworking', '~> 3.0'
     s.dependency 'PubNub', '~> 4'
+    s.frameworks = 'SystemConfiguration'
 end
