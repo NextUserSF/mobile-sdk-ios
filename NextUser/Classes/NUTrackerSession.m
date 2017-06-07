@@ -39,19 +39,13 @@
 
 @implementation NUTrackerSession
 
-+ (instancetype) initializeWithProperties:(NUTrackerProperties *) trackerProperties
-{
-    NUTrackerSession *instance = [[NUTrackerSession alloc] init];
-    instance.trackerProperties = trackerProperties;
-    instance.sessionState = None;
-    instance.deviceCookie = [instance serializedDeviceCookie];
-    
-    return instance;
-}
 
-- (id)init
+- (id)initWithProperties:(NUTrackerProperties *) properties
 {
     if (self = [super init]) {
+        _trackerProperties = properties;
+        _sessionState = None;
+        _deviceCookie = [self serializedDeviceCookie];
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
     
@@ -63,13 +57,12 @@
     return [_trackerProperties apiKey];
 }
 
-- (void)setDeviceCookie:(NSString *)deviceCookie
+- (void)setDeviceCookie:(NSString *) dCookie
 {
-    _deviceCookie = deviceCookie;
-    
-    NSAssert(deviceCookie, @"deviceCookie can not be nil");
+   _deviceCookie = dCookie;
+    NSAssert(_deviceCookie, @"deviceCookie can not be nil");
     NSError *error = nil;
-    [SSKeychain setPassword:deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    [SSKeychain setPassword:_deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while setting device cookie in keychain. %@", error);
     }
@@ -82,11 +75,6 @@
     if (error != nil) {
         DDLogError(@"Error while deleting device cookie from keychain. %@", error);
     }
-}
-
-- (NUSessionState) sessionState
-{
-    return _sessionState;
 }
 
 - (BOOL)isValid
@@ -123,6 +111,31 @@
     }
     
     return password;
+}
+
+-(NSString *)trackPath
+{
+    return [self pathWithAPIName:TRACK_ENDPOINT];
+}
+
+-(NSString *)sessionInitPath
+{
+    return [self pathWithAPIName:SESSION_INIT_ENDPOINT];
+}
+
+-(NSString *)trackDevicePath
+{
+    return [self pathWithAPIName:TRACK_DEVICE_ENDPOINT];
+}
+
+- (NSString *)basePath
+{
+    return _trackerProperties.isProduction ? TRACKER_PROD : TRACKER_DEV;
+}
+
+- (NSString *)pathWithAPIName:(NSString *)APIName
+{
+    return [[self basePath] stringByAppendingFormat:@"%@", APIName];
 }
 
 - (void)setupPushMessageServiceInfoWithSessionResponseObject:(id)responseObject

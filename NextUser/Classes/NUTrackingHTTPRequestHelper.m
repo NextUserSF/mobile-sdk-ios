@@ -17,23 +17,16 @@
 
 @implementation NUTrackingHTTPRequestHelper
 
-+ (instancetype)createWithSession:(NUTrackerSession *)session
-{
-    NUTrackingHTTPRequestHelper *helper = [NUTrackingHTTPRequestHelper alloc];
-    helper.session = session;
-    
-    return helper;
-}
-
-- (NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName
++(NSMutableDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:1];
     parameters[TRACK_PARAM_PV] = [screenName URLEncodedString];
     
-    return [self appendDefaultTrackingParameters: parameters];
+    return parameters;
 }
 
-- (NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions
+
++(NSMutableDictionary *)trackActionsParametersWithActions:(NSArray<NUAction*> *)actions
 {
     // max 10 actions are allowed
     if (actions.count > 10) {
@@ -48,10 +41,11 @@
         parameters[actionKey] = actionValue;
     }
     
-    return [self appendDefaultTrackingParameters: parameters];
+    return parameters;
 }
 
-- (NSDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases
+
++(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray<NUPurchase*> *)purchases
 {
     // max 10 purchases are allowed
     if (purchases.count > 10) {
@@ -66,11 +60,10 @@
         parameters[purchaseKey] = purchaseValue;
     }
     
-    return [self appendDefaultTrackingParameters: parameters];
+    return parameters;
 }
 
-- (NSDictionary *)trackUserParametersWithVariables:(NUUser *)user
-{
++(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[TRACK_SUBSCRIBER_PARAM] = [user httpRequestParameterRepresentation];
     
@@ -84,63 +77,38 @@
             index++;
         }
     }
-
-    return [self appendDefaultTrackingParameters: parameters];
+    
+    return parameters;
 }
 
--(NSDictionary *)sessionInitializationParameters
++(NSDictionary *)sessionInitializationParameters:(NUTrackerSession*) session
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[TRACK_PARAM_TID] = [_session apiKey];
-    if (_session.deviceCookie) {
-        parameters[TRACK_PARAM_DC] = _session.deviceCookie;
+    parameters[TRACK_PARAM_TID] = [session apiKey];
+    if ([session deviceCookie]) {
+        parameters[TRACK_PARAM_DC] = [session deviceCookie];
     }
     
     return parameters;
 }
 
--(NSDictionary *)appendDefaultTrackingParameters:(NSMutableDictionary*) parameters {
-    
-    NSString *tid = [_session.trackerProperties apiKey];
-    if (_session.user != nil && ![NSString lg_isEmptyString:_session.user.userIdentifier]) {
-        NSData *inputData = [_session.user.userIdentifier dataUsingEncoding:NSUTF8StringEncoding];
++(NSDictionary *)appendSessionDefaultParameters:(NUTrackerSession*) session withTrackParameters:(NSMutableDictionary*) parameters
+{
+    NSString *tid = [session apiKey];
+    if (session.user != nil && ![NSString lg_isEmptyString: session.user.userIdentifier]) {
+        NSData *inputData = [session.user.userIdentifier dataUsingEncoding:NSUTF8StringEncoding];
         NSString *base64Id = [inputData base64EncodedStringWithWrapWidth:0];
         tid = [tid stringByAppendingFormat:@"+%@", base64Id];
     }
     
-    parameters[TRACK_PARAM_NUTMS] = [NSString stringWithFormat:@"...%@", _session.deviceCookie];
-    parameters[TRACK_PARAM_NUTMSC] = _session.sessionCookie;
+    parameters[TRACK_PARAM_NUTMS] = [NSString stringWithFormat:@"...%@", [session deviceCookie]];
+    parameters[TRACK_PARAM_NUTMSC] = [session sessionCookie];
     parameters[TRACK_PARAM_TID] = tid;
     parameters[TRACK_PARAM_VERSION] = TRACKER_VERSION;
     parameters[TRACK_PARAM_BUILD_VERSION] = @"1.0";
     parameters[TRACK_PARAM_DEVICE_TYPE] = TRACK_PARAM_DEVICE_TYPE_IOS;
     
-    return [parameters mutableCopy];
-}
-
--(NSString *)trackPath
-{
-    return [self pathWithAPIName:TRACK_ENDPOINT];
-}
-
--(NSString *)sessionInitPath
-{
-    return [self pathWithAPIName:SESSION_INIT_ENDPOINT];
-}
-
--(NSString *)trackDevicePath
-{
-    return [self pathWithAPIName:TRACK_DEVICE_ENDPOINT];
-}
-
-- (NSString *)basePath
-{
-    return _session.trackerProperties.isProduction ? TRACKER_PROD : TRACKER_DEV;
-}
-
-- (NSString *)pathWithAPIName:(NSString *)APIName
-{
-    return [[self basePath] stringByAppendingFormat:@"%@", APIName];
+    return parameters;
 }
 
 @end

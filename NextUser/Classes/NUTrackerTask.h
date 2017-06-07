@@ -8,12 +8,26 @@
 
 #import <Foundation/Foundation.h>
 #import "NUHttpTask.h"
-#import "NUExecutionTask.h"
+#import "NUTask.h"
+#import "NUTrackerSession.h"
 
-@interface NUTrackerTask : NUHttpTask <NUExecutionTask>
+@interface NUTrackerTask : NUHttpTask
+{
+    NUTrackerSession* session;
+    id trackObject;
+}
 
-@property (nonatomic) NUTaskType taskType;
+-(instancetype)initForType:(NUTaskType)type  withTrackObject:(id) trackingObject withSession:(NUTrackerSession*) session;
 
--(instancetype)initForType:(NUTaskType)taskType withPath:(NSString *)path withParameters:(NSDictionary *)parameters;
+@end
+
+@interface NUTrackResponse : NUHttpResponse
+{
+    id trackObject;
+}
+
+- (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj;
+
+- (id) getTrackObject;
 
 @end

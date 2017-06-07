@@ -8,17 +8,18 @@
 
 #import <Foundation/Foundation.h>
 #import "NUConcurrentOperation.h"
-#import "NUTaskResponse.h"
+#import "NUTask.h"
 #import "NUTrackerSession.h"
 
 @interface NUTrackerInitializationTask : NUConcurrentOperation
 @end
 
 
-@interface NUTrackerInitializationTaskResponse : NSObject <NUTaskResponse>
+@interface NUTrackerInitializationResponse : NUConcurrentOperationResponse
 
-@property (nonatomic) BOOL successfull;
-@property (nonatomic) NSString *error;
-@property (nonatomic) NUTrackerSession *responseObject;
+@property (nonatomic) NUTrackerSession *session;
+@property (nonatomic) NSString *errorMessage;
+
+-(instancetype) initResponse;
 
 @end

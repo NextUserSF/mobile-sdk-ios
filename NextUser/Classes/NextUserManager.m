@@ -16,23 +16,33 @@
 #import "Base64.h"
 #import "NUTrackerTask.h"
 #import "NUTaskManager.h"
-#import "NUExecutionTask.h"
+#import "NUTask.h"
 #import "NUTracker.h"
+#import "NUTrackerInitializationTask.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
 
+@interface PendingTask : NSObject
+@property (nonatomic) id trackingObject;
+@property (nonatomic) NUTaskType taskType;
+@end
+
+@implementation PendingTask
+@end
+
 @interface NextUserManager()
-
-@property NSMutableArray *pendingTrackRequests;
-@property (nonatomic) NUTrackingHTTPRequestHelper *helper;
-
-@property (nonatomic) BOOL disabled;
-@property (nonatomic) Reachability* reachability;
-@property (nonatomic) NUPushMessageService *pushMessageService;
-@property (nonatomic) NUAppWakeUpManager *wakeUpManager;
-@property (nonatomic) BOOL subscribedToAppStatusNotifications;
-@property (nonatomic) NSLock *sessionRequestLock;
+{
+    NUTrackerSession *session;
+    Reachability *reachability;
+    NUPushMessageService *pushMessageService;
+    NUAppWakeUpManager *wakeUpManager;
+    NSMutableArray *pendingTrackRequests;
+    NSLock *sessionRequestLock;
+    BOOL disabled;
+    BOOL initializationFailed;
+    BOOL subscribedToAppStatusNotifications;
+}
 
 @end
 
@@ -47,102 +57,114 @@
 {
     self = [super init];
     if (self) {
-        self.pendingTrackRequests = [NSMutableArray array];
-        self.initializationFailed = NO;
-        self.disabled = NO;
-        self.wakeUpManager = [NUAppWakeUpManager manager];
-        self.wakeUpManager.delegate = self;
-        self.sessionRequestLock = [[NSLock alloc] init];
+        pendingTrackRequests = [NSMutableArray array];
+        initializationFailed = NO;
+        disabled = NO;
+        wakeUpManager = [NUAppWakeUpManager manager];
+        wakeUpManager.delegate = self;
+        sessionRequestLock = [[NSLock alloc] init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(receiveTaskManagerTrackNotification:)
-                                                     name:COMPLETION_TRACKER_NOTIFICATION_NAME
+                                                 selector:@selector(receiveTaskManagerNotification:)
+                                                     name:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
         
-        self.reachability = [Reachability reachabilityForInternetConnection];
-        [self.reachability startNotifier];
+        reachability = [Reachability reachabilityForInternetConnection];
+        [reachability startNotifier];
     }
     
     return self;
 }
 
--(void)addSession:(NUTrackerSession*) session
+-(NUTrackerSession *) getSession
 {
-    if (_session) {
-        return;
-    }
-    
-    _session = session;
-    _helper = [NUTrackingHTTPRequestHelper createWithSession:session];
-    [self requestSession];
+    return session;
 }
 
--(void)receiveTaskManagerTrackNotification: (NSNotification *) notification
+-(void)receiveTaskManagerNotification:(NSNotification *) notification
 {
     NSDictionary *userInfo = notification.userInfo;
-    NSObject *task = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
+    id<NUTaskResponse> taskResponse = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
     
-    if ([task class] != [NUTrackerTask class]) {
-        return;
-    }
-    
-    NUTrackerTask *trackerTask = (NUTrackerTask *)task;
-    switch (trackerTask.taskType) {
+    switch (taskResponse.taskType) {
+        case APPLICATION_INITIALIZATION:
+            [self onTrackerInitialization:taskResponse];
+            break;
         case SESSION_INITIALIZATION:
-            [self onSessionInitialization:trackerTask];
+            [self onSessionInitialization:taskResponse];
             break;
         default:
-            if ([trackerTask successfull]) {
-                [self sendPendingTrackRequests];
-            }
+            [self sendPendingTrackRequests];
             break;
     }
 }
 
--(void)reachabilityChanged: (NSNotification*) notification
+-(void)onTrackerInitialization:(NUTrackerInitializationResponse *) response
 {
-    if(_reachability.currentReachabilityStatus != NotReachable) {
+    if ([response successfull]) {
+        session = response.session;
+        [self setLogLevel: [session logLevel]];
         [self requestSession];
+    } else {
+        initializationFailed = YES;
+        DDLogError(@"Initialization Exception: %@", response.errorMessage);
     }
 }
 
--(void)onSessionInitialization: (NUTrackerTask *)sesionStartTask
+-(void)onSessionInitialization: (NUTrackResponse *)response
 {
-    if ([sesionStartTask successfull]) {
+    if ([response successfull]) {
         
         NSError *errorJson=nil;
-        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:sesionStartTask.responseObject options:kNilOptions error:&errorJson];
+        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:response.reponseData options:kNilOptions error:&errorJson];
         
         DDLogVerbose(@"Start tracker session response: %@", responseDict);
-        _session.sessionCookie = responseDict[kSessionCookieJSONKey];
+        session.sessionCookie = responseDict[kSessionCookieJSONKey];
         
-        if (_session.sessionCookie == nil) {
-            _session.sessionState = Failed;
+        if (![session sessionCookie]) {
+            [session setSessionState: Failed];
             DDLogError(@"Setup tracker error: %@", @"Server Error.");
             
             return;
         }
         
-        [_session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
-        _session.sessionState = Initialized;
-        if (_session.shouldListenForPushMessages) {
+        [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
+        [session setSessionState: Initialized];
+        
+        if (session.shouldListenForPushMessages) {
             [self connectPushMessageService];
         } else {
             [self disconnectPushMessageService];
         }
+        
         [self sendPendingTrackRequests];
+        
     } else {
-        DDLogError(@"Setup tracker error: %@", sesionStartTask.error);
-        _session.sessionState = Failed;
-        _initializationFailed = YES;
+        DDLogError(@"Setup tracker error: %@", response.error);
+        [session setSessionState: Failed];
+        initializationFailed = YES;
+    }
+}
+
+
+-(void)track:(id)trackObject withType:(NUTaskType) taskType
+{
+    NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:taskType withTrackObject:trackObject withSession:session];
+    [self submitTrackerTask:trackTask];
+}
+
+-(void)reachabilityChanged: (NSNotification*) notification
+{
+    if(reachability.currentReachabilityStatus != NotReachable) {
+        [self requestSession];
     }
 }
 
 -(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType
 {
-    if (_initializationFailed || _disabled) {
+    if (initializationFailed || disabled) {
         return NO;
     }
     
@@ -153,65 +175,33 @@
         return false;
     }
     
-    NUTrackerTask *trackTask = [self trackerTaskForType:taskType withPath:[_helper trackPath] withTrackObject:trackObject];
-    if (!trackTask) {
-        return NO;
-    }
-    
-    [self submitTrackerTask:trackTask];
+    [self track:trackObject withType:taskType];
     
     return YES;
 }
 
 -(void)submitTrackerTask:(NUTrackerTask *) trackTask
 {
-    NUTaskManager *manager = [NUTaskManager sharedManager];
-    [manager submitHttpTask:trackTask];
+    NUTaskManager *manager = [NUTaskManager manager];
+    [manager submitTask:trackTask];
 
 }
 
 -(BOOL)validTracker
 {
-    return _session && [_session isValid];
+    return session && [session isValid];
 }
 
 -(void)queueTrackObject:(id)trackObject withType:(NUTaskType) taskType
 {
-    if (_pendingTrackRequests.count > 10) {
+    if (pendingTrackRequests.count > 10) {
         return;
     }
     
     PendingTask *pendingTask = [PendingTask alloc];
     pendingTask.trackingObject = trackObject;
     pendingTask.taskType = taskType;
-    [_pendingTrackRequests addObject:pendingTask];
-}
-
--(NUTrackerTask*)trackerTaskForType:(NUTaskType) taskType withPath:(NSString *)path withTrackObject: (id)trackObject
-{
-    NSDictionary *params;
-    
-    switch (taskType) {
-        case TRACK_SCREEN:
-            params = [_helper trackScreenParametersWithScreenName: trackObject];
-            break;
-        case TRACK_ACTION:
-            params = [_helper trackActionsParametersWithActions: trackObject];
-            break;
-        case TRACK_PURCHASE:
-            params = [_helper trackPurchasesParametersWithPurchases: trackObject];
-            break;
-        case TRACK_USER:
-            params = [_helper trackUserParametersWithVariables: trackObject];
-            break;
-        case SESSION_INITIALIZATION:
-            params = [_helper sessionInitializationParameters];
-            break;
-        default:
-            return nil;
-    }
-    
-    return [[NUTrackerTask alloc] initForType:taskType withPath:path withParameters:params];
+    [pendingTrackRequests addObject:pendingTask];
 }
 
 - (void)refreshPendingRequests
@@ -221,9 +211,9 @@
 
 - (void)sendPendingTrackRequests
 {
-    while (_pendingTrackRequests.count > 0) {
-        PendingTask *pendingTask = _pendingTrackRequests.firstObject;
-        [_pendingTrackRequests removeObjectAtIndex:0];
+    while (pendingTrackRequests.count > 0) {
+        PendingTask *pendingTask = pendingTrackRequests.firstObject;
+        [pendingTrackRequests removeObjectAtIndex:0];
         
         DDLogVerbose(@"Popped request: %@", pendingTask);
         [self trackWithObject:pendingTask.trackingObject withType:pendingTask.taskType];
@@ -232,30 +222,58 @@
 
 -(void)requestSession
 {
-    if ([_sessionRequestLock tryLock]) {
+    if ([sessionRequestLock tryLock]) {
         @try
         {
-            if (_session && ([_session sessionState] == None || [_session sessionState] == Failed)) {
-                _session.sessionState = Initializing;
-                DDLogVerbose(@"Start tracker session for apikey: %@", [_session apiKey]);
-                NUTrackerTask *sessionStartTask = [self trackerTaskForType:SESSION_INITIALIZATION withPath:[_helper sessionInitPath]
-                                                           withTrackObject:nil];
-                [self submitTrackerTask:sessionStartTask];
+            if (session && ([session sessionState] == None || [session sessionState] == Failed)) {
+                [session setSessionState: Initializing];
+                DDLogVerbose(@"Start tracker session for apikey: %@", [session apiKey]);
+                [self track:nil withType:SESSION_INITIALIZATION];
             }
             
         } @catch (NSException *exception) {
             DDLogError(@"Request tracker session exception: %@", [exception reason]);
         } @finally {
-            [_sessionRequestLock unlock];
+            [sessionRequestLock unlock];
         }
     }
+}
 
+- (void)setLogLevel:(NULogLevel)logLevel
+{
+    DDLogLevel level = DDLogLevelOff;
+    switch (logLevel) {
+        case NULogLevelOff: level = DDLogLevelOff; break;
+        case NULogLevelError: level = DDLogLevelError; break;
+        case NULogLevelWarning: level = DDLogLevelWarning; break;
+        case NULogLevelInfo: level = DDLogLevelInfo; break;
+        case NULogLevelVerbose: level = DDLogLevelVerbose; break;
+    }
+    
+    [NUDDLog setLogLevel:level];
+}
+
+- (NULogLevel)logLevel
+{
+    DDLogLevel logLevel = [NUDDLog logLevel];
+    NULogLevel level = NULogLevelOff;
+    switch (logLevel) {
+        case DDLogLevelOff: level = NULogLevelOff; break;
+        case DDLogLevelError: level = NULogLevelError; break;
+        case DDLogLevelWarning: level = NULogLevelWarning; break;
+        case DDLogLevelInfo: level = NULogLevelInfo; break;
+        case DDLogLevelDebug: level = NULogLevelInfo; break;
+        case DDLogLevelVerbose: level = NULogLevelVerbose; break;
+        case DDLogLevelAll: level = NULogLevelVerbose; break;
+    }
+    
+    return level;
 }
 
 - (void)subscribeToAppStateNotificationsOnce
 {
-    if (!_subscribedToAppStatusNotifications) {
-        _subscribedToAppStatusNotifications = YES;
+    if (!subscribedToAppStatusNotifications) {
+        subscribedToAppStatusNotifications = YES;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidBecomeActiveNotification:)
@@ -281,25 +299,25 @@
 
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
-    if (_session.shouldListenForPushMessages) {
+    if (session.shouldListenForPushMessages) {
         DDLogInfo(@"Application did enter background, start app wake up manager");
-        [_wakeUpManager start];
+        [wakeUpManager start];
     }
 }
 
 - (void)applicationWillTerminateNotification:(NSNotification *)notification
 {
-    if (_session.shouldListenForPushMessages) {
+    if (session.shouldListenForPushMessages) {
         DDLogInfo(@"Application will terminate, start app wake up manager");
-        [_wakeUpManager start];
+        [wakeUpManager start];
     }
 }
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
-    if (_session.shouldListenForPushMessages) {
+    if (session.shouldListenForPushMessages) {
         DDLogInfo(@"Application did become active, stop app wake up manager");
-        [_wakeUpManager stop];
+        [wakeUpManager stop];
     }
 }
 
@@ -368,7 +386,7 @@
 
 -(void)requestLocationPersmissions
 {
-    [_wakeUpManager requestLocationUsageAuthorization];
+    [wakeUpManager requestLocationUsageAuthorization];
 }
 
 - (NUPushMessage *)pushMessageFromLocalNotification:(UILocalNotification *)notification
@@ -419,12 +437,12 @@
 - (void)connectPushMessageService
 {
     // connect push service
-    if (_pushMessageService != nil) {
-        [_pushMessageService stopListening];
+    if (pushMessageService != nil) {
+        [pushMessageService stopListening];
     }
-    _pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:_session];
-    _pushMessageService.delegate = self;
-    [_pushMessageService startListening];
+    pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:session];
+    pushMessageService.delegate = self;
+    [pushMessageService startListening];
     
     [self subscribeToAppStateNotificationsOnce];
 }
@@ -432,18 +450,13 @@
 - (void)disconnectPushMessageService
 {
     // disconnect push service
-    if (_pushMessageService != nil) {
-        [_pushMessageService stopListening];
+    if (pushMessageService != nil) {
+        [pushMessageService stopListening];
     }
-    _pushMessageService = nil;
+    pushMessageService = nil;
     
     [self unsubscribeFromAppStateNotifications];
 }
 
-
-
 @end
 
-
-@implementation PendingTask
-@end

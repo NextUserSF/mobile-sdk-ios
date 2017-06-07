@@ -34,18 +34,11 @@
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
-@property NUTrackerSession *session;
-
-+(instancetype)createWithSession:(NUTrackerSession *)session;
-
--(NSDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
--(NSDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
--(NSDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
--(NSDictionary *)trackUserParametersWithVariables:(NUUser *)user;
--(NSDictionary *)sessionInitializationParameters;
--(NSString *)trackPath;
--(NSString *)sessionInitPath;
--(NSString *)trackDevicePath;
-
++(NSMutableDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
++(NSMutableDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
++(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
++(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user;
++(NSMutableDictionary *)sessionInitializationParameters:(NUTrackerSession*) session;
++(NSDictionary *)appendSessionDefaultParameters:(NUTrackerSession*) session withTrackParameters:(NSMutableDictionary*) parameters;
 
 @end

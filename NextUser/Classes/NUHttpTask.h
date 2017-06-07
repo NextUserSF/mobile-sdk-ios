@@ -7,24 +7,30 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NUTaskType.h"
-#import "NUTaskResponse.h"
-#import "AFNetworking.h"
+#import "NUTask.h"
 
-@interface NUHttpTask : NSObject <NUTaskResponse>
+#import "NUConcurrentOperation.h"
 
-@property (nonatomic) NSString *requestMethod;
-@property (nonatomic) NSString *url;
-@property (nonatomic) NSDictionary *parameters;
-@property (nonatomic) BOOL successfull;
-@property (nonatomic) NSError *error;
+@interface NUHttpResponse : NUConcurrentOperationResponse
+
+@property (nonatomic) long      responseCode;
+@property (nonatomic) NSError*  error;
+@property (nonatomic) NSData*   reponseData;
+
+@end
 
 
+@interface NUHttpTask : NUConcurrentOperation
+{
+    NSString *requestMethod;
+    NSString *path;
+    NSMutableDictionary *queryParameters;
+}
 
 - (instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters;
 - (instancetype)initGetRequesWithPath:(NSString *)url withParameters:(NSDictionary *)parameters;
 
-- (NSURLRequest*)createNSURLRequest;
-- (void)setResponseObject:(NSData *) data;
-
 @end
+
+
+

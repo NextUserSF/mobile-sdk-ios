@@ -11,7 +11,7 @@
 
 @class NUTrackerSession;
 
-@interface NUTracker (Tests)
+@interface Tracker (Tests)
 
 + (void)releaseSharedInstance;
 

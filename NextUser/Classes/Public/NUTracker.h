@@ -27,7 +27,7 @@
  * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
  * It is important to initialize sharedTracker tracker in application:didFinishLaunchingWithOptions:
  */
-@interface NUTracker : NSObject
+@interface Tracker : NSObject
 
 #pragma mark - Tracker Singleton Setup
 /**
@@ -185,7 +185,7 @@
 @end
 
 
-@interface NUTracker (Dev)
+@interface Tracker (Dev)
 
 - (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay;
 

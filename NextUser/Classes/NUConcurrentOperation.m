@@ -11,28 +11,24 @@
 
 #import "NSError+NextUser.h"
 #import "NUDDLog.h"
-
+#import "NUTaskManager.h"
 
 @implementation NUConcurrentOperation
 
-- (NUTaskType) taskType {
-    return _taskType;
-}
-
 -(id)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         executing = NO;
         finished = NO;
     }
+    
     return self;
 }
 
 -(void)start
 {
-    if ([self isCancelled])
-    {
+    if ([self isCancelled]) {
+        
         [self willChangeValueForKey:@"isFinished"];
         finished = YES;
         [self didChangeValueForKey:@"isFinished"];
@@ -49,13 +45,15 @@
 -(void)main
 {
     @try {
-        _responseInstance = [self execute];
+        taskResponse = [self execute:[self responseInstance]];
     }
     @catch (NSException *exception) {
         DDLogInfo(@"NUOperation Exception: %@",[exception description]);
+        [self onExecutionException:exception];
     }
     @finally {
         [self completeOperation];
+        [[NUTaskManager manager] dispatchCompletionNotification:taskResponse];
     }
 }
 
@@ -74,16 +72,6 @@
     return finished;
 }
 
--(id<NUTaskResponse>) execute
-{
-    return nil;
-}
-
-- (id<NUTaskResponse>) response
-{
-    return _responseInstance;
-}
-
 -(void)completeOperation
 {
     [self willChangeValueForKey:@"isFinished"];
@@ -94,6 +82,64 @@
     
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
+}
+
+- (id<NUTaskResponse>) responseInstance
+{
+    return [[NUConcurrentOperationResponse alloc] initWithType:TASK_NO_TYPE shouldNotifyListeners:NO];
+}
+
+//overrride
+- (id<NUTaskResponse>) execute:(id<NUTaskResponse>) responseInstance
+{
+    return responseInstance;
+}
+
+//overrride
+- (id<NUTaskResponse>) getTaskResponse
+{
+    return taskResponse;
+}
+
+//overrride
+-(void)onExecutionException:(NSException *) exception
+{
+    
+}
+
+@end
+
+
+@implementation NUConcurrentOperationResponse
+
+-(instancetype)initWithType:(NUTaskType) type shouldNotifyListeners:(BOOL) notify
+{
+    if (self = [super init]) {
+        taskType = type;
+        notifyListeners = notify;
+    }
+    
+    return self;
+}
+
+- (NUTaskType) taskType
+{
+    return taskType;
+}
+
+- (BOOL) notifyListeners
+{
+    return notifyListeners;
+}
+
+- (BOOL) successfull
+{
+    return _success;
+}
+
+-(void)setSuccessfull:(BOOL) success
+{
+    _success = success;
 }
 
 @end

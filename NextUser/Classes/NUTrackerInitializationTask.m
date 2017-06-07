@@ -13,47 +13,32 @@
 
 @implementation NUTrackerInitializationTask
 
--(NUTrackerInitializationTaskResponse *) execute
+- (id<NUTaskResponse>) responseInstance
 {
-    
-    NUTrackerInitializationTaskResponse *response = [NUTrackerInitializationTaskResponse alloc];
-    
+    return [[NUTrackerInitializationResponse alloc] initResponse];
+}
+
+- (id<NUTaskResponse>) execute:(NUTrackerInitializationResponse *) responseInstance
+{
     NUTrackerProperties *properties = [NUTrackerProperties properties];
     if (![properties validProps]) {
-        response.error = @"Invalid Properties..Please check Nextuser properties list";
-        response.successfull = NO;
+        responseInstance.errorMessage = @"Invalid Properties..Please check Nextuser properties list";
+        [responseInstance setSuccessfull:NO];
         
-        return response;
+        return responseInstance;
     }
     
-    response.responseObject = [NUTrackerSession initializeWithProperties:properties];
-    response.successfull = YES;
+    responseInstance.session = [[NUTrackerSession alloc] initWithProperties:properties];
+    [responseInstance setSuccessfull:YES];
     
-    return response;
+    return responseInstance;
 }
-
 @end
 
-@implementation NUTrackerInitializationTaskResponse
+@implementation NUTrackerInitializationResponse
 
-- (BOOL) successfull
+-(instancetype) initResponse
 {
-    return _successfull;
+    return [super initWithType:APPLICATION_INITIALIZATION shouldNotifyListeners:YES];
 }
-
-- (NSString *) error
-{
-    return _error;
-}
-
-- (NUTrackerSession *) responseObject
-{
-    return _responseObject;
-}
-
-- (NUTaskType) taskType
-{
-    return APPLICATION_INITIALIZATION;
-}
-
 @end

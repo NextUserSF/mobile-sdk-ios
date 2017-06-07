@@ -8,59 +8,78 @@
 
 #import <Foundation/Foundation.h>
 #import "NUHttpTask.h"
-
-@interface NUHttpTask()
-@property (nonatomic) NSData *responseData;
-@end
+#import "AFNetworking.h"
+#import "NUDDLog.h"
 
 @implementation NUHttpTask
 
--(instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters
+-(instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSMutableDictionary *)parameters
 {
-    self = [super init];
-    if (self) {
-        self.requestMethod = method;
-        self.url = url;
-        self.parameters = parameters;
+    if (self = [super init]) {
+        requestMethod = method;
+        path = url;
+        queryParameters = parameters;
     }
 
     return self;
 }
 
--(instancetype)initGetRequesWithPath: (NSString *)url withParameters:(NSDictionary *)parameters
+-(instancetype)initGetRequesWithPath: (NSString *)url withParameters:(NSMutableDictionary *)parameters
 {
     return [self initWithMethod:@"Get" withPath:url withParameters:parameters];
 }
 
-- (NSURLRequest*)createNSURLRequest
+- (id<NUTaskResponse>) responseInstance
 {
-    return [[AFHTTPRequestSerializer serializer] requestWithMethod: _requestMethod URLString:_url
-                                                        parameters:_parameters error:nil];
+    return [NUHttpResponse init];
 }
 
-- (void)setResponseObject:(id) data
+- (id<NUTaskResponse>) execute: (NUHttpResponse*) responseInstance
 {
-    _responseData = data;
+    NSError *error = nil;
+    NSURLRequest* request = [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path
+                                                                         parameters: queryParameters error:&error];
+    if (error) {
+        return[self response: responseInstance withError:error];
+    }
+    
+    NSHTTPURLResponse *httpResponse;
+    error = nil;
+    responseInstance.reponseData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&httpResponse error:&error];
+    responseInstance.responseCode = (long)[httpResponse statusCode];
+    
+    if (![self successfullHttpCode:responseInstance.responseCode]) {
+        DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters, responseInstance.responseCode);
+        return [self response: taskResponse withError:error];
+    }
+    
+    [responseInstance setSuccessfull:YES];
+    DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters, responseInstance.
+                 responseCode);
+    
+    return responseInstance;
+}
+        
+-(BOOL)successfullHttpCode:(long) httpCode
+{
+    return httpCode >= 200 && httpCode < 300;
 }
 
-- (BOOL) successfull
+-(NUHttpResponse*) response:(NUHttpResponse*) response withError:(NSError *)error
 {
-    return _successfull;
-}
-
-- (NSError *) error
-{
-    return _error;
-}
-
-- (id) responseObject
-{
-    return _responseData;
+    response.error = error;
+    [response setSuccessfull:NO];
+    
+    return response;
 }
 
 - (NUTaskType) taskType
 {
     return TASK_NO_TYPE;
 }
+
+@end
+
+@implementation NUHttpResponse
 
 @end
