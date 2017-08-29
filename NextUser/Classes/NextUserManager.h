@@ -10,6 +10,9 @@
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 #import "NUInAppMessageManager.h"
+#import "NUWorkflowManager.h"
+#import "NUInAppMsgCacheManager.h"
+#import "NUTracker.h"
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
 #define kPushMessageContentURLKey @"nu_content_url"
@@ -17,7 +20,7 @@
 
 @interface NextUserManager : NSObject <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
 
--(instancetype)initManager;
++ (instancetype) sharedInstance;
 
 -(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType;
 -(void)refreshPendingRequests;
@@ -29,5 +32,8 @@
 -(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
 -(UIUserNotificationType)allNotificationTypes;
 -(NUTrackerSession *) getSession;
+-(NUWorkflowManager *) getWorkflowManager;
+-(NUInAppMsgCacheManager *) getInAppMsgCacheManager;
+-(NUTracker*) getTracker;
 
 @end

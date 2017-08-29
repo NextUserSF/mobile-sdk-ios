@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSError (NextUser)
+@interface NUError : NSObject
 
 + (NSError *)nextUserErrorWithMessage:(NSString *)message;
 

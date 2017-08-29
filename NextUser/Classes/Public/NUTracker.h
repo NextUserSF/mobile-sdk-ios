@@ -8,38 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-
 @class NUPurchase;
 @class NUAction;
 @class NUUser;
 
-/**
- *  Log level used by the tracker.
- */
 
-
-/**
- * This class is the primary interface for user tracking which communicates with the NextUser API.
- * Use shared singleton instance of the tracker. Use this class to configure your project analytics
- * and to track events.
- *
- * Before you can track any events, you need to start tracking session. Do this by calling one of two
- * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
- * It is important to initialize sharedTracker tracker in application:didFinishLaunchingWithOptions:
- */
-@interface Tracker : NSObject
-
-#pragma mark - Tracker Singleton Setup
-/**
- * @name Tracker Singleton Setup
- */
-
-/**
- *  Shared singleton instance of NUTracker. Use this method to get a reference to NUTracker object.
- *
- *  @return Shared instance of NUTracker.
- */
-+ (instancetype)sharedTracker;
+@interface NUTracker : NSObject
 
 /**
 *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
@@ -181,13 +155,6 @@
  *  @see trackPurchase:
  */
 - (void)trackPurchases:(NSArray *)purchases;
-
-@end
-
-
-@interface Tracker (Dev)
-
-- (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay;
 
 @end
 

@@ -50,7 +50,7 @@
     
     if (![self successfullHttpCode:responseInstance.responseCode]) {
         DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters, responseInstance.responseCode);
-        return [self response: taskResponse withError:error];
+        return [self response: responseInstance withError:error];
     }
     
     [responseInstance setSuccessfull:YES];

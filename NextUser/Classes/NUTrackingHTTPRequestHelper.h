@@ -31,6 +31,8 @@
 #define SESSION_INIT_ENDPOINT @"/sdk.js"
 #define TRACK_ENDPOINT @"/__nutm.gif"
 #define TRACK_DEVICE_ENDPOINT @"/dt.js"
+#define IAMS_REQUEST_ENDPOINT @"/m_wf.js"
+
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 

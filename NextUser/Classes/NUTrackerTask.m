@@ -57,6 +57,10 @@
             path = [session sessionInitPath];
             queryParameters = [NUTrackingHTTPRequestHelper sessionInitializationParameters: session];
             break;
+        case REQUEST_IN_APP_MESSAGES:
+            path = [session iamsRequestPath];
+            queryParameters = [NSMutableDictionary dictionary];
+            break;
         default:
             break;
     }

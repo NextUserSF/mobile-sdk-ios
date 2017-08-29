@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "NUConcurrentOperation.h"
 
-#import "NSError+NextUser.h"
+#import "NUError.h"
 #import "NUDDLog.h"
 #import "NUTaskManager.h"
 

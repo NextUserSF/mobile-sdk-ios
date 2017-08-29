@@ -45,6 +45,7 @@
     if (self = [super init]) {
         _trackerProperties = properties;
         _sessionState = None;
+        _requestInAppMessages = YES;
         _deviceCookie = [self serializedDeviceCookie];
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
@@ -126,6 +127,11 @@
 -(NSString *)trackDevicePath
 {
     return [self pathWithAPIName:TRACK_DEVICE_ENDPOINT];
+}
+
+- (NSString *)iamsRequestPath
+{
+    return [self pathWithAPIName:IAMS_REQUEST_ENDPOINT];
 }
 
 - (NSString *)basePath

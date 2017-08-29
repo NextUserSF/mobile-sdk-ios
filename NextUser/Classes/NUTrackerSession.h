@@ -10,7 +10,6 @@
 #import "NULogLevel.h"
 #import "NUUser.h"
 #import "NUTrackerProperties.h"
-#import "NUTrackerProperties.h"
 
 @class NUPubNubConfiguration;
 
@@ -33,6 +32,8 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 @property (nonatomic) NSString *trackingIdentifier;
 @property (nonatomic) BOOL shouldListenForPushMessages;
 @property (nonatomic) NUPubNubConfiguration *pubNubConfiguration;
+@property (nonatomic) NSString *instantWorkflows;
+@property (nonatomic) BOOL requestInAppMessages;
 
 
 - (id)initWithProperties:(NUTrackerProperties *) trackerProperties;
@@ -44,6 +45,7 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (NSString *)trackPath;
 - (NSString *)sessionInitPath;
 - (NSString *)trackDevicePath;
+- (NSString *)iamsRequestPath;
 
 @end
 

@@ -6,14 +6,14 @@
 //  Copyright © 2016 NextUser. All rights reserved.
 //
 
-#import "NSError+NextUser.h"
+#import "NUError.h"
 #import "NUErrorDefinitions.h"
 
 NSString * const NUNextUserErrorDomain = @"com.nextuser.base";
 
 NSInteger const NUNextUserErrorCodeGeneral = 0;
 
-@implementation NSError (NextUser)
+@implementation NUError
 
 + (NSError *)nextUserErrorWithMessage:(NSString *)message
 {

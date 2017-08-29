@@ -10,18 +10,20 @@
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUHTTPRequestUtils.h"
-#import "NSError+NextUser.h"
+#import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 #import "Base64.h"
 #import "NUTrackerTask.h"
 #import "NUTaskManager.h"
 #import "NUTask.h"
-#import "NUTracker.h"
 #import "NUTrackerInitializationTask.h"
+#import "NUWorkflowManager.h"
+#import "NUInAppMsgCacheManager.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
+#define kInstantWorkflowsJSONKey @"instant_workflows"
 
 @interface PendingTask : NSObject
 @property (nonatomic) id trackingObject;
@@ -37,21 +39,34 @@
     Reachability *reachability;
     NUPushMessageService *pushMessageService;
     NUAppWakeUpManager *wakeUpManager;
+    NUWorkflowManager* workflowManager;
+    NUInAppMsgCacheManager* inAppMessageCacheManager;
     NSMutableArray *pendingTrackRequests;
     NSLock *sessionRequestLock;
     BOOL disabled;
     BOOL initializationFailed;
     BOOL subscribedToAppStatusNotifications;
+    NUTracker* tracker;
 }
 
 @end
 
 @implementation NextUserManager
 
-- (instancetype)initManager
+
++ (instancetype) sharedInstance
 {
-    return [[NextUserManager alloc] init];
+    static NextUserManager *instance;
+    static dispatch_once_t instanceInitToken;
+    dispatch_once(&instanceInitToken, ^{
+        instance = [[NextUserManager alloc] init];
+        [DDLog addLogger:[DDASLLogger sharedInstance]];
+        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    });
+    
+    return instance;
 }
+
 
 -(instancetype)init
 {
@@ -63,6 +78,7 @@
         wakeUpManager = [NUAppWakeUpManager manager];
         wakeUpManager.delegate = self;
         sessionRequestLock = [[NSLock alloc] init];
+        tracker = [[NUTracker alloc] init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveTaskManagerNotification:)
@@ -78,9 +94,20 @@
     return self;
 }
 
+
 -(NUTrackerSession *) getSession
 {
     return session;
+}
+
+-(NUWorkflowManager *) getWorkflowManager
+{
+    return workflowManager;
+}
+
+-(NUInAppMsgCacheManager *) getInAppMsgCacheManager
+{
+    return inAppMessageCacheManager;
 }
 
 -(void)receiveTaskManagerNotification:(NSNotification *) notification
@@ -131,6 +158,7 @@
         }
         
         [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
+        [session setInstantWorkflows: responseDict[kInstantWorkflowsJSONKey]];
         [session setSessionState: Initialized];
         
         if (session.shouldListenForPushMessages) {
@@ -139,12 +167,31 @@
             [self disconnectPushMessageService];
         }
         
+        
+        [self initSessionManagers];
         [self sendPendingTrackRequests];
         
     } else {
         DDLogError(@"Setup tracker error: %@", response.error);
         [session setSessionState: Failed];
         initializationFailed = YES;
+    }
+}
+
+-(void) initSessionManagers
+{
+
+    //inAppMessageCacheManager manager
+    if (inAppMessageCacheManager == nil) {
+        inAppMessageCacheManager = [[NUInAppMsgCacheManager alloc] initWithCache:[[NUCache alloc] init]];
+    }
+    
+    //workflow manager
+    if (workflowManager == nil) {
+        workflowManager = [[NUWorkflowManager alloc] initWithSession: session];
+    } else {
+        workflowManager.session = session;
+        [workflowManager requestInstantWorkflows: SESSION_INITIALIZATION];
     }
 }
 
@@ -458,5 +505,10 @@
     [self unsubscribeFromAppStateNotifications];
 }
 
-@end
 
+- (NUTracker*) getTracker
+{
+    return tracker;
+}
+
+@end

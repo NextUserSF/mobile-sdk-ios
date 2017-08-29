@@ -49,7 +49,8 @@ NSString * const COMPLETION_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerNotifObject
 
 -(void) dispatchCompletionNotification:(id<NUTaskResponse>) taskResponse {
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:taskResponse forKey:COMPLETION_NOTIFICATION_OBJECT_KEY];
-    [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME object:nil userInfo:dictionary];
+    [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME object:nil
+                                                      userInfo:dictionary];
 }
 
 @end
