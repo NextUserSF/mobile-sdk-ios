@@ -1,11 +1,11 @@
+////
+////  NUInAppMsgCacheManager.m
+////  Pods
+////
+////  Created by Adrian Lazea on 29/08/2017.
+////
+////
 //
-//  NUInAppMsgCacheManager.m
-//  Pods
-//
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgCacheManager.h"
 #import "NUDDLog.h"
@@ -32,18 +32,18 @@
 
 - (instancetype)initWithCache:(NUCache*) cache
 {
-    NUInAppMsgCacheManager* instance = [[NUInAppMsgCacheManager alloc] init];
-    nuCache = cache;
+    NUInAppMsgCacheManager* instance = [[NUInAppMsgCacheManager alloc] init: cache];
     
     return instance;
 }
 
-- (instancetype)init
+- (instancetype)init:(NUCache*)cache
 {
     self = [super init];
     if (self) {
         CACHE_LOCK = [[NSLock alloc] init];
         PENDING_IAM_LOCK = [[NSLock alloc] init];
+        nuCache = cache;
     }
     
     return self;
@@ -202,7 +202,7 @@
             if (displayLimit >= 0) {
                 BOOL remove = displayLimit == 0;
                 if (remove == YES) {
-                    [[[NextUserManager sharedInstance] getWorkflowManager] removeWorkflow:pendingMessage.ID];
+                    //[[[NextUserManager sharedInstance] getWorkflowManager] removeWorkflow:pendingMessage.ID];
                 } else {
                     displayLimit = displayLimit - 1;
                     pendingMessage.displayLimit = [NSString stringWithFormat:@"%d",displayLimit];

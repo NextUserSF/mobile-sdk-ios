@@ -7,8 +7,6 @@
 //
 
 #import "NextUserManager.h"
-#import "NUTrackerSession.h"
-#import "NUTrackingHTTPRequestHelper.h"
 #import "NUHTTPRequestUtils.h"
 #import "NUError.h"
 #import "NSString+LGUtils.h"
@@ -18,8 +16,6 @@
 #import "NUTaskManager.h"
 #import "NUTask.h"
 #import "NUTrackerInitializationTask.h"
-#import "NUWorkflowManager.h"
-#import "NUInAppMsgCacheManager.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
@@ -179,14 +175,12 @@
 -(void) initSessionManagers
 {
 
-    //inAppMessageCacheManager manager
     if (inAppMessageCacheManager == nil) {
         inAppMessageCacheManager = [[NUInAppMsgCacheManager alloc] initWithCache:[[NUCache alloc] init]];
     }
     
-    //workflow manager
     if (workflowManager == nil) {
-        workflowManager = [[NUWorkflowManager alloc] initWithSession: session];
+        workflowManager = [NUWorkflowManager initWithSession:session];
     } else {
         workflowManager.session = session;
         [workflowManager requestInstantWorkflows: SESSION_INITIALIZATION];

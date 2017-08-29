@@ -1,12 +1,12 @@
+////
+////  NUInAppMsgCacheManager.h
+////  Pods
+////
+////  Created by Adrian Lazea on 29/08/2017.
+////
+////
 //
-//  NUInAppMsgCacheManager.h
-//  Pods
 //
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
-
 #import <Foundation/Foundation.h>
 #import "NUError.h"
 #import "NSString+LGUtils.h"

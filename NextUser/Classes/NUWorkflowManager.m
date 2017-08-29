@@ -9,8 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "NUWorkflowManager.h"
 #import "NUTaskManager.h"
-#import "NUWorkflows.h"
-#import "NUTrackerSession.h"
+#import "NUWorkflow.h"
 #import "NUTrackerTask.h"
 #import "NUDDLog.h"
 #import "NUJSONTransformer.h"
@@ -22,40 +21,43 @@
     NSOperationQueue* queue;
     NSMutableArray<Workflow *>* workFlows;
     NSLock* WORKFLOWS_LOCK;
-
+    NUTrackerSession* session;
 }
-
--(void) decodeWorkflowsJSON:(NSDictionary*) instantWorkflowsJSON;
--(void) workflowConditionCheck:(WorkflowCondition*) condition;
--(void) removeWorkflow:(NSString*) iamID;
 
 @end
 
 
 @implementation NUWorkflowManager
 
--(instancetype)initWithSession:(NUTrackerSession*) tSession
++(instancetype)initWithSession:(NUTrackerSession*) tSession
 {
-    NUWorkflowManager* instance = [[NUWorkflowManager alloc] init];
-    _session = tSession;
-    [self requestInstantWorkflows: SESSION_INITIALIZATION];
-
+    NUWorkflowManager* instance = [[NUWorkflowManager alloc] init:tSession];
+    
     return instance;
 }
 
--(instancetype)init
+-(instancetype)init:(NUTrackerSession*) tSession
 {
     self = [super init];
     if (self) {
+        session = tSession;
         queue = [[NSOperationQueue alloc] init];
         [queue setMaxConcurrentOperationCount:1];
         [queue setName:@"com.nextuser.workflowConditionsQueue"];
         WORKFLOWS_LOCK = [[NSLock alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveTaskManagerNotification:)
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:)
                                                      name:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME object:nil];
     }
     
+    [self requestInstantWorkflows: SESSION_INITIALIZATION];
+    
     return self;
+}
+
+-(void) setSession:(NUTrackerSession*) tSession
+{
+    session = tSession;
+    [self requestInstantWorkflows: SESSION_INITIALIZATION];
 }
 
 -(void) decodeWorkflowsJSON:(NSDictionary*) instantWorkflowsJSON
@@ -73,7 +75,7 @@
 
 
 
--(void)receiveTaskManagerNotification:(NSNotification *) notification
+-(void)receiveNotification:(NSNotification *) notification
 {
     NSDictionary *userInfo = notification.userInfo;
     NUTrackResponse* taskResponse = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
@@ -109,10 +111,11 @@
 }
 
 - (void) requestInstantWorkflows:(NUTaskType) type {
-    if (_session.requestInAppMessages == YES) {
+    if (session.requestInAppMessages == YES) {
         NUTaskManager* manager = [NUTaskManager manager];
-        NUTrackerTask* task = [[NUTrackerTask alloc] initForType:REQUEST_IN_APP_MESSAGES withTrackObject:[NSNumber numberWithInt:type] withSession:_session];
+        NUTrackerTask* task = [[NUTrackerTask alloc] initForType:REQUEST_IN_APP_MESSAGES withTrackObject:[NSNumber numberWithInt:type] withSession:session];
         [manager submitTask:task];
+
     }
 }
 
@@ -181,7 +184,7 @@
     if ([WORKFLOWS_LOCK tryLock]) {
         @try
         {
-            NSMutableArray *discardedItems = [NSMutableArray array];
+            NSMutableArray *discardedItems = [NSMutableArray alloc];
             for (Workflow* item in workFlows) {
                 if ([item.iamID isEqual:iamID])
                     [discardedItems addObject:item];
