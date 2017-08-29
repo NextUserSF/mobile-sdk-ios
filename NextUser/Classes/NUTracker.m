@@ -14,7 +14,32 @@
 #import "NUTrackerInitializationTask.h"
 
 
+#import "NUTracker.h"
+#import "NUTrackerSession.h"
+#import "NextUserManager.h"
+#import "NUUser.h"
+#import "NUError.h"
+#import "NUDDLog.h"
+#import "NUTracker+Tests.h"
+#import "NULogLevel.h"
+#import "NUTaskManager.h"
+#import "NUTrackerInitializationTask.h"
+
+
 @implementation NUTracker
+
++ (instancetype)sharedTracker
+{
+    static NUTracker *instance;
+    static dispatch_once_t instanceInitToken;
+    dispatch_once(&instanceInitToken, ^{
+        instance = [[NUTracker alloc] init];
+        [DDLog addLogger:[DDASLLogger sharedInstance]];
+        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    });
+    
+    return instance;
+}
 
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 {
@@ -22,15 +47,13 @@
     dispatch_once(&appInitToken, ^{
         DDLogInfo(@"Did finish launching with options: %@", launchOptions);
         UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-        
-        NextUserManager* manager = [NextUserManager sharedInstance];
-        if (localNotification && [manager isNextUserLocalNotification:localNotification]) {
-            [manager handleLocalNotification:localNotification application:application];
+        if (localNotification && [[NextUserManager sharedInstance] isNextUserLocalNotification:localNotification]) {
+            [[NextUserManager sharedInstance] handleLocalNotification:localNotification application:application];
         }
         
         NUTrackerInitializationTask *initTask = [[NUTrackerInitializationTask alloc] init];
-        NUTaskManager *taskManager = [NUTaskManager manager];
-        [taskManager submitTask: initTask];
+        NUTaskManager *manager = [NUTaskManager manager];
+        [manager submitTask: initTask];
     });
 }
 
@@ -43,9 +66,8 @@
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
-    NextUserManager* manager = [NextUserManager sharedInstance];
-    if ([manager isNextUserLocalNotification:notification]) {
-        [manager handleLocalNotification:notification application:application];
+    if ([[NextUserManager sharedInstance] isNextUserLocalNotification:notification]) {
+        [[NextUserManager sharedInstance] handleLocalNotification:notification application:application];
     }
 }
 
@@ -126,6 +148,11 @@
 {
     DDLogInfo(@"Track purchases: %@", purchases);
     [[NextUserManager sharedInstance] trackWithObject:purchases withType:TRACK_PURCHASE];
+}
+
++ (void)releaseSharedInstance
+{
+    [DDLog removeAllLoggers];
 }
 
 - (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay

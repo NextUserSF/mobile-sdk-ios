@@ -12,7 +12,6 @@
 #import "NUInAppMessageManager.h"
 #import "NUWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
-#import "NUTracker.h"
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
 #define kPushMessageContentURLKey @"nu_content_url"
@@ -34,6 +33,5 @@
 -(NUTrackerSession *) getSession;
 -(NUWorkflowManager *) getWorkflowManager;
 -(NUInAppMsgCacheManager *) getInAppMsgCacheManager;
--(NUTracker*) getTracker;
 
 @end

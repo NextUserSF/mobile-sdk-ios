@@ -8,20 +8,46 @@
 
 #import <UIKit/UIKit.h>
 
+
 @class NUPurchase;
 @class NUAction;
 @class NUUser;
 
+/**
+ *  Log level used by the tracker.
+ */
 
-@interface NUTracker : NSObject
 
 /**
-*  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
-*
-*  @param application   Host Application
-*  @param launchOptions Dictionary with launching options
-*
-*/
+ * This class is the primary interface for user tracking which communicates with the NextUser API.
+ * Use shared singleton instance of the tracker. Use this class to configure your project analytics
+ * and to track events.
+ *
+ * Before you can track any events, you need to start tracking session. Do this by calling one of two
+ * methods: startSessionWithTrackIdentifier:, startSessionWithTrackIdentifier:completion:
+ * It is important to initialize sharedTracker tracker in application:didFinishLaunchingWithOptions:
+ */
+@interface NUTracker : NSObject
+
+#pragma mark - Tracker Singleton Setup
+/**
+ * @name Tracker Singleton Setup
+ */
+
+/**
+ *  Shared singleton instance of NUTracker. Use this method to get a reference to NUTracker object.
+ *
+ *  @return Shared instance of NUTracker.
+ */
++ (instancetype)sharedTracker;
+
+/**
+ *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:
+ *
+ *  @param application   Host Application
+ *  @param launchOptions Dictionary with launching options
+ *
+ */
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 
 
@@ -46,7 +72,7 @@
 /**
  *  Triggers system alert view which asks user for permissions to use location. NUTracker is monitoring for significant location changes in order to wake up application
  *  in periods when it is in background or turned off. This is because app can not receive HTTP messages while in background.
- *  
+ *
  *  @warning Without calling this method (or expanded version of it bellow) IAMs will not work properly (you will miss messages that arrived during app's background time).
  */
 - (void)requestLocationPersmissions;
@@ -56,7 +82,7 @@
 /**
  *  Triggers system alert view which asks user for permissions to use notifications. This method requests all notifications type alerts.
  *  For requesting only specific notification type alerts use -requestNotificationPermissionsForNotificationTypes: method.
- * 
+ *
  *  @warning Without calling this method (or expanded version of it bellow) IAMs will not work.
  *  @see requestNotificationPermissionsForNotificationTypes:
  *  @see requestLocationPersmissions
@@ -83,7 +109,7 @@
 /**
  *  Call this method if you want to track a particular user.
  *  Check NUUser.h interface for available user fileds for tracking.
- *  @param user that is currently using the application. 
+ *  @param user that is currently using the application.
  */
 - (void)trackUser:(NUUser *)user;
 
@@ -158,3 +184,9 @@
 
 @end
 
+
+@interface NUTracker (Dev)
+
+- (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay;
+
+@end

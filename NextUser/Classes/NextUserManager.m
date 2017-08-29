@@ -46,7 +46,6 @@
     BOOL disabled;
     BOOL initializationFailed;
     BOOL subscribedToAppStatusNotifications;
-    NUTracker* tracker;
 }
 
 @end
@@ -78,7 +77,6 @@
         wakeUpManager = [NUAppWakeUpManager manager];
         wakeUpManager.delegate = self;
         sessionRequestLock = [[NSLock alloc] init];
-        tracker = [[NUTracker alloc] init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveTaskManagerNotification:)
@@ -503,12 +501,6 @@
     pushMessageService = nil;
     
     [self unsubscribeFromAppStateNotifications];
-}
-
-
-- (NUTracker*) getTracker
-{
-    return tracker;
 }
 
 @end
