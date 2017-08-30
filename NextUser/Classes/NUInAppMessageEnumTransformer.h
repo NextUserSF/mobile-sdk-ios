@@ -6,7 +6,8 @@
 typedef NS_ENUM(NSUInteger, InAppMsgLayoutType) {
     SKINNY = 0,
     MODAL,
-    FULL
+    FULL,
+    NO_TYPE
 };
 
 typedef NS_ENUM(NSUInteger, InAppMsgAlign) {
@@ -14,7 +15,8 @@ typedef NS_ENUM(NSUInteger, InAppMsgAlign) {
     RIGHT,
     LEFT,
     TOP,
-    BOTTOM
+    BOTTOM,
+    NO_ALIGN
 };
 
 
@@ -22,14 +24,15 @@ typedef NS_ENUM(NSUInteger, InAppMsgAction) {
     DISMISS = 0,
     LANDING_PAGE,
     URL,
-    DEEP_LINK
+    DEEP_LINK,
+    NO_ACTION
 };
 
 @interface InAppMessageEnumTransformer : NSObject
 
-+(InAppMsgLayoutType) toInAppMsgType:(NSString*) type;
-+(InAppMsgAlign) toInAppMsgAlign:(NSString*) align;
-+(InAppMsgAction) toInAppMsgAction:(NSString*) action;
++(InAppMsgLayoutType) toInAppMsgType:(id) type;
++(InAppMsgAlign) toInAppMsgAlign:(id) align;
++(InAppMsgAction) toInAppMsgAction:(id) action;
 
 @end
 

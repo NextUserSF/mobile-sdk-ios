@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgButton.h"
 #import "NUInAppMsgCover.h"
+#import "NUJSONObject.h"
 
-@interface InAppMsgBody : NSObject
+@interface InAppMsgBody : NUJSONObject
 
 @property (nonatomic) InAppMsgText* header;
 @property (nonatomic) InAppMsgCover* cover;

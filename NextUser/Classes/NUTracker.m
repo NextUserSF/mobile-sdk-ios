@@ -21,47 +21,24 @@
 
 @implementation NUTracker
 
-+ (instancetype)sharedTracker
-{
-    static NUTracker *instance;
-    static dispatch_once_t instanceInitToken;
-    dispatch_once(&instanceInitToken, ^{
-        instance = [[NUTracker alloc] init];
-        [DDLog addLogger:[DDASLLogger sharedInstance]];
-        [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    });
-    
-    return instance;
-}
 
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 {
-    static dispatch_once_t appInitToken;
-    dispatch_once(&appInitToken, ^{
-        DDLogInfo(@"Did finish launching with options: %@", launchOptions);
-        //UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-        //if (localNotification && [[NextUserManager sharedInstance] isNextUserLocalNotification:localNotification]) {
-        //    [[NextUserManager sharedInstance] handleLocalNotification:localNotification application:application];
-        //}
-        
-        //NUTrackerInitializationTask *initTask = [[NUTrackerInitializationTask alloc] init];
-        //NUTaskManager *manager = [NUTaskManager manager];
-        //[manager submitTask: initTask];
-    });
+    [[NextUserManager sharedInstance] initializeWithApplication:application withLaunchOptions:launchOptions];
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    //[[NextUserManager sharedInstance] unsubscribeFromAppStateNotifications];
+    [[NextUserManager sharedInstance] unsubscribeFromAppStateNotifications];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
-    //if ([[NextUserManager sharedInstance] isNextUserLocalNotification:notification]) {
-    //    [[NextUserManager sharedInstance] handleLocalNotification:notification application:application];
-    //}
+    if ([[NextUserManager sharedInstance] isNextUserLocalNotification:notification]) {
+        [[NextUserManager sharedInstance] handleLocalNotification:notification application:application];
+    }
 }
 
 #pragma mark -
@@ -74,17 +51,17 @@
 
 - (void)requestLocationPersmissions
 {
-   // [[NextUserManager sharedInstance] requestLocationPersmissions];
+   [[NextUserManager sharedInstance] requestLocationPersmissions];
 }
 
 - (void)requestNotificationPermissions
 {
-   // [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes:[[NextUserManager sharedInstance] allNotificationTypes]];
+   [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes:[[NextUserManager sharedInstance] allNotificationTypes]];
 }
 
 - (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
 {
-    //[[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes: types];
+    [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes: types];
 }
 
 
@@ -92,55 +69,55 @@
 {
     [self setUser:user];
     DDLogInfo(@"Tracking user with identifier: %@", user.userIdentifier);
-    //[[NextUserManager sharedInstance] trackWithObject:user withType:(TRACK_USER)];
+    [[NextUserManager sharedInstance] trackWithObject:user withType:(TRACK_USER)];
 }
 
 - (void)setUser:(NUUser *)user
 {
-    //if (![[NextUserManager sharedInstance] getSession]) {
-    //    return;
-    //}
+    if (![[NextUserManager sharedInstance] getSession]) {
+        return;
+    }
     
-   // [[NextUserManager sharedInstance] getSession].user = user;
+    [[NextUserManager sharedInstance] getSession].user = user;
 }
 
 - (NSString *)currentUserIdenifier
 {
-    //if (![[NextUserManager sharedInstance] getSession]) {
+    if (![[NextUserManager sharedInstance] getSession]) {
         return nil;
-    //}
+    }
     
-    return nil; //[[[NextUserManager sharedInstance] getSession].user userIdentifier];
+    return [[[NextUserManager sharedInstance] getSession].user userIdentifier];
 }
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
     DDLogInfo(@"Track screen with name: %@", screenName);
-    //[[NextUserManager sharedInstance] trackWithObject:screenName withType:TRACK_SCREEN];
+    [[NextUserManager sharedInstance] trackWithObject:screenName withType:TRACK_SCREEN];
 }
 
 - (void)trackAction:(NUAction *)action
 {
     DDLogInfo(@"Track action: %@", action);
-   // [[NextUserManager sharedInstance] trackWithObject:@[action] withType:TRACK_ACTION];
+    [[NextUserManager sharedInstance] trackWithObject:@[action] withType:TRACK_ACTION];
 }
 
 - (void)trackActions:(NSArray *)actions
 {
     DDLogInfo(@"Track actions: %@", actions);
-    //[[NextUserManager sharedInstance] trackWithObject:actions withType:TRACK_ACTION];
+    [[NextUserManager sharedInstance] trackWithObject:actions withType:TRACK_ACTION];
 }
 
 - (void)trackPurchase:(NUPurchase *)purchase
 {
     DDLogInfo(@"Track purchase: %@", purchase);
-    //[[NextUserManager sharedInstance] trackWithObject:@[purchase] withType:TRACK_PURCHASE];
+    [[NextUserManager sharedInstance] trackWithObject:@[purchase] withType:TRACK_PURCHASE];
 }
 
 - (void)trackPurchases:(NSArray *)purchases
 {
     DDLogInfo(@"Track purchases: %@", purchases);
-    //[[NextUserManager sharedInstance] trackWithObject:purchases withType:TRACK_PURCHASE];
+    [[NextUserManager sharedInstance] trackWithObject:purchases withType:TRACK_PURCHASE];
 }
 
 + (void)releaseSharedInstance
@@ -160,7 +137,7 @@
     message.UITheme = [NUIAMUITheme defautTheme];
     message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
-    //[[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
+    [[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
 }
 
 @end

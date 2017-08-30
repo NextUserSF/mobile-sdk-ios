@@ -66,7 +66,7 @@
 
 - (void) deleteFile:(NSString *) fileName
 {
-    
+    [filemgr createFileAtPath:[self formatPathForFileName:fileName] contents:[NSData data] attributes:nil];
 }
 
 

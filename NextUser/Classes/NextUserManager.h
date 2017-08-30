@@ -12,6 +12,7 @@
 #import "NUInAppMessageManager.h"
 #import "NUWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
+#import "NUTracker.h"
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
 #define kPushMessageContentURLKey @"nu_content_url"
@@ -21,6 +22,7 @@
 
 + (instancetype) sharedInstance;
 
+-(void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 -(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType;
 -(void)refreshPendingRequests;
 -(void)unsubscribeFromAppStateNotifications;
@@ -33,5 +35,7 @@
 -(NUTrackerSession *) getSession;
 -(NUWorkflowManager *) getWorkflowManager;
 -(NUInAppMsgCacheManager *) getInAppMsgCacheManager;
+-(NUTracker* ) getTracker;
+-(void) inAppMessagesRequested;
 
 @end

@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgClick.h"
+#import "NUJSONObject.h"
 
-@interface InAppMsgInteractions : NSObject
+@interface InAppMsgInteractions : NUJSONObject
 
 @property (nonatomic) InAppMsgClick* click;
 @property (nonatomic) InAppMsgClick* click0;

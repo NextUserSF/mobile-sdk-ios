@@ -9,8 +9,9 @@
 
 #import <Foundation/Foundation.h>
 #import "NUInAppMessageEnumTransformer.h"
+#import "NUJSONObject.h"
 
-@interface InAppMsgClick : NSObject
+@interface InAppMsgClick : NUJSONObject
 
 @property (nonatomic) InAppMsgAction action;
 @property (nonatomic) NSString* value;

@@ -11,4 +11,10 @@
 + (NSMutableArray<InAppMessage* >*) toInAppMessages:(id) messagesJSONArray;
 + (NSMutableArray<Workflow* >*) toWorkflows:(id) workflowsJSONArray;
 
+
++ (id) toInAppMessagesJSON:(NSArray<InAppMessage* >*) messages;
++ (id) toInAppMessageJSON:(InAppMessage* ) message;
++ (InAppMessage* ) toInAppMessage:(id) messageJSON;
+
+
 @end

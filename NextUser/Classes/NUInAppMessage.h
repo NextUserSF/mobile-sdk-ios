@@ -8,8 +8,9 @@
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgBody.h"
 #import "NUInAppMsgInteractions.h"
+#import "NUJSONObject.h"
 
-@interface InAppMessage : NSObject
+@interface InAppMessage : NUJSONObject
 
 @property (nonatomic) NSString* ID;
 @property (nonatomic) InAppMsgLayoutType type;

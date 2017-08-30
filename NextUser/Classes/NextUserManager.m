@@ -31,6 +31,7 @@
 
 @interface NextUserManager()
 {
+    NUTracker* tracker;
     NUTrackerSession *session;
     Reachability *reachability;
     NUPushMessageService *pushMessageService;
@@ -42,6 +43,7 @@
     BOOL disabled;
     BOOL initializationFailed;
     BOOL subscribedToAppStatusNotifications;
+    BOOL inAppMessagesRequested;
 }
 
 @end
@@ -68,7 +70,9 @@
     self = [super init];
     if (self) {
         pendingTrackRequests = [NSMutableArray array];
+        tracker = [[NUTracker alloc] init];
         initializationFailed = NO;
+        inAppMessagesRequested = NO;
         disabled = NO;
         wakeUpManager = [NUAppWakeUpManager manager];
         wakeUpManager.delegate = self;
@@ -88,6 +92,24 @@
     return self;
 }
 
+- (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions
+{
+    static dispatch_once_t appInitToken;
+    dispatch_once(&appInitToken, ^{
+        DDLogInfo(@"Did finish launching with options: %@", launchOptions);
+        UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        if (localNotification && [self isNextUserLocalNotification:localNotification]) {
+            [self handleLocalNotification:localNotification application:application];
+        }
+        
+        [[NUTaskManager manager] submitTask: [[NUTrackerInitializationTask alloc] init]];
+    });
+}
+
+-(NUTracker* ) getTracker
+{
+    return tracker;
+}
 
 -(NUTrackerSession *) getSession
 {
@@ -117,7 +139,7 @@
             [self onSessionInitialization:taskResponse];
             break;
         default:
-            [self sendPendingTrackRequests];
+            //[self sendPendingTrackRequests];
             break;
     }
 }
@@ -161,9 +183,13 @@
             [self disconnectPushMessageService];
         }
         
-        
-        [self initSessionManagers];
-        [self sendPendingTrackRequests];
+        if (session.requestInAppMessages == YES) {
+            inAppMessagesRequested = NO;
+            [self initInAppMsgSessionManagers];
+        } else {
+            inAppMessagesRequested = YES;
+            [self sendPendingTrackRequests];
+        }
         
     } else {
         DDLogError(@"Setup tracker error: %@", response.error);
@@ -172,7 +198,13 @@
     }
 }
 
--(void) initSessionManagers
+-(void) inAppMessagesRequested
+{
+    inAppMessagesRequested = YES;
+    [self sendPendingTrackRequests];
+}
+
+-(void) initInAppMsgSessionManagers
 {
 
     if (inAppMessageCacheManager == nil) {
@@ -207,7 +239,7 @@
         return NO;
     }
     
-    if (![self validTracker]) {
+    if (![self validTracker] || !inAppMessagesRequested) {
         DDLogVerbose(@"Cannot sendTrackTask, session or network connection not available...");
         [self queueTrackObject:trackObject withType:taskType];
         

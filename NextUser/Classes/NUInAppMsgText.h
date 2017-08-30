@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "NUInAppMessageEnumTransformer.h"
+#import "NUJSONObject.h"
 
-@interface InAppMsgText : NSObject
+@interface InAppMsgText : NUJSONObject
 
 @property (nonatomic) NSString* text;
 @property (nonatomic) InAppMsgAlign align;

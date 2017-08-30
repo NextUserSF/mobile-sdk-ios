@@ -7,8 +7,9 @@
 //
 #import <Foundation/Foundation.h>
 #import "NUWorkflowCondition.h"
+#import "NUJSONObject.h"
 
-@interface Workflow : NSObject
+@interface Workflow : NUJSONObject
 
 @property (nonatomic) NSArray<WorkflowCondition *> *conditions;
 @property (nonatomic) NSString* ID;

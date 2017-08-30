@@ -7,11 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NUPurchase.h"
+#import "NUAction.h"
+#import "NUUser.h"
 
-
-@class NUPurchase;
-@class NUAction;
-@class NUUser;
 
 /**
  *  Log level used by the tracker.
@@ -34,12 +33,6 @@
  * @name Tracker Singleton Setup
  */
 
-/**
- *  Shared singleton instance of NUTracker. Use this method to get a reference to NUTracker object.
- *
- *  @return Shared instance of NUTracker.
- */
-+ (instancetype)sharedTracker;
 
 /**
  *  Called when application is finishing launching. Call this method from your AppDelegate's -application:didFinishLaunchingWithOptions:

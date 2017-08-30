@@ -66,13 +66,11 @@
     NSMutableArray<InAppMessage* >* messages = [NUJSONTransformer toInAppMessages:[instantWorkflowsJSON objectForKey:@"messages"]];
     if (messages != nil && [messages count] > 0)
     {
-        NUInAppMsgCacheManager* iamsCacheManager = [[NextUserManager sharedInstance] getInAppMsgCacheManager];
-        [iamsCacheManager cacheMessages:messages];
+        [[[NextUserManager sharedInstance] getInAppMsgCacheManager] cacheMessages:messages];
     }
     
     workFlows = [NUJSONTransformer toWorkflows:[instantWorkflowsJSON objectForKey:@"workFlows"]];
 }
-
 
 
 -(void)receiveNotification:(NSNotification *) notification
@@ -88,10 +86,11 @@
             break;
         case REQUEST_IN_APP_MESSAGES:
             [self onInAppMsgRequest:taskResponse];
+            [[NextUserManager sharedInstance] inAppMessagesRequested];
             break;
         case TRACK_ACTION:
-            for(NSString* action in [taskResponse getTrackObject]) {
-                [queue addOperation:[self createWorkflowOperationForType:ACTION withValue:action]];
+            for(NUAction* action in [taskResponse getTrackObject]) {
+                [queue addOperation:[self createWorkflowOperationForType:ACTION withValue:[action actionName]]];
             }
             break;
         case TRACK_PURCHASE:
@@ -132,7 +131,6 @@
     
    
     NSDictionary* inAppMsgsRequestJSON = [responseDict objectForKey:@"instant_workflows"];
-    DDLogVerbose(@"Instant workflows response: %@", inAppMsgsRequestJSON);
     if (inAppMsgsRequestJSON != nil)
     {
         [self decodeWorkflowsJSON: inAppMsgsRequestJSON];
@@ -167,7 +165,8 @@
             }
             
             if (nextIamID != nil) {
-                //send iam id to in app messanger queue for display
+                InAppMessage* fetchedIam = [[[NextUserManager sharedInstance] getInAppMsgCacheManager] fetchMessage:nextIamID];
+                //send iam to showing
             }
             
             
