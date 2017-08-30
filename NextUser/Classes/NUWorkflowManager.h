@@ -11,7 +11,7 @@
 #import "NUTask.h"
 
 
-@interface NUWorkflowManager : NSObject
+@interface WorkflowManager : NSObject
 
 +(instancetype)initWithSession:(NUTrackerSession*) tSession;
 -(void) requestInstantWorkflows:(NUTaskType) type;

@@ -13,9 +13,9 @@
 #import "NUCache.h"
 #import "NUInAppMessage.h"
 
-@interface NUInAppMsgCacheManager : NSObject
+@interface InAppMsgCacheManager : NSObject
 
-- (instancetype)initWithCache:(NUCache*) cache;
++(instancetype)initWithCache:(NUCache*) cache;
 - (void) cacheMessages:(NSArray<InAppMessage* >*) messages;
 - (InAppMessage* ) fetchMessage:(NSString *) iamID;
 - (void) clearAll;

@@ -14,7 +14,7 @@
 
 #define IAMS_JSON_FILE @"in_app_messages.json"
 
-@interface NUInAppMsgCacheManager()
+@interface InAppMsgCacheManager()
 {
     InAppMessage* pendingMessage;
     NUCache* nuCache;
@@ -27,12 +27,12 @@
 @end
 
 
-@implementation NUInAppMsgCacheManager
+@implementation InAppMsgCacheManager
 
 
-- (instancetype)initWithCache:(NUCache*) cache
++ (instancetype)initWithCache:(NUCache*) cache
 {
-    NUInAppMsgCacheManager* instance = [[NUInAppMsgCacheManager alloc] init: cache];
+    InAppMsgCacheManager* instance = [[InAppMsgCacheManager alloc] init: cache];
     
     return instance;
 }
@@ -98,7 +98,6 @@
         }
     }
 }
-
 
 - (void) cacheMessage:(InAppMessage* ) message
 {

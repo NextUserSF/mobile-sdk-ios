@@ -12,6 +12,8 @@
 #import "NUInAppMessageManager.h"
 #import "NUWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
+#import "NUInAppMsgImageManager.h"
+#import "NUInAppMsgUIManager.h"
 #import "NUTracker.h"
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
@@ -33,8 +35,12 @@
 -(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
 -(UIUserNotificationType)allNotificationTypes;
 -(NUTrackerSession *) getSession;
--(NUWorkflowManager *) getWorkflowManager;
--(NUInAppMsgCacheManager *) getInAppMsgCacheManager;
+-(WorkflowManager *) workflowManager;
+-(InAppMsgCacheManager *) inAppMsgCacheManager;
+-(InAppMsgImageManager *) inAppMsgImageManager;
+-(InAppMsgUIManager *) inAppMsgUIManager;
+
+
 -(NUTracker* ) getTracker;
 -(void) inAppMessagesRequested;
 

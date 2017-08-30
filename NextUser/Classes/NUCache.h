@@ -16,5 +16,6 @@
 - (void) deleteFile:(NSString* ) fileName;
 - (void) writeData:(NSData* ) data toFile:(NSString*) fileName;
 - (NSData* ) readFromFile:(NSString* ) fileName;
+- (NSString* ) formatPathForFileName:(NSString* ) fileName;
 
 @end

@@ -36,8 +36,10 @@
     Reachability *reachability;
     NUPushMessageService *pushMessageService;
     NUAppWakeUpManager *wakeUpManager;
-    NUWorkflowManager* workflowManager;
-    NUInAppMsgCacheManager* inAppMessageCacheManager;
+    WorkflowManager* workflowManager;
+    InAppMsgCacheManager* inAppMessageCacheManager;
+    InAppMsgUIManager* inAppMsgUIManager;
+    InAppMsgImageManager* inAppMsgImageManager;
     NSMutableArray *pendingTrackRequests;
     NSLock *sessionRequestLock;
     BOOL disabled;
@@ -116,14 +118,25 @@
     return session;
 }
 
--(NUWorkflowManager *) getWorkflowManager
+-(WorkflowManager *) workflowManager
 {
     return workflowManager;
 }
 
--(NUInAppMsgCacheManager *) getInAppMsgCacheManager
+-(InAppMsgCacheManager *) inAppMsgCacheManager
 {
     return inAppMessageCacheManager;
+}
+
+
+-(InAppMsgImageManager *) inAppMsgImageManager
+{
+    return inAppMsgImageManager;
+}
+
+-(InAppMsgUIManager *) inAppMsgUIManager
+{
+    return inAppMsgUIManager;
 }
 
 -(void)receiveTaskManagerNotification:(NSNotification *) notification
@@ -208,11 +221,19 @@
 {
 
     if (inAppMessageCacheManager == nil) {
-        inAppMessageCacheManager = [[NUInAppMsgCacheManager alloc] initWithCache:[[NUCache alloc] init]];
+        inAppMessageCacheManager = [InAppMsgCacheManager initWithCache:[[NUCache alloc] init]];
+    }
+    
+    if (inAppMsgImageManager == nil) {
+        inAppMsgImageManager = [InAppMsgImageManager initWithCache:[[NUCache alloc] init]];
+    }
+    
+    if (inAppMsgUIManager == nil) {
+        inAppMsgUIManager = [[InAppMsgUIManager alloc] init];
     }
     
     if (workflowManager == nil) {
-        workflowManager = [NUWorkflowManager initWithSession:session];
+        workflowManager = [WorkflowManager initWithSession:session];
     } else {
         workflowManager.session = session;
         [workflowManager requestInstantWorkflows: SESSION_INITIALIZATION];

@@ -11,9 +11,6 @@
 @class NUPushMessage;
 
 @interface NUInAppMessageManager : NSObject
-
 + (instancetype)sharedManager;
-
 - (void)showPushMessage:(NUPushMessage *)message skipNotificationUI:(BOOL)skipNotificationUI;
-
 @end
