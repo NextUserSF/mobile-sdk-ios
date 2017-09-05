@@ -32,11 +32,13 @@
 @property(nonatomic)  CGFloat closeIconHeight;
 @property(nonatomic)  CGFloat modalTextPadding;
 @property(nonatomic)  CGFloat skinnyTextPadding;
+@property(nonatomic)  CGFloat fullTextPadding;
 @property(nonatomic)  CGFloat imagePadding;
 @property(nonatomic)  CGFloat cornerRadius;
 @property(nonatomic)  CGFloat cornerRadiusSmall;
-
 @property(nonatomic)  CGFloat headerTitleFontSize;
 @property(nonatomic)  CGFloat contentTitleFontSize;
+@property(nonatomic)  CGFloat contentBodyFontSize;
+
 
 @end

@@ -85,10 +85,10 @@
     InAppMsgText *headerTitleMsg = [wrapper getHeader];
     headerTitle = [[UILabel alloc] init];
     [headerTitle setTranslatesAutoresizingMaskIntoConstraints:NO];
-    headerTitle.textColor = [InAppMsgViewHelper textColor:headerTitleMsg.textColor];
-    headerTitle.font = [UIFont boldSystemFontOfSize:12.0];
-    headerTitle.text = headerTitleMsg.text;
-    headerTitle.textAlignment = [InAppMsgViewHelper toTextAlignment:headerTitleMsg.align];
+    [headerTitle setTextColor: [InAppMsgViewHelper textColor:headerTitleMsg.textColor]];
+    [headerTitle setFont: [UIFont boldSystemFontOfSize:settings.headerTitleFontSize]];
+    [headerTitle setText: headerTitleMsg.text] ;
+    [headerTitle setTextAlignment: [InAppMsgViewHelper toTextAlignment:headerTitleMsg.align]];
     [headerView addSubview:headerTitle];
 }
 
@@ -96,7 +96,6 @@
 {
     headerCloseImgView = [[UIImageView alloc] init];
     [headerCloseImgView setTranslatesAutoresizingMaskIntoConstraints: NO];
-//    UIImage* chevronRightImage = [UIImage imageNamed:@"chevron_right.png"];
     headerCloseImgView.contentMode = UIViewContentModeCenter;
     [headerView addSubview:headerCloseImgView];
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -112,7 +111,7 @@
     coverImgView = [[UIImageView alloc] init];
     [coverImgView setTranslatesAutoresizingMaskIntoConstraints: NO];
     [coverImgView setClipsToBounds:YES];
-    coverImgView.image = wrapper.messageImage;
+    [coverImgView setImage: wrapper.messageImage];
     [self addSubview:coverImgView];
 }
 
@@ -129,10 +128,10 @@
     InAppMsgText *titleMsg = [wrapper getTitle];
     contentTitleView = [[UILabel alloc] init];
     [contentTitleView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    contentTitleView.textColor = [InAppMsgViewHelper textColor:titleMsg.textColor];
-    contentTitleView.font = [UIFont boldSystemFontOfSize:settings.contentTitleFontSize];
-    contentTitleView.text = titleMsg.text;
-    contentTitleView.textAlignment = [InAppMsgViewHelper toTextAlignment:titleMsg.align];
+    [contentTitleView setTextColor: [InAppMsgViewHelper textColor:titleMsg.textColor]];
+    [contentTitleView setFont: [UIFont boldSystemFontOfSize:settings.contentTitleFontSize]];
+    [contentTitleView setText: titleMsg.text];
+    [contentTitleView setTextAlignment: [InAppMsgViewHelper toTextAlignment:titleMsg.align]];
     [contentView addSubview:contentTitleView];
 }
 
@@ -141,10 +140,10 @@
     InAppMsgText *contentMsg = [wrapper getContent];
     contentTextView = [[UILabel alloc] init];
     [contentTextView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    contentTextView.textColor = [InAppMsgViewHelper textColor:contentMsg.textColor];
-    contentTextView.font = [UIFont boldSystemFontOfSize:12.0];
-    contentTextView.text = contentMsg.text;
-    contentTextView.textAlignment = [InAppMsgViewHelper toTextAlignment:contentMsg.align];
+    [contentTextView setTextColor: [InAppMsgViewHelper textColor:contentMsg.textColor]];
+    [contentTextView setFont: [UIFont systemFontOfSize:settings.contentBodyFontSize]];
+    [contentTextView setText: contentMsg.text];
+    [contentTextView setTextAlignment:[InAppMsgViewHelper toTextAlignment:contentMsg.align]];
     contentTextView.numberOfLines = 5;
     [contentView addSubview:contentTextView];
 }
@@ -170,7 +169,7 @@
         @throw error;
     }
     
-    if (wrapper.image ==YES && (wrapper.messageImage == nil || ([wrapper.messageImage size].height == 0 && [wrapper.messageImage size].width == 0))){
+    if (wrapper.image == YES && (wrapper.messageImage == nil || ([wrapper.messageImage size].height == 0 && [wrapper.messageImage size].width == 0))){
         NSError* error = [NUError nextUserErrorWithMessage: [NSString stringWithFormat:@"Missing image"]];
         @throw error;
     }
@@ -179,14 +178,14 @@
 -(NUUIButton*)setupButton:(InAppMsgButton*) buttonConfig withSelector:(SEL) selector
 {
     NUUIButton* button = [NUUIButton buttonWithType:UIButtonTypeCustom];
-    button.translatesAutoresizingMaskIntoConstraints = NO;
-    button.contentEdgeInsets = UIEdgeInsetsMake(10, 20, 10, 20);
+    [button setTranslatesAutoresizingMaskIntoConstraints: NO];
+    [button setContentEdgeInsets: UIEdgeInsetsMake(10, 20, 10, 20)];
     
     [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateNormal];
     [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateSelected];
     
     //button.layer.contentsGravity
-    button.titleLabel.font = [UIFont systemFontOfSize:settings.headerTitleFontSize weight:UIFontWeightLight];
+    [button.titleLabel setFont: [UIFont systemFontOfSize:settings.headerTitleFontSize weight:UIFontWeightLight]];
     [button setTitle:buttonConfig.text forState:UIControlStateNormal];
     [button setTitleColor:[InAppMsgViewHelper textColor: buttonConfig.textColor] forState:UIControlStateNormal];
     [button setTitleColor:[[button titleColorForState:UIControlStateNormal] colorWithAlphaComponent:0.5] forState:UIControlStateHighlighted];

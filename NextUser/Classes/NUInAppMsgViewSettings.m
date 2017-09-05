@@ -30,10 +30,11 @@
         _smallMargin = 10;
         _largeMargin = 10;
         _closeIconHeight = 20;
+        _fullTextPadding = 17;
         _modalTextPadding = 15;
-        _skinnyTextPadding = 10;
+        _skinnyTextPadding = 13;
         _imagePadding = 10;
-        _cornerRadius = 10;
+        _cornerRadius = 6;
         _cornerRadiusSmall = 6;
         
         _skinnyHeight = (_screenHeight - _statusBarHeight)/6;
@@ -51,8 +52,9 @@
         
         _fullSmallImageHeight = (_screenHeight - _statusBarHeight)/2;
         
-        _headerTitleFontSize = 34*72/96;
-        _contentTitleFontSize = 28*72/96;
+        _headerTitleFontSize = 22*72/96;
+        _contentTitleFontSize = 20*72/96;
+        _contentBodyFontSize = 17*72/96;
     }
     
     return self;

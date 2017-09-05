@@ -20,10 +20,6 @@
 
 +(NSTextAlignment) toTextAlignment:(InAppMsgAlign) align
 {
-    if (!align) {
-        return NSTextAlignmentLeft;
-    }
-    
     switch (align) {
         case LEFT:
             return NSTextAlignmentLeft;
