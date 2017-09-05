@@ -625,8 +625,6 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             self.contentView.frame = contentViewFrame;
             
             // Reset _containerView's constraints in case contentView is uaing autolayout.
-            UIView* contentView = _contentView;
-            NSDictionary* views = NSDictionaryOfVariableBindings(contentView);
             [_containerView removeConstraints:_containerView.constraints];
             
             NSValue* layoutValue = [parameters valueForKey:@"layout"];
@@ -637,23 +635,10 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 layout = NUPopUpLayoutCenter;
                 layout.contentMargins = NUPopUpContentMarginsMake(0, 0, 0, 0);
             }
-
-            NSString* verticalFormat =[NSString stringWithFormat: @"V:|-(%f)-[contentView]-(%f)-|",
-                                       layout.contentMargins.verticalTop, layout.contentMargins.verticalBottom];
-            NSString* horizontalFormat =[NSString stringWithFormat: @"H:|-(%f)-[contentView]-(%f)-|",
-                                       layout.contentMargins.horizontalLeft, layout.contentMargins.horizontalRight];
             
-            [_containerView addConstraints:
-             [NSLayoutConstraint constraintsWithVisualFormat: verticalFormat
-                                                     options:0
-                                                     metrics:nil
-                                                       views:views]];
-            
-            [_containerView addConstraints:
-             [NSLayoutConstraint constraintsWithVisualFormat:horizontalFormat
-                                                     options:0
-                                                     metrics:nil
-                                                       views:views]];
+            NSLayoutConstraint *marginTop = [NSLayoutConstraint constraintWithItem:_containerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeTop multiplier:1 constant:-layout.contentMargins.verticalTop];
+            NSLayoutConstraint *marginLeft = [NSLayoutConstraint constraintWithItem:_containerView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeLeft multiplier:1 constant:-layout.contentMargins.horizontalLeft];
+            [NSLayoutConstraint activateConstraints:@[marginTop, marginLeft]];
 
             
             // Determine final position and necessary autoresizingMask for container.
@@ -766,6 +751,7 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             }
             
             _containerView.autoresizingMask = containerAutoresizingMask;
+            [_contentView setTranslatesAutoresizingMaskIntoConstraints:NO];
             
             // Animate content if needed
             switch (_showType) {

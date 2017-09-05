@@ -26,10 +26,12 @@
     message.autoDismiss = [[messageJSON objectForKey:@"autoDismiss"] boolValue];
     message.dismissTimeout = [messageJSON objectForKey:@"dismissTimeout"];
     message.backgroundColor = [messageJSON objectForKey:@"backgroundColor"];
-    message.backgroundColor = [messageJSON objectForKey:@"dismissColor"];
+    message.dismissColor = [messageJSON objectForKey:@"dismissColor"];
     message.showDismiss = [[messageJSON objectForKey:@"showDismiss"] boolValue];
     message.floatingButtons = [[messageJSON objectForKey:@"floatingButtons"] boolValue];
     message.position = [InAppMessageEnumTransformer toInAppMsgAlign: [messageJSON objectForKey:@"position"]];
+    message.displayLimit = [messageJSON objectForKey:@"displayLimit"];
+    
     
     id bodyObject = [messageJSON objectForKey:@"body"];
     if (bodyObject != nil) {
@@ -50,6 +52,16 @@
             message.body.footer = footer;
         }
     }
+    
+    id interactionsObject = [messageJSON objectForKey:@"interactions"];
+    if (interactionsObject != nil) {
+        message.interactions = [[InAppMsgInteractions alloc] init];
+        message.interactions.click = [self convertToInMessageClick: [interactionsObject objectForKey:@"click"]];
+        message.interactions.click0 = [self convertToInMessageClick: [interactionsObject objectForKey:@"click0"]];
+        message.interactions.click1 = [self convertToInMessageClick: [interactionsObject objectForKey:@"click1"]];
+        message.interactions.dismiss = [self convertToInMessageClick: [interactionsObject objectForKey:@"dismiss"]];
+    }
+    
     
     return message;
 }
@@ -73,7 +85,7 @@
 + (InAppMsgText*) convertToInMessageText:(id) object
 {
     if (object == nil || [object isKindOfClass:[NSString class]]) {
-        return object;
+        return nil;
     }
     
     InAppMsgText* inAppMsgTxt = nil;
@@ -85,10 +97,26 @@
     return inAppMsgTxt;
 }
 
++ (InAppMsgClick*) convertToInMessageClick:(id) object
+{
+    if (object == nil || [object isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    
+    InAppMsgClick* inAppMsgClick = nil;
+    inAppMsgClick = [[InAppMsgClick alloc] init];
+    inAppMsgClick.action = [InAppMessageEnumTransformer toInAppMsgAction:[object objectForKey:@"action"]];
+    inAppMsgClick.track = [object objectForKey:@"track"];
+    inAppMsgClick.value = [object objectForKey:@"value"];
+    inAppMsgClick.params = [object objectForKey:@"params"];
+    
+    return inAppMsgClick;
+}
+
 + (InAppMsgCover*) convertToInMessageCover:(id) object
 {
     if (object == nil || [object isKindOfClass:[NSString class]]) {
-        return object;
+        return nil;
     }
     
     InAppMsgCover* inAppMsgCover = nil;
@@ -101,7 +129,7 @@
 + (InAppMsgButton*) convertToInMessageButton:(id) object
 {
     if (object == nil || [object isKindOfClass:[NSString class]]) {
-        return object;
+        return nil;
     }
     
     InAppMsgButton* inAppMsgBtn = nil;

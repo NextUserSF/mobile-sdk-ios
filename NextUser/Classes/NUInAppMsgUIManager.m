@@ -10,11 +10,16 @@
 #import "NUInAppMsgUIManager.h"
 #import "NextUserManager.h"
 #import "NUInAppMessageWrapperBuilder.h"
+#import "NUInAppMsgSkinnyContentView.h"
+#import "NSString+LGUtils.h"
+#import "NUDDLog.h"
 
 @interface InAppMsgUIManager()
 {
-    NSOperationQueue* queue;
-    InAppMsgViewSettings* viewSettings;
+    NSOperationQueue *queue;
+    InAppMsgViewSettings *viewSettings;
+    NUPopUpView *popup;
+    NSLock *IAMS_LOCK;
 }
 
 @end
@@ -30,41 +35,120 @@
         [queue setMaxConcurrentOperationCount:1];
         [queue setName:@"com.nextuser.iamsDisplayQueue"];
         viewSettings = [[InAppMsgViewSettings alloc] init];
+        IAMS_LOCK = [[NSLock alloc] init];
     }
     
     return self;
 }
 
--(void) sendToQueue:(NSString*) iamID
+-(void) sendToQueue:(NSString *) iamID
 {
-    NSOperation* operation = [self createIamDisplayOperation:iamID];
-    [queue addOperation:operation];
+    if ([IAMS_LOCK tryLock]) {
+        @try
+        {
+            NSOperation *operation = [self createIamDisplayOperation:iamID];
+            [queue addOperation:operation];
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on workflows removal for iamID: %@%@",iamID, [exception reason]);
+        } @finally {
+            [IAMS_LOCK unlock];
+        }
+    }
 }
 
--(InAppMsgViewSettings*) viewSettings
+
+-(InAppMsgViewSettings *) viewSettings
 {
     return viewSettings;
 }
 
 
--(NSOperation*) createIamDisplayOperation:(NSString*) iamID
+-(NSOperation *) createIamDisplayOperation:(NSString *) iamID
 {
     return [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayOperationSelector:) object:iamID];
 }
 
--(void)displayOperationSelector:(NSString*) iamID
+-(void)displayOperationSelector:(NSString *) iamID
 {
-    InAppMessage* message = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchMessage:iamID];
-    if (message != nil) {
-        InAppMsgWrapper* wrapper = [InAppMessageWrapperBuilder toWrapper:message];
-        if (wrapper != nil) {
-            //dispatch_group_t iamDisplayGroup = dispatch_group_create();
-            //dispatch_group_enter(iamDisplayGroup);
-            
-            //show iam and call dispatch_group_leave(iamDisplayGroup); on dismiss callback
-            
-            //dispatch_group_wait(iamDisplayGroup, DISPATCH_TIME_FOREVER);
+    
+    
+    
+    DDLogInfo(@"got in que with id:%@", iamID);
+    dispatch_group_t iamDisplayGroup = dispatch_group_create();
+    dispatch_group_enter(iamDisplayGroup);
+    
+    @try {
+        
+        InAppMessage* message = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchMessage:iamID];
+        if (message != nil) {
+            InAppMsgWrapper* wrapper = [InAppMessageWrapperBuilder toWrapper:message];
+            if (wrapper != nil) {
+                DDLogInfo(@"we have the wrapper:%@", iamID);
+                wrapper.interactionListener = self;
+                InAppMsgSkinnyContentView *contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                NUPopUpLayout layout = [contentView getLayout];
+                popup = [NUPopUpView popupWithContentView:contentView
+                                                 showType:NUPopUpShowTypeSlideInFromLeft
+                                              dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                 maskType:NUPopUpMaskTypeNone
+                                 dismissOnBackgroundTouch:NO
+                                    dismissOnContentTouch:YES];
+                
+                
+                popup.didFinishShowingCompletion = ^{
+                    DDLogInfo(@"show iam completed");
+                };
+                
+                __weak dispatch_group_t weakGroup = iamDisplayGroup;
+                popup.didFinishDismissingCompletion = ^{
+                    DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
+                    dispatch_group_leave(weakGroup);
+                };
+                
+                if (wrapper.message.dismissTimeout != 0) {
+                    [popup showWithLayout:layout duration: [wrapper.message.dismissTimeout intValue] / 1000];
+                } else {
+                    DDLogInfo(@"before we show:%@", iamID);
+                    [popup showWithLayout:layout];
+                }
+                DDLogInfo(@"winter...%@", iamID);
+                dispatch_group_wait(iamDisplayGroup, DISPATCH_TIME_FOREVER);
+                DDLogInfo(@"summer again...%@", iamID);
+            }
         }
+        
+    }@catch(NSException *e) {
+        DDLogError(@"exception on iam display: %@", [e reason]);
+        dispatch_group_leave(iamDisplayGroup);
+    }
+}
+
+- (void) onInteract:(InAppMsgClick *) clickConfig
+{
+    
+    DDLogInfo(@"interacted with iam..");
+    if (clickConfig == nil || !clickConfig.action || clickConfig.action == NO_ACTION) {
+        [popup dismiss:YES];
+        
+        return;
+    }
+    
+    DDLogInfo(@"interacted with iam:%lu", (unsigned long)clickConfig.action);
+    
+    switch (clickConfig.action) {
+        case DISMISS:
+            [popup dismiss:YES];
+            break;
+        case URL:
+        case DEEP_LINK:
+            if ([NSString lg_isEmptyString:clickConfig.value] == NO) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString: clickConfig.value]];
+            }
+            break;
+        case LANDING_PAGE:
+            break;
+        default:
+            break;
     }
 }
 

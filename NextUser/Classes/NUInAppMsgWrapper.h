@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "NUInAppMessage.h"
 
+@protocol InAppMsgInteractionListener <NSObject>
+- (void) onInteract:(InAppMsgClick*) clickConfig;
+@end
+
 
 @interface InAppMsgWrapper : NSObject
 
@@ -22,6 +26,7 @@
 @property(nonatomic) BOOL footer;
 @property(nonatomic) BOOL interactions;
 @property(nonatomic) CGSize imageSize;
+@property(nonatomic) id<InAppMsgInteractionListener> interactionListener;
 
 + (instancetype) initWithMessage:(InAppMessage*) message;
 

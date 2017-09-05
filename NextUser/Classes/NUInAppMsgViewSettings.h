@@ -36,4 +36,7 @@
 @property(nonatomic)  CGFloat cornerRadius;
 @property(nonatomic)  CGFloat cornerRadiusSmall;
 
+@property(nonatomic)  CGFloat headerTitleFontSize;
+@property(nonatomic)  CGFloat contentTitleFontSize;
+
 @end
