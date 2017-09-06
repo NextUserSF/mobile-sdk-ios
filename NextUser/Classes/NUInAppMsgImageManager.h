@@ -13,8 +13,10 @@
 @interface InAppMsgImageManager: NSObject
 
 + (instancetype) initWithCache:(NUCache* ) cache;
-- (UIImage *)scaleImage:(UIImage *)imageToResize toSize:(CGSize)theNewSize;
-- (UIImage *)fetchImageSync:(NSString* )url toSize:(CGSize)theNewSize;
+- (UIImage *) getImageResource:(NSString *) imageName;
+- (UIImage *) scaleImage:(UIImage *)imageToResize toSize:(CGSize)theNewSize;
+- (UIImage *) scaleImageResource:(NSString *)imageName toSize:(CGSize)theNewSize;
+- (UIImage *) fetchImageSync:(NSString* )url toSize:(CGSize)theNewSize;
 
 @end
 

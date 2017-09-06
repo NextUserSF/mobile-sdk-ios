@@ -51,7 +51,7 @@
     if ([wrapper dismiss] == YES) {
         [super setupHeaderDismissImg];
         [headerCloseImgView setImage: [[[NextUserManager sharedInstance] inAppMsgImageManager]
-                                                                    scaleImage:[UIImage imageNamed:@"chevron_right.png"] toSize:CGSizeMake(settings.closeIconHeight, settings.closeIconHeight)]];
+            scaleImageResource:@"chevron_right.png" toSize:CGSizeMake(settings.closeIconHeight, settings.closeIconHeight)]];
         
         [constraints addObject: [NSLayoutConstraint constraintWithItem:headerCloseImgView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:headerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
         [constraints addObject: [NSLayoutConstraint constraintWithItem:headerCloseImgView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:headerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];

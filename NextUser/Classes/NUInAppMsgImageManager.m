@@ -13,6 +13,7 @@
 @implementation InAppMsgImageManager
 {
     NUCache* nuCache;
+    NSBundle *bundle;
 }
 
 + (instancetype)initWithCache:(NUCache*) cache
@@ -27,6 +28,7 @@
     self = [super init];
     if (self) {
         nuCache = cache;
+        bundle = [NSBundle bundleForClass:[self class]];
     }
     
     return self;
@@ -52,7 +54,21 @@
     return nil;
 }
 
+-(UIImage*) getImageResource:(NSString *) imageName
+{
+    return [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+}
+
+- (UIImage *)scaleImageResource:(NSString *)imageName toSize:(CGSize)theNewSize
+{
+    return [self scaleImage:[self getImageResource:imageName] toSize:theNewSize];
+}
+
 - (UIImage *)scaleImage:(UIImage *)imageToResize toSize:(CGSize)theNewSize {
+    
+    if (imageToResize == nil) {
+        return nil;
+    }
     
     CGFloat width = imageToResize.size.width;
     CGFloat height = imageToResize.size.height;
