@@ -21,6 +21,7 @@
 
 - (void) setupMainContainer
 {
+    [super setupMainContainer];
     [constraints addObject: [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:settings.skinnyHeight]];
     [constraints addObject: [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:settings.skinnyWidth]];
     if ([wrapper isSingleImage] == YES) {
@@ -31,25 +32,27 @@
 
 - (void) setupMainContainerWithMargins
 {
-    if ([wrapper isSingleImage] == YES) {
-        return;
-    }
+    CGFloat margin = [wrapper isImageAndFloatingFooter] == YES ? 0.0 : settings.smallMargin;
+    CGFloat negativeMarginBottom = margin != 0.0 ? -margin : 0.0;
+    CGFloat negativeMarginRight = margin != 0.0 ? -margin/2 : 0.0;
     
+    [self addSubview:layoutWithMarginsView];
     [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self
-                                                         attribute:NSLayoutAttributeTop multiplier:1.0 constant:settings.smallMargin]];
+        attribute:NSLayoutAttributeTop multiplier:1.0 constant:margin]];
     [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self
-                                                         attribute:NSLayoutAttributeLeft multiplier:1.0 constant:settings.smallMargin]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant: -settings.smallMargin]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant: -settings.smallMargin/2]];
-    
-    
+        attribute:NSLayoutAttributeLeft multiplier:1.0 constant:margin]];
+    [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant: negativeMarginBottom]];
+    [constraints addObject: [NSLayoutConstraint constraintWithItem:layoutWithMarginsView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant: negativeMarginRight]];
 }
 
 - (void) setupHeaderContainer
 {
     [super setupHeaderContainer];
-    if ([wrapper dismiss] == YES) {
+    if (wrapper.dismiss == YES) {
+        
         [super setupHeaderDismissImg];
+        
+        [headerView addSubview:headerCloseImgView];
         [headerCloseImgView setImage: [[[NextUserManager sharedInstance] inAppMsgImageManager]
             scaleImageResource:@"chevron_right.png" toSize:CGSizeMake(settings.closeIconHeight, settings.closeIconHeight)]];
         
@@ -105,19 +108,33 @@
         [constraints addObject: [NSLayoutConstraint constraintWithItem:contentView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:layoutWithMarginsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant: 0.0]];
     }
     
+    
+    if (wrapper.title == YES) {
+        [super setupTitle];
+        [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
+        [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0]];
+        [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:contentView attribute:
+                                 NSLayoutAttributeTop multiplier:1.0 constant:0.0]];
 
-    [super setupTitle];
-    [super setupContentText];
+    }
     
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTitleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:contentView attribute:
-        NSLayoutAttributeTop multiplier:1.0 constant:0.0]];
-    
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:contentTitleView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
-    [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:contentTitleView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:settings.skinnyTextPadding]];
+    if (wrapper.content == YES) {
+        [super setupContentText];
+        [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
+        [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:contentView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
+        
+        if (wrapper.title == YES) {
+            [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:contentTitleView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:settings.skinnyTextPadding]];
+        } else {
+            [constraints addObject: [NSLayoutConstraint constraintWithItem:contentTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:contentView attribute:
+                                     NSLayoutAttributeTop multiplier:1.0 constant:0.0]];
+        }
+    }
 }
 
+- (BOOL) isBorderView
+{
+    return [super isBorderView];
+}
 @end
 

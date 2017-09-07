@@ -10,8 +10,4 @@
 #import "NUInAppMsgContentView.h"
 
 @interface InAppMsgSkinnyContentView : InAppMsgContentView
-
-
-
-
 @end

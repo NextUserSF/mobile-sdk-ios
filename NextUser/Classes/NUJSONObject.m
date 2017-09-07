@@ -33,7 +33,7 @@
                 val = [val dictionaryReflectFromAttributes];
             } else if ([value isKindOfClass:[NSArray<NUJSONObject*> class]]) {
                 NSArray<NUJSONObject*>* valArray = (NSArray<NUJSONObject*>*) value;
-                NSMutableArray* val = [NSMutableArray arrayWithCapacity:[valArray count]];
+                val = [NSMutableArray arrayWithCapacity:[valArray count]];
                 for (NUJSONObject* v in valArray) {
                     [val addObject: [v dictionaryReflectFromAttributes]];
                 }

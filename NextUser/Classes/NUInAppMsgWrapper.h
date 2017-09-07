@@ -43,5 +43,6 @@
 - (InAppMsgClick* ) getClick0Configuration;
 - (InAppMsgClick* ) getClick1Configuration;
 - (InAppMsgClick* ) getDismissClickConfiguration;
+- (BOOL) isImageAndFloatingFooter;
 
 @end

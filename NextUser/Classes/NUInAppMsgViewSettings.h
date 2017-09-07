@@ -28,6 +28,7 @@
 @property(nonatomic)  CGFloat modalViewWidth;
 @property(nonatomic)  CGFloat modalMediumViewHeight;
 @property(nonatomic)  CGFloat fullSmallImageHeight;
+@property(nonatomic)  CGFloat fullViewWidth;
 @property(nonatomic)  CGFloat statusBarHeight;
 @property(nonatomic)  CGFloat closeIconHeight;
 @property(nonatomic)  CGFloat modalTextPadding;
@@ -39,6 +40,7 @@
 @property(nonatomic)  CGFloat headerTitleFontSize;
 @property(nonatomic)  CGFloat contentTitleFontSize;
 @property(nonatomic)  CGFloat contentBodyFontSize;
+@property(nonatomic)  CGRect screenFrame;
 
 
 @end

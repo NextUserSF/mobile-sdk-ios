@@ -11,6 +11,9 @@
 #import "NextUserManager.h"
 #import "NUInAppMessageWrapperBuilder.h"
 #import "NUInAppMsgSkinnyContentView.h"
+#import "NUInAppMsgFullContentView.h"
+#import "NUInAppMsgModalContentView.h"
+#import "NUInAppMsgSkinnyContentView.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 
@@ -85,7 +88,25 @@
             if (wrapper != nil) {
                 DDLogInfo(@"we have the wrapper:%@", iamID);
                 wrapper.interactionListener = self;
-                InAppMsgSkinnyContentView *contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                
+                
+                InAppMsgContentView *contentView;
+                switch (wrapper.message.type) {
+                    case SKINNY:
+                        contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                        break;
+                    case MODAL:
+                        contentView = [[InAppMsgModalContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                        break;
+                    case FULL:
+                        contentView = [[InAppMsgFullContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                        break;
+                    default:
+                        DDLogError(@"Iam Type not defined.");
+                        dispatch_group_leave(iamDisplayGroup);
+                        return;
+                }
+            
                 NUPopUpLayout layout = [contentView getLayout];
                 popup = [NUPopUpView popupWithContentView:contentView
                                                  showType:NUPopUpShowTypeSlideInFromLeft
@@ -119,6 +140,9 @@
         
     }@catch(NSException *e) {
         DDLogError(@"exception on iam display: %@", [e reason]);
+        dispatch_group_leave(iamDisplayGroup);
+    }@catch(NSError *e) {
+        DDLogError(@"error on iam display: %@", e);
         dispatch_group_leave(iamDisplayGroup);
     }
 }

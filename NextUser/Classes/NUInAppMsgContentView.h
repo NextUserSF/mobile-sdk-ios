@@ -64,6 +64,7 @@
 - (void) setupTitle;
 - (void) setupContentText;
 - (void) setupFooterContainer;
+- (BOOL) isBorderView;
 
 @end
 

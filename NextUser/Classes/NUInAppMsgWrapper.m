@@ -61,7 +61,7 @@
 }
 - (BOOL) hasBody
 {
-    return _content == YES && _title == YES;
+    return _content == YES || _title == YES;
 }
 
 - (BOOL) containsHeader
@@ -137,6 +137,12 @@
     }
     
     return [[self getInAppMsgInteractions] dismiss];
+}
+
+- (BOOL) isImageAndFloatingFooter
+{
+    return [self isSingleImage] == YES ||
+    (_image == YES && [self hasBody] == NO && _headerText == NO && _footer == YES && _message.floatingButtons == YES);
 }
 
 @end
