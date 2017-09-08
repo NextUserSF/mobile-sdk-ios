@@ -16,6 +16,7 @@
 #import "NUInAppMsgSkinnyContentView.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
+#import "NUInternalTracker.h"
 
 @interface InAppMsgUIManager()
 {
@@ -23,6 +24,7 @@
     InAppMsgViewSettings *viewSettings;
     NUPopUpView *popup;
     NSLock *IAMS_LOCK;
+    NSString *currentParams;
 }
 
 @end
@@ -74,8 +76,6 @@
 -(void)displayOperationSelector:(NSString *) iamID
 {
     
-    
-    
     DDLogInfo(@"got in que with id:%@", iamID);
     dispatch_group_t iamDisplayGroup = dispatch_group_create();
     dispatch_group_enter(iamDisplayGroup);
@@ -106,6 +106,15 @@
                         dispatch_group_leave(iamDisplayGroup);
                         return;
                 }
+                
+                __weak NSString* trackParams = nil;
+                if (message.interactions != nil && message.interactions.dismiss != nil) {
+                    if (message.interactions.dismiss.params != nil) {
+                        trackParams = message.interactions.dismiss.params;
+                        currentParams = message.interactions.dismiss.params;
+                    }
+                }
+                
             
                 NUPopUpLayout layout = [contentView getLayout];
                 popup = [NUPopUpView popupWithContentView:contentView
@@ -117,12 +126,14 @@
                 
                 
                 popup.didFinishShowingCompletion = ^{
-                    DDLogInfo(@"show iam completed");
+                    DDLogInfo(@"show iam completed: %@", iamID);
+                    [InternalActionsTracker trackAction:TRACK_ACTION_DISPLAYED withParams:trackParams];
                 };
                 
                 __weak dispatch_group_t weakGroup = iamDisplayGroup;
                 popup.didFinishDismissingCompletion = ^{
                     DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
+                    [InternalActionsTracker trackAction:TRACK_ACTION_DISMISSED withParams:trackParams];
                     dispatch_group_leave(weakGroup);
                 };
                 
@@ -151,6 +162,7 @@
 {
     
     DDLogInfo(@"interacted with iam..");
+    [InternalActionsTracker trackAction:TRACK_ACTION_INTERACTED withParams:currentParams];
     if (clickConfig == nil || !clickConfig.action || clickConfig.action == NO_ACTION) {
         [popup dismiss:YES];
         
@@ -174,6 +186,11 @@
         default:
             break;
     }
+    
+    if (clickConfig.track != nil) {
+        [InternalActionsTracker trackAction:clickConfig.track withParams:currentParams];
+    }
+    
 }
 
 @end

@@ -206,7 +206,7 @@
     
     [button addTarget:self
             action:selector
-  forControlEvents:UIControlEventTouchUpInside];
+  forControlEvents:UIControlEventTouchUpInside|UIControlEventAllEvents];
     
     return button;
 }

@@ -25,6 +25,14 @@
     return action;
 }
 
++ (instancetype)actionWithName:(NSString *)actionName andParams:(NSMutableArray *) params
+{
+    NUAction *action = [[NUAction alloc] initWithName:actionName];
+    action.parameters = params;
+    
+    return action;
+}
+
 - (id)initWithName:(NSString *)actionName
 {
     if (actionName == nil || actionName.length == 0) {

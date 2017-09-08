@@ -35,6 +35,8 @@
  */
 + (instancetype)actionWithName:(NSString *)actionName;
 
++ (instancetype)actionWithName:(NSString *)actionName andParams:(NSMutableArray *) params;
+
 #pragma mark - Action Properties
 /**
  * @name Action Properties
