@@ -152,7 +152,7 @@
 
 #pragma mark - Notification View Reveal/Unreveal
 
-- (void)revealNotificationViewWithCompletion:(void(^)())completion
+- (void)revealNotificationViewWithCompletion:(void(^)(void))completion
 {
     // animate notification view from screen top
     CGFloat xOffset = kIAMNotificationViewSideInset;
@@ -178,7 +178,7 @@
 }
 
 - (void)unrevealNotificationViewWithDuration:(NSTimeInterval)duration
-                                  completion:(void(^)())completion
+                                  completion:(void(^)(void))completion
 {
     NSAssert(_notificationView != nil, @"notification view can not be nil");
     

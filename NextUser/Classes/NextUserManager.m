@@ -16,6 +16,8 @@
 #import "NUTaskManager.h"
 #import "NUTask.h"
 #import "NUTrackerInitializationTask.h"
+#import "NUSubscriberDevice.h"
+#import "NUHardwareInfo.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
@@ -47,6 +49,8 @@
     BOOL subscribedToAppStatusNotifications;
     BOOL inAppMessagesRequested;
 }
+
+-(void) trackSubscriberDevice;
 
 @end
 
@@ -189,6 +193,7 @@
         [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
         [session setInstantWorkflows: responseDict[kInstantWorkflowsJSONKey]];
         [session setSessionState: Initialized];
+        [self trackSubscriberDevice];
         
         if (session.shouldListenForPushMessages) {
             [self connectPushMessageService];
@@ -209,6 +214,22 @@
         [session setSessionState: Failed];
         initializationFailed = YES;
     }
+}
+
+-(void) trackSubscriberDevice
+{
+    NUSubscriberDevice *subDevice = [[NUSubscriberDevice alloc] init];
+    subDevice.os = [NUHardwareInfo systemName];
+    subDevice.osVersion = [NUHardwareInfo systemVersion];
+    subDevice.trackingSource = @"ios NU SDK";
+    subDevice.trackingVersion = TRACKER_VERSION;
+    subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
+    subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", [NUHardwareInfo screenWidth], [NUHardwareInfo screenHeight]];
+    
+    subDevice.tablet = [subDevice.deviceModel containsString:@"Pad"];
+    subDevice.mobile = !subDevice.tablet;
+    
+    [self trackWithObject:subDevice withType:TRACK_USER_DEVICE];
 }
 
 -(void) inAppMessagesRequested
@@ -413,7 +434,7 @@
     }
 }
 
-- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)())completion
+- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)(void))completion
 {
     // fetch missed messages (history)
     // schedule local notes

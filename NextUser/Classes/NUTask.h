@@ -19,6 +19,7 @@ typedef NS_ENUM(NSUInteger, NUTaskType) {
     TRACK_DEVICE,
     TRACK_USER,
     TRACK_USER_VARIABLES,
+    TRACK_USER_DEVICE,
     TASK_NO_TYPE
 };
 

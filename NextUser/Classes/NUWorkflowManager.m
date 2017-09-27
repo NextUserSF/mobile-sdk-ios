@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "NUWorkflowManager.h"
+#import "NUTrackerSession.h"
+#import "NUTask.h"
 #import "NUTaskManager.h"
 #import "NUWorkflow.h"
 #import "NUTrackerTask.h"

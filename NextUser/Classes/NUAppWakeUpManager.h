@@ -15,7 +15,7 @@
 // when app is woken up in background, we ask OS for more time in background.
 // when we finish our task
 - (void)appWakeUpManager:(NUAppWakeUpManager *)manager
-didWakeUpAppInBackgroundWithTaskCompletion:(void(^)())completion;
+didWakeUpAppInBackgroundWithTaskCompletion:(void(^)(void))completion;
 
 @end
 

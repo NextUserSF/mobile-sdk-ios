@@ -12,6 +12,7 @@
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
 #import "NUUser+Serialization.h"
+#import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
 #import "Base64.h"
 
@@ -77,6 +78,14 @@
             index++;
         }
     }
+    
+    return parameters;
+}
+
++(NSMutableDictionary *)trackUserDeviceParametersWithVariables:(NUSubscriberDevice *)userDevice
+{
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[TRACK_SUBSCRIBER_DEVICE_PARAM] = [userDevice httpRequestParameterRepresentation];
     
     return parameters;
 }

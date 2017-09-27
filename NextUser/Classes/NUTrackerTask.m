@@ -61,6 +61,9 @@
             path = [session iamsRequestPath];
             queryParameters = [NSMutableDictionary dictionary];
             break;
+        case TRACK_USER_DEVICE:
+            queryParameters = [NUTrackingHTTPRequestHelper trackUserDeviceParametersWithVariables: trackObject];
+            break;
         default:
             break;
     }
