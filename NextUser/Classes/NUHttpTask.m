@@ -48,8 +48,9 @@
     responseInstance.reponseData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&httpResponse error:&error];
     responseInstance.responseCode = (long)[httpResponse statusCode];
     
-    if (![self successfullHttpCode:responseInstance.responseCode]) {
+    if ([self successfullHttpCode:responseInstance.responseCode] == NO) {
         DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters, responseInstance.responseCode);
+        
         return [self response: responseInstance withError:error];
     }
     

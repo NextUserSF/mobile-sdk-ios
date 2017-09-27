@@ -173,7 +173,7 @@
     }
 }
 
--(void)onSessionInitialization: (NUTrackResponse *)response
+-(void)onSessionInitialization:(NUTrackResponse *)response
 {
     if ([response successfull]) {
         
@@ -221,7 +221,7 @@
     NUSubscriberDevice *subDevice = [[NUSubscriberDevice alloc] init];
     subDevice.os = [NUHardwareInfo systemName];
     subDevice.osVersion = [NUHardwareInfo systemVersion];
-    subDevice.trackingSource = @"ios NU SDK";
+    subDevice.trackingSource = @"nu.ios";
     subDevice.trackingVersion = TRACKER_VERSION;
     subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
     subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", [NUHardwareInfo screenWidth], [NUHardwareInfo screenHeight]];
