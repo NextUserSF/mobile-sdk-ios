@@ -29,15 +29,15 @@
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_resolution]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"resolution=", _resolution]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"r=", _resolution]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_trackingSource]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"tracking_source=", _trackingSource]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"src=", _trackingSource]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_trackingVersion]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"tracking_version=", _trackingVersion]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"tv=", _trackingVersion]];
     }
     
     [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"mobile=", _mobile == YES ? @"1" : @"0"]];
