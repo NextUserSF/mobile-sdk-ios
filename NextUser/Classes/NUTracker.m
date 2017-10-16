@@ -72,6 +72,12 @@
     [[NextUserManager sharedInstance] trackWithObject:user withType:(TRACK_USER)];
 }
 
+- (void)trackUserVariables:(NUUserVariables *)userVariables
+{
+    DDLogInfo(@"Tracking userVariables");
+    [[NextUserManager sharedInstance] trackWithObject:userVariables withType:(TRACK_USER_VARIABLES)];
+}
+
 - (void)setUser:(NUUser *)user
 {
     if (![[NextUserManager sharedInstance] getSession]) {

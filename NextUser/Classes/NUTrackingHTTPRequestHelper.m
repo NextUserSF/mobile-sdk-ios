@@ -67,19 +67,20 @@
 +(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[TRACK_SUBSCRIBER_PARAM] = [user httpRequestParameterRepresentation];
-    
-    if (user.userVariables != nil) {
-        int index = 0;
-        for (id key in user.userVariables.allKeys) {
-            NSString *userVariableTrackKey = [NSString stringWithFormat:TRACK_SUBSCRIBER_VARIABLE_PARAM"%d", index];
-            NSString *userVariableTrackValue = [NSString stringWithFormat:@"%@=%@", key,
-                                                [user.userVariables[key] URLEncodedString]];
-            parameters[userVariableTrackKey] = userVariableTrackValue;
-            index++;
-        }
+    if (user.nuUserVariables != nil) {
+        [parameters addEntriesFromDictionary: [user.nuUserVariables toTrackingFormat]];
     }
     
     return parameters;
+}
+
++(NSMutableDictionary *)trackUserVariables:(NUUserVariables *)userVariables
+{
+    if (userVariables == nil) {
+        return nil;
+    }
+    
+    return [userVariables toTrackingFormat];
 }
 
 +(NSMutableDictionary *)trackUserDeviceParametersWithVariables:(NUSubscriberDevice *)userDevice

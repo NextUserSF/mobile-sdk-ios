@@ -42,6 +42,7 @@
 +(NSMutableDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
 +(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
 +(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user;
++(NSMutableDictionary *)trackUserVariables:(NUUserVariables *)userVariables;
 +(NSMutableDictionary *)sessionInitializationParameters:(NUTrackerSession*) session;
 +(NSDictionary *)appendSessionDefaultParameters:(NUTrackerSession*) session withTrackParameters:(NSMutableDictionary*) parameters;
 +(NSMutableDictionary *)trackUserDeviceParametersWithVariables:(NUSubscriberDevice *)userDevice;

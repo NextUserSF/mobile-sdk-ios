@@ -40,6 +40,14 @@
         [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"tv=", _trackingVersion]];
     }
     
+    if ([NUObjectPropertyStatusUtils isStringValueSet:_browser]) {
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"br=", _browser]];
+    }
+    
+    if ([NUObjectPropertyStatusUtils isStringValueSet:_browserVersion]) {
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"bv=", _browserVersion]];
+    }
+    
     [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"mobile=", _mobile == YES ? @"1" : @"0"]];
     [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"tablet=", _tablet == YES ? @"1" : @"0"]];
 

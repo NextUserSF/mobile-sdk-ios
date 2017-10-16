@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NUUserVariables.h"
 
 /**
  *  This class creates an user instance
@@ -28,7 +29,7 @@
 
 - (BOOL) hasVariable:(NSString *)variableName;
 
-- (void) addVariable:(NSString*)name withValue:(NSString*)value;
+- (void) addVariable:(NSString *)name withValue:(NSString *)value;
 
 #pragma mark - User Properties
 /**
@@ -93,6 +94,6 @@
 /**
  *  User Variables.
  */
-@property (nonatomic) NSMutableDictionary *userVariables;
+@property (nonatomic) NUUserVariables *nuUserVariables;
 
 @end

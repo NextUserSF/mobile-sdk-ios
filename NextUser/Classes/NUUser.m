@@ -21,7 +21,7 @@
 - (id)init
 {
     if (self = [super init]) {
-        _userVariables = [NSMutableDictionary dictionary];
+        _nuUserVariables = [[NUUserVariables alloc] init];
     }
     
     return self;
@@ -34,15 +34,15 @@
 
 - (BOOL) hasVariable:(NSString *)variableName
 {
-    if ([NUObjectPropertyStatusUtils isStringValueSet:variableName]) {
-        return [NUObjectPropertyStatusUtils isStringValueSet:_userVariables[variableName]];
+    if (_nuUserVariables == nil) {
+        return NO;
     }
     
-    return NO;
+    return [_nuUserVariables hasVariable: variableName];
 }
 
 - (void) addVariable:(NSString*)name withValue:(NSString*)value {
-    [_userVariables setValue:value forKey:name];
+    [_nuUserVariables addVariable:name withValue:value];
 }
 
 - (NSString *)httpRequestParameterRepresentation

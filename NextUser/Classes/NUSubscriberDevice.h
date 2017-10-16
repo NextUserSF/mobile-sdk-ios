@@ -15,6 +15,8 @@
 @property (nonatomic) NSString *resolution;
 @property (nonatomic) NSString *trackingSource;
 @property (nonatomic) NSString *trackingVersion;
+@property (nonatomic) NSString *browser;
+@property (nonatomic) NSString *browserVersion;
 @property (nonatomic) BOOL mobile;
 @property (nonatomic) BOOL tablet;
 

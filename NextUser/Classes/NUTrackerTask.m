@@ -53,6 +53,9 @@
         case TRACK_USER:
             queryParameters = [NUTrackingHTTPRequestHelper trackUserParametersWithVariables: trackObject];
             break;
+        case TRACK_USER_VARIABLES:
+            queryParameters = [NUTrackingHTTPRequestHelper trackUserVariables: trackObject];
+            break;
         case SESSION_INITIALIZATION:
             path = [session sessionInitPath];
             queryParameters = [NUTrackingHTTPRequestHelper sessionInitializationParameters: session];

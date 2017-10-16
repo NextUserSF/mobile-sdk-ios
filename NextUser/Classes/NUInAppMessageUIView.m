@@ -197,6 +197,24 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
 }
 
 
++ (NUPopUpView*) popupWithContentView:(UIView*)contentView
+                            withFrame:(CGRect) frame
+                             showType:(NUPopUpShowType)showType
+                          dismissType:(NUPopUpDismissType)dismissType
+                             maskType:(NUPopUpMaskType)maskType
+             dismissOnBackgroundTouch:(BOOL)shouldDismissOnBackgroundTouch
+                dismissOnContentTouch:(BOOL)shouldDismissOnContentTouch
+{
+    NUPopUpView* popup = [[self alloc] initWithFrame:frame];
+    popup.contentView = contentView;
+    popup.showType = showType;
+    popup.dismissType = dismissType;
+    popup.maskType = maskType;
+    popup.shouldDismissOnBackgroundTouch = shouldDismissOnBackgroundTouch;
+    popup.shouldDismissOnContentTouch = shouldDismissOnContentTouch;
+    return popup;
+}
+
 + (void)dismissAllPopups {
     NSArray* windows = [[UIApplication sharedApplication] windows];
     for (UIWindow* window in windows) {

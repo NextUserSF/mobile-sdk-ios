@@ -128,6 +128,14 @@ extern const NUPopUpLayout NUPopUpLayoutCenter;
          dismissOnBackgroundTouch:(BOOL)shouldDismissOnBackgroundTouch
             dismissOnContentTouch:(BOOL)shouldDismissOnContentTouch;
 
++ (NUPopUpView*) popupWithContentView:(UIView*)contentView
+                            withFrame:(CGRect) frame
+                             showType:(NUPopUpShowType)showType
+                          dismissType:(NUPopUpDismissType)dismissType
+                             maskType:(NUPopUpMaskType)maskType
+             dismissOnBackgroundTouch:(BOOL)shouldDismissOnBackgroundTouch
+                dismissOnContentTouch:(BOOL)shouldDismissOnContentTouch;
+
 // Dismisses all the popups in the app. Use as a fail-safe for cleaning up.
 + (void)dismissAllPopups;
 

@@ -115,15 +115,25 @@
                     }
                 }
                 
-            
-                NUPopUpLayout layout = [contentView getLayout];
-                popup = [NUPopUpView popupWithContentView:contentView
-                                                 showType:NUPopUpShowTypeSlideInFromLeft
-                                              dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                 maskType:NUPopUpMaskTypeNone
-                                 dismissOnBackgroundTouch:NO
-                                    dismissOnContentTouch:YES];
                 
+                NUPopUpLayout layout = [contentView getLayout];
+                
+                if (UIApplication.sharedApplication.keyWindow == nil) {
+                    popup = [NUPopUpView popupWithContentView:contentView
+                                                    withFrame:UIApplication.sharedApplication.keyWindow.frame
+                                                     showType:NUPopUpShowTypeSlideInFromLeft
+                                                  dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                     maskType:NUPopUpMaskTypeNone
+                                     dismissOnBackgroundTouch:NO
+                                        dismissOnContentTouch:YES];
+                } else {
+                    popup = [NUPopUpView popupWithContentView:contentView
+                                                     showType:NUPopUpShowTypeSlideInFromLeft
+                                                  dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                     maskType:NUPopUpMaskTypeNone
+                                     dismissOnBackgroundTouch:NO
+                                        dismissOnContentTouch:YES];
+                }
                 
                 popup.didFinishShowingCompletion = ^{
                     DDLogInfo(@"show iam completed: %@", iamID);

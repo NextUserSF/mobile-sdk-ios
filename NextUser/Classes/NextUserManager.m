@@ -225,6 +225,9 @@
     subDevice.trackingVersion = TRACKER_VERSION;
     subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
     subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", [NUHardwareInfo screenWidth], [NUHardwareInfo screenHeight]];
+    NSBundle *bundle = [NSBundle mainBundle];
+    subDevice.browser =[[bundle infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
+    subDevice.browserVersion = [[bundle infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     
     subDevice.tablet = [subDevice.deviceModel containsString:@"Pad"];
     subDevice.mobile = !subDevice.tablet;
@@ -532,6 +535,16 @@
         }
     }
 }
+
+#pragma mark - <UINavigationControllerDelegate>
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    
+    if (viewController != nil && [viewController restorationIdentifier] != nil) {
+        [self trackWithObject:[viewController restorationIdentifier] withType:TRACK_SCREEN];
+    }
+}
+
 
 #pragma mark - Notification Permissions
 
