@@ -29,7 +29,7 @@
 
 - (NSString *)userIdentifier
 {
-    return [NUObjectPropertyStatusUtils isStringValueSet: _email] ? _email : _uid;
+    return [NUObjectPropertyStatusUtils isStringValueSet: _email] ? _email : _customerID;
 }
 
 - (BOOL) hasVariable:(NSString *)variableName
@@ -53,8 +53,8 @@
         [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"email=", _email]];
     }
     
-    if ([NUObjectPropertyStatusUtils isStringValueSet:_uid]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", _uid]];
+    if ([NUObjectPropertyStatusUtils isStringValueSet:_customerID]) {
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", _customerID]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_subscription]) {

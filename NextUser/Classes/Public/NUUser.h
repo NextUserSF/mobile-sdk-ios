@@ -44,7 +44,7 @@
 /**
  *  User Id(optional).
  */
-@property (nonatomic) NSString *uid;
+@property (nonatomic) NSString *customerID;
 
 /**
  *  User Subscription.
