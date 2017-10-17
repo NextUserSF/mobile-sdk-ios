@@ -68,9 +68,13 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes: types];
 }
 
-
 - (void)trackUser:(NUUser *)user
 {
+    if (user == nil) {
+        
+        return;
+    }
+    
     [self setUser:user];
     DDLogInfo(@"Tracking user with identifier: %@", user.userIdentifier);
     [[NextUserManager sharedInstance] trackWithObject:user withType:(TRACK_USER)];
@@ -78,6 +82,12 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 
 - (void)trackUserVariables:(NUUserVariables *)userVariables
 {
+    if (userVariables == nil) {
+        
+        return;
+    }
+    
+    
     DDLogInfo(@"Tracking userVariables");
     [[NextUserManager sharedInstance] trackWithObject:userVariables withType:(TRACK_USER_VARIABLES)];
 }
@@ -102,30 +112,54 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 
 - (void)trackScreenWithName:(NSString *)screenName
 {
+    if (screenName == nil) {
+        
+        return;
+    }
+    
     DDLogInfo(@"Track screen with name: %@", screenName);
     [[NextUserManager sharedInstance] trackWithObject:screenName withType:TRACK_SCREEN];
 }
 
-- (void)trackAction:(NUAction *)action
+- (void)trackEvent:(NUEvent *)event
 {
-    DDLogInfo(@"Track action: %@", action);
-    [[NextUserManager sharedInstance] trackWithObject:@[action] withType:TRACK_ACTION];
+    if (event == nil) {
+        
+        return;
+    }
+    
+    DDLogInfo(@"Track event: %@", event.eventName);
+    [[NextUserManager sharedInstance] trackWithObject:@[event] withType:TRACK_EVENT];
 }
-
-- (void)trackActions:(NSArray *)actions
+- (void)trackEvents:(NSArray<NUEvent *> *)events
 {
-    DDLogInfo(@"Track actions: %@", actions);
-    [[NextUserManager sharedInstance] trackWithObject:actions withType:TRACK_ACTION];
+    if (events == nil || events.count == 0) {
+        
+        return;
+    }
+    
+    DDLogInfo(@"Track events: %@", events);
+    [[NextUserManager sharedInstance] trackWithObject:events withType:TRACK_EVENT];
 }
 
 - (void)trackPurchase:(NUPurchase *)purchase
 {
+    if (purchase == nil) {
+        
+        return;
+    }
+        
     DDLogInfo(@"Track purchase: %@", purchase);
     [[NextUserManager sharedInstance] trackWithObject:@[purchase] withType:TRACK_PURCHASE];
 }
 
 - (void)trackPurchases:(NSArray *)purchases
 {
+    if (purchases == nil || purchases.count == 0) {
+        
+        return;
+    }
+    
     DDLogInfo(@"Track purchases: %@", purchases);
     [[NextUserManager sharedInstance] trackWithObject:purchases withType:TRACK_PURCHASE];
 }

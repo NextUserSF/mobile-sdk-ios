@@ -44,8 +44,8 @@
         case TRACK_SCREEN:
             queryParameters = [NUTrackingHTTPRequestHelper trackScreenParametersWithScreenName: trackObject];
             break;
-        case TRACK_ACTION:
-            queryParameters = [NUTrackingHTTPRequestHelper trackActionsParametersWithActions: trackObject];
+        case TRACK_EVENT:
+            queryParameters = [NUTrackingHTTPRequestHelper trackEventsParametersWithEvents: trackObject];
             break;
         case TRACK_PURCHASE:
             queryParameters = [NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases: trackObject];

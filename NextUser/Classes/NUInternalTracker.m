@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "NUInternalTracker.h"
-#import "NUAction+Serialization.h"
+#import "NUEvent+Serialization.h"
 #import "NUError.h"
 #import "NextUserManager.h"
 
-@implementation InternalActionsTracker
+@implementation InternalEventTracker
 
-+(void) trackAction:(NSString *) actionName withParams:(NSString*) paramsAsString
++(void) trackEvent:(NSString *) eventName withParams:(NSString*) paramsAsString
 {
     NSArray *params = [paramsAsString componentsSeparatedByString:@","];
     if (params != nil && [params count] > 9) {
@@ -23,7 +23,7 @@
     }
     
     [[[NextUserManager sharedInstance] getTracker]
-            trackAction: [NUAction actionWithName:actionName andParams:[params mutableCopy]]];
+            trackEvent: [NUEvent eventWithName:eventName andParameters:[params mutableCopy]]];
 }
 
 

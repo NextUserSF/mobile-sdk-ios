@@ -6,46 +6,46 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import "NUAction+Serialization.h"
+#import "NUEvent+Serialization.h"
 #import "NSString+LGUtils.h"
 
-@interface NUAction ()
+@interface NUEvent ()
 
-@property (nonatomic) NSString *actionName;
-@property (nonatomic) NSMutableArray *parameters;
+@property (nonatomic) NSString *eventName;
+@property (nonatomic) NSMutableArray *params;
 
 @end
 
-@implementation NUAction
+@implementation NUEvent
 
-+ (instancetype)actionWithName:(NSString *)actionName
++ (instancetype)eventWithName:(NSString *)eventName
 {
-    NUAction *action = [[NUAction alloc] initWithName:actionName];
+    NUEvent *event = [[NUEvent alloc] initWithName:eventName];
     
-    return action;
+    return event;
 }
 
-+ (instancetype)actionWithName:(NSString *)actionName andParams:(NSMutableArray *) params
++ (instancetype)eventWithName:(NSString *)eventName andParameters:(NSMutableArray *) parameters
 {
-    NUAction *action = [[NUAction alloc] initWithName:actionName];
-    action.parameters = params;
+    NUEvent *event = [[NUEvent alloc] initWithName:eventName];
+    event.params = parameters;
     
-    return action;
+    return event;
 }
 
-- (id)initWithName:(NSString *)actionName
+- (id)initWithName:(NSString *)eventName
 {
-    if (actionName == nil || actionName.length == 0) {
-        @throw [NSException exceptionWithName:@"Action create exception"
-                                       reason:@"Action name must be a non-empty string"
+    if (eventName == nil || eventName.length == 0) {
+        @throw [NSException exceptionWithName:@"Event create exception"
+                                       reason:@"Event name must be a non-empty string"
                                      userInfo:nil];
     }
     
     if (self = [super init]) {
-        _actionName = [actionName copy];
-        _parameters = [NSMutableArray arrayWithCapacity:10];
+        _eventName = [eventName copy];
+        _params = [NSMutableArray arrayWithCapacity:10];
         for (int i=0; i<10; i++) {
-            [_parameters addObject:[NSNull null]];
+            [_params addObject:[NSNull null]];
         }
     }
     
@@ -111,7 +111,7 @@
         parameterValue = value;
     }
     
-    _parameters[index] = parameterValue;
+    _params[index] = parameterValue;
 }
 
 #pragma mark - Trackable
@@ -123,17 +123,17 @@
 
 #pragma mark - Serialization
 
-+ (NSString *)serializedActionStringFromAction:(NUAction *)action
++ (NSString *)serializedActionStringFromAction:(NUEvent *)event
 {
-    NSString *actionValue = [self URLParameterValueFromString:action.actionName];
-    if (action.parameters.count > 0) {
-        NSString *actionParametersString = [self serializedActionParametersStringWithActionParameters:action.parameters];
-        if (actionParametersString.length > 0) {
-            actionValue = [actionValue stringByAppendingFormat:@",%@", actionParametersString];
+    NSString *eventValue = [self URLParameterValueFromString:event.eventName];
+    if (event.params.count > 0) {
+        NSString *eventParametersString = [self serializedActionParametersStringWithActionParameters:event.params];
+        if (eventParametersString.length > 0) {
+            eventValue = [eventValue stringByAppendingFormat:@",%@", eventParametersString];
         }
     }
     
-    return actionValue;
+    return eventValue;
 }
 
 + (NSString *)serializedActionParametersStringWithActionParameters:(NSArray *)actionParameters

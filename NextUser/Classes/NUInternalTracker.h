@@ -12,9 +12,9 @@
 #define TRACK_ACTION_INTERACTED @"_interacted"
 #define TRACK_ACTION_DISMISSED @"_dismissed"
 
-@interface InternalActionsTracker : NSObject
+@interface InternalEventTracker : NSObject
 
-+(void) trackAction:(NSString *) actionName withParams:(NSString*) params;
++(void) trackEvent:(NSString *) eventName withParams:(NSString*) params;
 
 @end
 

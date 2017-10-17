@@ -140,13 +140,13 @@
                     
                     popup.didFinishShowingCompletion = ^{
                         DDLogInfo(@"show iam completed: %@", iamID);
-                        [InternalActionsTracker trackAction:TRACK_ACTION_DISPLAYED withParams:trackParams];
+                        [InternalEventTracker trackEvent:TRACK_ACTION_DISPLAYED withParams:trackParams];
                     };
                     
                      __weak dispatch_group_t weakGroup = iamDisplayGroup;
                     popup.didFinishDismissingCompletion = ^{
                         DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
-                        [InternalActionsTracker trackAction:TRACK_ACTION_DISMISSED withParams:trackParams];
+                        [InternalEventTracker trackEvent:TRACK_ACTION_DISMISSED withParams:trackParams];
                         dispatch_group_leave(weakGroup);
                     };
                     
@@ -177,7 +177,7 @@
 {
     
     DDLogInfo(@"interacted with iam..");
-    [InternalActionsTracker trackAction:TRACK_ACTION_INTERACTED withParams:currentParams];
+    [InternalEventTracker trackEvent:TRACK_ACTION_INTERACTED withParams:currentParams];
     if (clickConfig == nil || !clickConfig.action || clickConfig.action == NO_ACTION) {
         [popup dismiss:YES];
         
@@ -203,7 +203,7 @@
     }
     
     if (clickConfig.track != nil) {
-        [InternalActionsTracker trackAction:clickConfig.track withParams:currentParams];
+        [InternalEventTracker trackEvent:clickConfig.track withParams:currentParams];
     }
     
 }

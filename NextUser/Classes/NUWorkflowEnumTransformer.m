@@ -16,8 +16,8 @@
         return NEW_SESSION;
     } else if ([@"SCREEN_VIEW" isEqualToString:rule]) {
         return SCREEN_VIEW;
-    } else if ([@"ACTION" isEqualToString:rule]) {
-        return ACTION;
+    } else if ([@"EVENT" isEqualToString:rule]) {
+        return EVENT;
     } else if ([@"PURCHASE" isEqualToString:rule]) {
         return PURCHASE;
     }

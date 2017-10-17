@@ -63,8 +63,12 @@
     static dispatch_once_t instanceInitToken;
     dispatch_once(&instanceInitToken, ^{
         instance = [[NextUserManager alloc] init];
-        [DDLog addLogger:[DDASLLogger sharedInstance]];
-        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        NSArray * args = [[NSProcessInfo processInfo] arguments];
+        if (![args containsObject:@"disableTTY"]) {
+            [DDLog addLogger:[DDASLLogger sharedInstance]];
+        } else {
+            [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        }
     });
     
     return instance;
@@ -160,7 +164,7 @@
             break;
         case TRACK_USER:
         case TRACK_USER_VARIABLES:
-        case TRACK_ACTION:
+        case TRACK_EVENT:
         case TRACK_PURCHASE:
         case TRACK_SCREEN:
             surfaceType = taskResponse.taskType;
@@ -391,6 +395,8 @@
     } else {
         level = DDLogLevelOff;
     }
+    
+    
     
     [NUDDLog setLogLevel:level];
 }

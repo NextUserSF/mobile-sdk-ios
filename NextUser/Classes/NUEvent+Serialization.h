@@ -6,9 +6,9 @@
 //  Copyright © 2015 NextUser. All rights reserved.
 //
 
-#import "NUAction.h"
+#import "NUEvent.h"
 #import "NUTrackable.h"
 
-@interface NUAction (Serialization) <NUTrackable>
+@interface NUEvent (Serialization) <NUTrackable>
 
 @end

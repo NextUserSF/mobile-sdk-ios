@@ -7,7 +7,7 @@
 //
 
 #import "NUTrackingHTTPRequestHelper.h"
-#import "NUAction+Serialization.h"
+#import "NUEvent+Serialization.h"
 #import "NUPurchase+Serialization.h"
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
@@ -27,17 +27,16 @@
 }
 
 
-+(NSMutableDictionary *)trackActionsParametersWithActions:(NSArray<NUAction*> *)actions
++(NSMutableDictionary *)trackEventsParametersWithEvents:(NSArray<NUEvent*> *) events
 {
-    // max 10 actions are allowed
-    if (actions.count > 10) {
-        actions = [actions subarrayWithRange:NSMakeRange(0, 10)];
+    if (events.count > 10) {
+        events = [events subarrayWithRange:NSMakeRange(0, 10)];
     }
     
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:actions.count];
-    for (int i=0; i<actions.count; i++) {
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:events.count];
+    for (int i=0; i < events.count; i++) {
         NSString *actionKey = [NSString stringWithFormat:TRACK_PARAM_A"%d", i];
-        NSString *actionValue = [actions[i] httpRequestParameterRepresentation];
+        NSString *actionValue = [events[i] httpRequestParameterRepresentation];
         
         parameters[actionKey] = actionValue;
     }
@@ -48,7 +47,6 @@
 
 +(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray<NUPurchase*> *)purchases
 {
-    // max 10 purchases are allowed
     if (purchases.count > 10) {
         purchases = [purchases subarrayWithRange:NSMakeRange(0, 10)];
     }

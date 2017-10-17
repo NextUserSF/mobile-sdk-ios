@@ -39,7 +39,7 @@
 @interface NUTrackingHTTPRequestHelper : NSObject
 
 +(NSMutableDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
-+(NSMutableDictionary *)trackActionsParametersWithActions:(NSArray *)actions;
++(NSMutableDictionary *)trackEventsParametersWithEvents:(NSArray *)actions;
 +(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
 +(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user;
 +(NSMutableDictionary *)trackUserVariables:(NUUserVariables *)userVariables;

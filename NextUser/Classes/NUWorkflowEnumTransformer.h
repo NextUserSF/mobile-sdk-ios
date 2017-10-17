@@ -13,7 +13,7 @@
 typedef NS_ENUM(NSUInteger, WorkflowRule) {
     NEW_SESSION = 0,
     SCREEN_VIEW,
-    ACTION,
+    EVENT,
     PURCHASE,
     NO_RULE
 };
