@@ -89,70 +89,75 @@
                 DDLogInfo(@"we have the wrapper:%@", iamID);
                 wrapper.interactionListener = self;
                 
+               
                 
-                InAppMsgContentView *contentView;
-                switch (wrapper.message.type) {
-                    case SKINNY:
-                        contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                        break;
-                    case MODAL:
-                        contentView = [[InAppMsgModalContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                        break;
-                    case FULL:
-                        contentView = [[InAppMsgFullContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                        break;
-                    default:
-                        DDLogError(@"Iam Type not defined.");
-                        dispatch_group_leave(iamDisplayGroup);
-                        return;
-                }
                 
-                __weak NSString* trackParams = nil;
-                if (message.interactions != nil && message.interactions.dismiss != nil) {
-                    if (message.interactions.dismiss.params != nil) {
-                        trackParams = message.interactions.dismiss.params;
-                        currentParams = message.interactions.dismiss.params;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    InAppMsgContentView *contentView;
+                    switch (wrapper.message.type) {
+                        case SKINNY:
+                            contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                            break;
+                        case MODAL:
+                            contentView = [[InAppMsgModalContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                            break;
+                        case FULL:
+                            contentView = [[InAppMsgFullContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
+                            break;
+                        default:
+                            DDLogError(@"Iam Type not defined.");
+                            dispatch_group_leave(iamDisplayGroup);
+                            return;
                     }
-                }
+                    
+                    __weak NSString* trackParams = nil;
+                    if (message.interactions != nil && message.interactions.dismiss != nil) {
+                        if (message.interactions.dismiss.params != nil) {
+                            trackParams = message.interactions.dismiss.params;
+                            currentParams = message.interactions.dismiss.params;
+                        }
+                    }
+                    
+                    
+                    NUPopUpLayout layout = [contentView getLayout];
+                    
+                    if (UIApplication.sharedApplication.keyWindow == nil) {
+                        popup = [NUPopUpView popupWithContentView:contentView
+                                                        withFrame:UIApplication.sharedApplication.keyWindow.frame
+                                                         showType:NUPopUpShowTypeSlideInFromLeft
+                                                      dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                         maskType:NUPopUpMaskTypeNone
+                                         dismissOnBackgroundTouch:NO
+                                            dismissOnContentTouch:YES];
+                    } else {
+                        popup = [NUPopUpView popupWithContentView:contentView
+                                                         showType:NUPopUpShowTypeSlideInFromLeft
+                                                      dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                         maskType:NUPopUpMaskTypeNone
+                                         dismissOnBackgroundTouch:NO
+                                            dismissOnContentTouch:YES];
+                    }
+                    
+                    popup.didFinishShowingCompletion = ^{
+                        DDLogInfo(@"show iam completed: %@", iamID);
+                        [InternalActionsTracker trackAction:TRACK_ACTION_DISPLAYED withParams:trackParams];
+                    };
+                    
+                     __weak dispatch_group_t weakGroup = iamDisplayGroup;
+                    popup.didFinishDismissingCompletion = ^{
+                        DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
+                        [InternalActionsTracker trackAction:TRACK_ACTION_DISMISSED withParams:trackParams];
+                        dispatch_group_leave(weakGroup);
+                    };
+                    
+                    if (wrapper.message.dismissTimeout != 0) {
+                        [popup showWithLayout:layout duration: [wrapper.message.dismissTimeout intValue] / 1000];
+                    } else {
+                        DDLogInfo(@"before we show:%@", iamID);
+                        [popup showWithLayout:layout];
+                    }
+                });
                 
-                
-                NUPopUpLayout layout = [contentView getLayout];
-                
-                if (UIApplication.sharedApplication.keyWindow == nil) {
-                    popup = [NUPopUpView popupWithContentView:contentView
-                                                    withFrame:UIApplication.sharedApplication.keyWindow.frame
-                                                     showType:NUPopUpShowTypeSlideInFromLeft
-                                                  dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                     maskType:NUPopUpMaskTypeNone
-                                     dismissOnBackgroundTouch:NO
-                                        dismissOnContentTouch:YES];
-                } else {
-                    popup = [NUPopUpView popupWithContentView:contentView
-                                                     showType:NUPopUpShowTypeSlideInFromLeft
-                                                  dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                     maskType:NUPopUpMaskTypeNone
-                                     dismissOnBackgroundTouch:NO
-                                        dismissOnContentTouch:YES];
-                }
-                
-                popup.didFinishShowingCompletion = ^{
-                    DDLogInfo(@"show iam completed: %@", iamID);
-                    [InternalActionsTracker trackAction:TRACK_ACTION_DISPLAYED withParams:trackParams];
-                };
-                
-                __weak dispatch_group_t weakGroup = iamDisplayGroup;
-                popup.didFinishDismissingCompletion = ^{
-                    DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
-                    [InternalActionsTracker trackAction:TRACK_ACTION_DISMISSED withParams:trackParams];
-                    dispatch_group_leave(weakGroup);
-                };
-                
-                if (wrapper.message.dismissTimeout != 0) {
-                    [popup showWithLayout:layout duration: [wrapper.message.dismissTimeout intValue] / 1000];
-                } else {
-                    DDLogInfo(@"before we show:%@", iamID);
-                    [popup showWithLayout:layout];
-                }
                 DDLogInfo(@"winter...%@", iamID);
                 dispatch_group_wait(iamDisplayGroup, DISPATCH_TIME_FOREVER);
                 DDLogInfo(@"summer again...%@", iamID);

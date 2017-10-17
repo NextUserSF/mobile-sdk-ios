@@ -46,8 +46,8 @@
             _devApiKey       = props[kDevApiKey];
             _prodApiKey      = props[kProdApiKey];
             _isProduction    = [[props objectForKey:kProdMode] boolValue];
-            _devLogLevel     = [[props objectForKey:kDevLogLvl] intValue];
-            _prodLogLevel    = [[props objectForKey:kProdLogLvl] intValue];
+            _devLogLevel     = props[kDevLogLvl];
+            _prodLogLevel    = props[kProdLogLvl];
             _wid             = props[kWidKey];
             _useGeneratedKey = NO;
             _valid           = YES;

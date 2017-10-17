@@ -355,15 +355,22 @@
     }
 }
 
-- (void)setLogLevel:(NULogLevel)logLevel
+- (void)setLogLevel:(NSString *)logLevel
 {
-    DDLogLevel level = DDLogLevelOff;
-    switch (logLevel) {
-        case NULogLevelOff: level = DDLogLevelOff; break;
-        case NULogLevelError: level = DDLogLevelError; break;
-        case NULogLevelWarning: level = DDLogLevelWarning; break;
-        case NULogLevelInfo: level = DDLogLevelInfo; break;
-        case NULogLevelVerbose: level = DDLogLevelVerbose; break;
+    DDLogLevel level;
+    
+    if ([NSString lg_isEmptyString:logLevel] || [logLevel isEqualToString:@"OFF"]) {
+        level = DDLogLevelOff;
+    } else if ([logLevel isEqualToString:@"ERROR"]) {
+        level = DDLogLevelError;
+    } else if ([logLevel isEqualToString:@"WARNING"]) {
+        level = DDLogLevelWarning;
+    } else if ([logLevel isEqualToString:@"INFO"]) {
+        level = DDLogLevelInfo;
+    } else if ([logLevel isEqualToString:@"VERBOSE"]) {
+        level = DDLogLevelVerbose;
+    } else {
+        level = DDLogLevelOff;
     }
     
     [NUDDLog setLogLevel:level];

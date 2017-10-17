@@ -83,7 +83,7 @@
     return _sessionState == Initialized;
 }
 
-- (NULogLevel) logLevel
+- (NSString *) logLevel
 {
     if (_trackerProperties.isProduction) {
         return _trackerProperties.prodLogLevel;
