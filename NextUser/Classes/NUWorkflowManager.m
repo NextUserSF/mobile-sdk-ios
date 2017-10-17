@@ -116,7 +116,6 @@
         NUTaskManager* manager = [NUTaskManager manager];
         NUTrackerTask* task = [[NUTrackerTask alloc] initForType:REQUEST_IN_APP_MESSAGES withTrackObject:[NSNumber numberWithInt:type] withSession:session];
         [manager submitTask:task];
-
     }
 }
 

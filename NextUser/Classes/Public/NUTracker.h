@@ -11,6 +11,10 @@
 #import "NUAction.h"
 #import "NUUser.h"
 
+extern NSString * const COMPLETION_NU_TRACKER_NOTIFICATION_NAME;
+extern NSString * const NU_TRACK_RESPONSE;
+extern NSString * const NU_TRACK_EVENT;
+
 @interface NUTracker : NSObject
 
 /**

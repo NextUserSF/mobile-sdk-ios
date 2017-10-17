@@ -148,16 +148,35 @@
     NSDictionary *userInfo = notification.userInfo;
     id<NUTaskResponse> taskResponse = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
     
+    NUTaskType surfaceType = TASK_NO_TYPE;
+    
     switch (taskResponse.taskType) {
         case APPLICATION_INITIALIZATION:
             [self onTrackerInitialization:taskResponse];
             break;
         case SESSION_INITIALIZATION:
             [self onSessionInitialization:taskResponse];
+            surfaceType = SESSION_INITIALIZATION;
+            break;
+        case TRACK_USER:
+        case TRACK_USER_VARIABLES:
+        case TRACK_ACTION:
+        case TRACK_PURCHASE:
+        case TRACK_SCREEN:
+            surfaceType = taskResponse.taskType;
             break;
         default:
-            //[self sendPendingTrackRequests];
             break;
+    }
+    
+    if (surfaceType != TASK_NO_TYPE) {
+        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+        [dictionary setValue:[NSNumber numberWithBool:taskResponse.successfull ] forKey: NU_TRACK_RESPONSE];
+        [dictionary setValue:[NSNumber numberWithInt:surfaceType] forKey: NU_TRACK_EVENT];
+        [[NSNotificationCenter defaultCenter]
+             postNotificationName:COMPLETION_NU_TRACKER_NOTIFICATION_NAME
+             object:nil
+             userInfo:dictionary];
     }
 }
 
@@ -588,7 +607,7 @@
     }
     pushMessageService = nil;
     
-    [self unsubscribeFromAppStateNotifications];
+    //[self unsubscribeFromAppStateNotifications];
 }
 
 @end

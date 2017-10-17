@@ -19,7 +19,7 @@
  *
  *  @return Instance of NUUser object.
  */
-+ (instancetype)user;
++ (instancetype) user;
 
 
 /**

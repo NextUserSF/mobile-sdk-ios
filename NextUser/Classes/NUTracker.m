@@ -21,6 +21,10 @@
 
 @implementation NUTracker
 
+NSString * const COMPLETION_NU_TRACKER_NOTIFICATION_NAME = @"NUCompletionTTrackerNotification";
+NSString * const NU_TRACK_RESPONSE = @"NUTTrackResponse";
+NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
+
 
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 {
