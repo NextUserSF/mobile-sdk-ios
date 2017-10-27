@@ -6,8 +6,7 @@
 @property (nonatomic, readonly) NSString *wid;
 @property (nonatomic, readonly) NSString *api_key;
 @property (nonatomic, readonly) BOOL production_release;
-@property (nonatomic, readonly) NSString *devLogLevel;
-@property (nonatomic, readonly) NSString *prodLogLevel;
+@property (nonatomic, readonly) NSString *log_level;
 @property (nonatomic, readonly) BOOL useGeneratedKey;
 @property (nonatomic, readonly) BOOL valid;
 

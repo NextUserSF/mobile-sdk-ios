@@ -86,10 +86,10 @@
 - (NSString *) logLevel
 {
     if (_trackerProperties.production_release) {
-        return _trackerProperties.prodLogLevel;
+        return _trackerProperties.log_level == nil ? @"ERROR" : _trackerProperties.log_level;
     }
     
-    return _trackerProperties.devLogLevel;
+    return @"VERBOSE";
 }
 
 - (NSString *)keychainSerivceName
