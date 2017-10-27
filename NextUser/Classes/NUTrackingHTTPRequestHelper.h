@@ -27,7 +27,7 @@
 #define TRACK_SUBSCRIBER_VARIABLE_PARAM @"sv"
 #define TRACK_SUBSCRIBER_DEVICE_PARAM @"sd"
 #define TRACK_DEVICE_PARAM @"dt"
-#define TRACKER_VERSION @"1.0.0"
+#define TRACKER_VERSION @"1.0.2"
 #define TRACKER_PROD @"https://track.nextuser.com"
 #define TRACKER_DEV @"https://track-dev.nextuser.com"
 #define SESSION_INIT_ENDPOINT @"/sdk.js"
