@@ -12,13 +12,11 @@
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 
-#define kDevApiKey @"development_api_key"
-#define kProdApiKey @"production_api_key"
-#define kProdMode @"production_mode"
-#define kDevLogLvl @"development_log_level"
-#define kProdLogLvl @"production_log_level"
 #define kWidKey @"wid"
-
+#define kApiKey @"api_key"
+#define kProdMode @"production_release"
+#define kProdLogLvl @"production_log_level"
+#define kDevLogLvl @"development_log_level"
 
 @implementation NUTrackerProperties
 
@@ -43,12 +41,11 @@
             _valid = NO;
         } else {
             NSDictionary *props = (NSDictionary *)plist;
-            _devApiKey       = props[kDevApiKey];
-            _prodApiKey      = props[kProdApiKey];
-            _isProduction    = [[props objectForKey:kProdMode] boolValue];
+            _wid = props[kWidKey];
+            _api_key       = props[kApiKey];
+            _production_release    = [[props objectForKey:kProdMode] boolValue];
             _devLogLevel     = props[kDevLogLvl];
             _prodLogLevel    = props[kProdLogLvl];
-            _wid             = props[kWidKey];
             _useGeneratedKey = NO;
             _valid           = YES;
         }
@@ -63,11 +60,7 @@
         return _wid;
     }
     
-    if (_isProduction) {
-        return _prodApiKey;
-    }
-    
-    return _devApiKey;
+    return _api_key;
 }
 
 - (BOOL)validProps

@@ -45,7 +45,7 @@
     if (self = [super init]) {
         _trackerProperties = properties;
         _sessionState = None;
-        _requestInAppMessages = YES;
+        _requestInAppMessages = NO;
         _deviceCookie = [self serializedDeviceCookie];
         [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
@@ -85,7 +85,7 @@
 
 - (NSString *) logLevel
 {
-    if (_trackerProperties.isProduction) {
+    if (_trackerProperties.production_release) {
         return _trackerProperties.prodLogLevel;
     }
     
@@ -136,7 +136,7 @@
 
 - (NSString *)basePath
 {
-    return _trackerProperties.isProduction ? TRACKER_PROD : TRACKER_DEV;
+    return _trackerProperties.production_release ? TRACKER_PROD : TRACKER_DEV;
 }
 
 - (NSString *)pathWithAPIName:(NSString *)APIName

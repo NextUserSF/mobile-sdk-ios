@@ -308,7 +308,7 @@
     }
     
     if (![self validTracker] || !inAppMessagesRequested) {
-        DDLogVerbose(@"Cannot sendTrackTask, session or network connection not available...");
+        DDLogWarn(@"Cannot sendTrackTask, session or network connection not available...");
         [self queueTrackObject:trackObject withType:taskType];
         
         return false;
