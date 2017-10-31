@@ -17,6 +17,7 @@
 @property (nonatomic) NSError*  error;
 @property (nonatomic) NSData*   reponseData;
 
+
 @end
 
 
@@ -28,7 +29,9 @@
 }
 
 - (instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSDictionary *)parameters;
-- (instancetype)initGetRequesWithPath:(NSString *)url withParameters:(NSDictionary *)parameters;
+- (instancetype)initGetRequestWithPath:(NSString *)url withParameters:(NSDictionary *)parameters;
+- (NSMutableURLRequest* ) buildRequestInstance:(NSError *) error;
+- (NUHttpResponse*) response:(NUHttpResponse*) response withError:(NSError *)error;
 
 @end
 

@@ -9,12 +9,23 @@
 #import <Foundation/Foundation.h>
 #import "NUTrackerTask.h"
 #import "NUTrackingHTTPRequestHelper.h"
+#import "AFNetworking.h"
 
 @implementation NUTrackerTask
 
 -(instancetype)initForType:(NUTaskType)type  withTrackObject:(id) trackingObject withSession:(NUTrackerSession*) tSession
 {
-    self = [super initGetRequesWithPath:nil withParameters:nil];
+    requestMethod = @"POST";
+    switch (type) {
+        case SESSION_INITIALIZATION:
+        case REQUEST_IN_APP_MESSAGES:
+            requestMethod = @"GET";
+            break;
+        default:
+            break;
+    }
+    
+    self = [super initWithMethod:requestMethod withPath:path withParameters:queryParameters];
     if (self) {
         taskType = type;
         trackObject = trackingObject;
@@ -31,31 +42,20 @@
 
 - (id<NUTaskResponse>) execute: (NUHttpResponse*) responseInstance
 {
-    [self setupRequestData];
+    NSError *error = [self setupRequestData];
+    if (error) {
+        return [self response:responseInstance withError:error];
+    }
+    
     responseInstance = [super execute:responseInstance];
     
     return responseInstance;
 }
 
--(void) setupRequestData
+-(NSError *) setupRequestData
 {
-    path = [session trackPath];
+    NSError *error = nil;
     switch (taskType) {
-        case TRACK_SCREEN:
-            queryParameters = [NUTrackingHTTPRequestHelper trackScreenParametersWithScreenName: trackObject];
-            break;
-        case TRACK_EVENT:
-            queryParameters = [NUTrackingHTTPRequestHelper trackEventsParametersWithEvents: trackObject];
-            break;
-        case TRACK_PURCHASE:
-            queryParameters = [NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases: trackObject];
-            break;
-        case TRACK_USER:
-            queryParameters = [NUTrackingHTTPRequestHelper trackUserParametersWithVariables: trackObject];
-            break;
-        case TRACK_USER_VARIABLES:
-            queryParameters = [NUTrackingHTTPRequestHelper trackUserVariables: trackObject];
-            break;
         case SESSION_INITIALIZATION:
             path = [session sessionInitPath];
             queryParameters = [NUTrackingHTTPRequestHelper sessionInitializationParameters: session];
@@ -63,15 +63,33 @@
         case REQUEST_IN_APP_MESSAGES:
             path = [session iamsRequestPath];
             queryParameters = [NSMutableDictionary dictionary];
-            break;
-        case TRACK_USER_DEVICE:
-            queryParameters = [NUTrackingHTTPRequestHelper trackUserDeviceParametersWithVariables: trackObject];
+            [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
             break;
         default:
+            path = [NSString stringWithFormat:@"%@?%@=%@", [session trackCollectPath], @"tid", [NUTrackingHTTPRequestHelper generateTid:session]];
+            queryParameters = [NUTrackingHTTPRequestHelper generateCollectDictionary:taskType withObject:trackObject withSession:session];
+            if (queryParameters == nil) {
+                error = [[NSError alloc] init];
+                [error setValue:@"Invalid json params" forKey:@"Description"];
+            }
             break;
     }
     
-    [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
+    return error;
+}
+
+-(NSMutableURLRequest *)buildRequestInstance:(NSError *)error
+{
+    if ([requestMethod isEqualToString:@"POST"]) {
+        NSMutableURLRequest *postRequest = [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path parameters: nil error:&error];
+        [postRequest setValue:@"text/plain; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:queryParameters options:0 error:&error];
+        [postRequest setHTTPBody: jsonData];
+        
+        return postRequest;
+    }
+    
+    return [super buildRequestInstance:error];
 }
 
 @end

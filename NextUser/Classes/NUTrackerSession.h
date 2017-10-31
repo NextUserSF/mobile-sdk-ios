@@ -40,12 +40,13 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 
 - (NSString *) apiKey;
 - (void) clearSerializedDeviceCookie;
-- (BOOL)isValid;
+- (BOOL) isValid;
 - (NSString *) logLevel;
-- (NSString *)trackPath;
-- (NSString *)sessionInitPath;
-- (NSString *)trackDevicePath;
-- (NSString *)iamsRequestPath;
+- (NSString *) trackPath;
+- (NSString *) trackCollectPath;
+- (NSString *) sessionInitPath;
+- (NSString *) trackDevicePath;
+- (NSString *) iamsRequestPath;
 
 @end
 

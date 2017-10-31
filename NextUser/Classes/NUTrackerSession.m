@@ -119,6 +119,11 @@
     return [self pathWithAPIName:TRACK_ENDPOINT];
 }
 
+-(NSString *)trackCollectPath
+{
+    return [self pathWithAPIName:TRACK_COLLECT_ENDPOINT];
+}
+
 -(NSString *)sessionInitPath
 {
     return [self pathWithAPIName:SESSION_INIT_ENDPOINT];

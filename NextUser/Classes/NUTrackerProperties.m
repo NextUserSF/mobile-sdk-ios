@@ -15,6 +15,7 @@
 #define kWidKey @"wid"
 #define kApiKey @"api_key"
 #define kLogLvl @"log_level"
+#define kProductionRelease @"production_release"
 
 @implementation NUTrackerProperties
 
@@ -41,7 +42,8 @@
             NSDictionary *props = (NSDictionary *)plist;
             _wid = props[kWidKey];
             _api_key       = props[kApiKey];
-            _production_release = YES;
+            _production_release = (props[kProductionRelease] != nil ?
+                                   [[props valueForKey:kProductionRelease] boolValue] : YES);
             _log_level     = props[kLogLvl];
             _useGeneratedKey = NO;
             _valid           = YES;

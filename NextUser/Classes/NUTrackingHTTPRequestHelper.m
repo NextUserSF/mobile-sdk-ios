@@ -100,7 +100,7 @@
     return parameters;
 }
 
-+(NSDictionary *)appendSessionDefaultParameters:(NUTrackerSession*) session withTrackParameters:(NSMutableDictionary*) parameters
++(NSString *) generateTid:(NUTrackerSession *) session
 {
     NSString *tid = [session apiKey];
     if (session.user != nil && ![NSString lg_isEmptyString: session.user.userIdentifier]) {
@@ -109,14 +109,61 @@
         tid = [tid stringByAppendingFormat:@"+%@", base64Id];
     }
     
+    return tid;
+}
+
++(NSDictionary *)appendSessionDefaultParameters:(NUTrackerSession*) session withTrackParameters:(NSMutableDictionary*) parameters
+{
     parameters[TRACK_PARAM_NUTMS] = [NSString stringWithFormat:@"...%@", [session deviceCookie]];
     parameters[TRACK_PARAM_NUTMSC] = [session sessionCookie];
-    parameters[TRACK_PARAM_TID] = tid;
+    parameters[TRACK_PARAM_TID] = [self generateTid:session];
     parameters[TRACK_PARAM_VERSION] = TRACKER_VERSION;
-    parameters[TRACK_PARAM_BUILD_VERSION] = @"1.0";
     parameters[TRACK_PARAM_DEVICE_TYPE] = TRACK_PARAM_DEVICE_TYPE_IOS;
     
     return parameters;
+}
+
++(NSMutableDictionary *) generateCollectDictionary:(NUTaskType) type withObject:(id) trackObject withSession:(NUTrackerSession *) session
+{
+    NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+    data[TRACK_PARAM_VERSION] = TRACKER_VERSION;
+    data[TRACK_PARAM_DEVICE_TYPE] = TRACK_PARAM_DEVICE_TYPE_IOS;
+    
+    switch (type) {
+        case TRACK_SCREEN:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackScreenParametersWithScreenName: trackObject]];
+            break;
+        case TRACK_EVENT:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackEventsParametersWithEvents: trackObject]];
+            break;
+        case TRACK_PURCHASE:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases: trackObject]];
+            break;
+        case TRACK_USER:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackUserParametersWithVariables: trackObject]];
+            break;
+        case TRACK_USER_VARIABLES:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackUserVariables: trackObject]];
+            break;
+        case TRACK_USER_DEVICE:
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackUserDeviceParametersWithVariables: trackObject]];
+            break;
+        default:
+            break;
+    }
+    
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:data options:0 error:nil];
+    if (jsonData == nil) {
+        return nil;
+    }
+    
+    payload[TRACK_PARAM_DATA] = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    payload[TRACK_PARAM_DC] = session.deviceCookie;
+    payload[TRACK_PARAM_SC] = session.sessionCookie;
+    payload[TRACK_PARAM_API_KEY] = session.apiKey;
+    
+    return payload;
 }
 
 @end
