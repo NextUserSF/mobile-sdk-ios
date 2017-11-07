@@ -9,10 +9,10 @@
 @property (nonatomic, readonly) NSString *log_level;
 @property (nonatomic, readonly) BOOL useGeneratedKey;
 @property (nonatomic, readonly) BOOL valid;
+@property (nonatomic, readonly) BOOL notifications;
+@property (nonatomic, readonly) BOOL requestInAppMessages;
 
 + (instancetype)properties;
-
 - (NSString *)apiKey;
-- (BOOL)validProps;
 
 @end

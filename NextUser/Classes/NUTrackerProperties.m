@@ -46,6 +46,7 @@
                                    [[props valueForKey:kProductionRelease] boolValue] : YES);
             _log_level     = props[kLogLvl];
             _useGeneratedKey = NO;
+            _notifications = YES;
             _valid           = YES;
         }
     }
@@ -60,11 +61,6 @@
     }
     
     return _api_key;
-}
-
-- (BOOL)validProps
-{
-    return _valid;
 }
 
 @end

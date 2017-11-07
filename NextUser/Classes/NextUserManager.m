@@ -23,6 +23,15 @@
 #define kSessionCookieJSONKey @"session_cookie"
 #define kInstantWorkflowsJSONKey @"instant_workflows"
 
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+@import UserNotifications;
+#endif
+
+// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
+#ifndef NSFoundationVersionNumber_iOS_9_x_Max
+#define NSFoundationVersionNumber_iOS_9_x_Max 1299
+#endif
+
 @interface PendingTask : NSObject
 @property (nonatomic) id trackingObject;
 @property (nonatomic) NUTaskType taskType;
@@ -230,6 +239,11 @@
         } else {
             inAppMessagesRequested = YES;
             [self sendPendingTrackRequests];
+        }
+        
+        
+        if ([[session trackerProperties] notifications] == YES) {
+            //init firebase
         }
         
     } else {
@@ -524,11 +538,44 @@
     return note;
 }
 
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
+- (void)registerForRemoteNotifications
 {
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [self userNotificationSettingsForNotificationTypes:types];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    // Register for remote notifications. This shows a permission dialog on first run, to
+    // show the dialog at a more appropriate time move this registration accordingly.
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+        // iOS 7.1 or earlier. Disable the deprecation warnings.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        UIRemoteNotificationType allNotificationTypes =
+        (UIRemoteNotificationTypeSound |
+         UIRemoteNotificationTypeAlert |
+         UIRemoteNotificationTypeBadge);
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:allNotificationTypes];
+#pragma clang diagnostic pop
+    } else {
+        // iOS 8 or later
+        // [START register_for_notifications]
+        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+            UIUserNotificationType allNotificationTypes =
+            (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+            UIUserNotificationSettings *settings =
+            [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        } else {
+            // iOS 10 or later
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            // For iOS 10 display notification (sent via APNS)
+            UNAuthorizationOptions authOptions =
+            UNAuthorizationOptionAlert
+            | UNAuthorizationOptionSound
+            | UNAuthorizationOptionBadge;
+            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            }];
+#endif
+        }
+        
+        [[UIApplication sharedApplication]  registerForRemoteNotifications];
+
     }
 }
 

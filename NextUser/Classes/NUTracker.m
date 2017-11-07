@@ -45,27 +45,9 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
 }
 
-#pragma mark -
-
-- (void)requestDefaultPermissions
+- (void)registerForRemoteNotifications
 {
-    [self requestLocationPersmissions];
-    [self requestNotificationPermissions];
-}
-
-- (void)requestLocationPersmissions
-{
-   [[NextUserManager sharedInstance] requestLocationPersmissions];
-}
-
-- (void)requestNotificationPermissions
-{
-   [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes:[[NextUserManager sharedInstance] allNotificationTypes]];
-}
-
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
-{
-    [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes: types];
+    [[NextUserManager sharedInstance] registerForRemoteNotifications];
 }
 
 - (void)trackUser:(NUUser *)user
@@ -101,7 +83,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [[NextUserManager sharedInstance] getSession].user = user;
 }
 
-- (NSString *)currentUserIdenifier
+- (NSString *)currentUserIdentifier
 {
     if (![[NextUserManager sharedInstance] getSession]) {
         return nil;
@@ -182,6 +164,16 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
     [[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
+}
+
+- (void)initializePushNotificationsService
+{
+    
+}
+
+- (void)submitFCMDeviceToken:(NSString *) deviceToken
+{
+    
 }
 
 @end

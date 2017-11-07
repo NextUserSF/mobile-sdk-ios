@@ -20,14 +20,13 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
-- (void)requestDefaultPermissions;
-- (void)requestLocationPersmissions;
-- (void)requestNotificationPermissions;
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
+- (void)initializePushNotificationsService;
+- (void)registerForRemoteNotifications;
+- (void)submitFCMDeviceToken:(NSString *) deviceToken;
 
 - (void)trackUser:(NUUser *)user;
 - (void)setUser:(NUUser *)user;
-- (NSString *)currentUserIdenifier;
+- (NSString *)currentUserIdentifier;
 - (void)trackUserVariables:(NUUserVariables *)userVariables;
 - (void)trackScreenWithName:(NSString *)screenName;
 - (void)trackEvent:(NUEvent *)event;

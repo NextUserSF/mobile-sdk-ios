@@ -29,8 +29,7 @@
 -(void)refreshPendingRequests;
 -(void)unsubscribeFromAppStateNotifications;
 -(void)scheduleLocalNotificationForMessage:(NUPushMessage *)message;
--(void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
--(void)requestLocationPersmissions;
+-(void)registerForRemoteNotifications;
 -(BOOL)isNextUserLocalNotification:(UILocalNotification *)note;
 -(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
 -(UIUserNotificationType)allNotificationTypes;

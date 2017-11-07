@@ -21,7 +21,7 @@
 - (id<NUTaskResponse>) execute:(NUTrackerInitializationResponse *) responseInstance
 {
     NUTrackerProperties *properties = [NUTrackerProperties properties];
-    if (![properties validProps]) {
+    if ([properties valid] == NO) {
         responseInstance.errorMessage = @"Invalid Properties..Please check Nextuser properties list";
         [responseInstance setSuccessfull:NO];
         
