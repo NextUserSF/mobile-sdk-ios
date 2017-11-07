@@ -21,7 +21,6 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
 - (void)initializePushNotificationsService;
-- (void)registerForRemoteNotifications;
 - (void)submitFCMDeviceToken:(NSString *) deviceToken;
 
 - (void)trackUser:(NUUser *)user;
