@@ -17,6 +17,7 @@
 #import "NULogLevel.h"
 #import "NUTaskManager.h"
 #import "NUTrackerInitializationTask.h"
+#import "NUDeviceToken.h"
 
 
 @implementation NUTracker
@@ -166,14 +167,16 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
 }
 
-- (void)initializePushNotificationsService
-{
-    
-}
-
 - (void)submitFCMDeviceToken:(NSString *) deviceToken
 {
+    NUDeviceToken *deviceTokenObj = [[NUDeviceToken alloc] init];
+    deviceTokenObj.deviceOS = @"ios";
+    deviceTokenObj.token = deviceToken;
+    deviceTokenObj.provider = @"google";
+    deviceTokenObj.active = YES;
     
+    DDLogInfo(@"Track FCM deviceToken: %@", deviceToken);
+    [[NextUserManager sharedInstance] trackWithObject:deviceTokenObj withType:TRACK_DEVICE_TOKEN];
 }
 
 @end

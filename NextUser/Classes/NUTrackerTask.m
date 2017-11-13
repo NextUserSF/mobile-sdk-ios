@@ -65,6 +65,17 @@
             queryParameters = [NSMutableDictionary dictionary];
             [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
             break;
+        case TRACK_DEVICE_TOKEN:
+            if (session.trackerProperties.notifications == YES) {
+                path = [session trackDeviceTokenPath];
+                queryParameters = [NUTrackingHTTPRequestHelper trackDeviceToken:trackObject];
+                [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
+            } else {
+                error = [[NSError alloc] init];
+                [error setValue:@"notif_error" forKey:@"Push notiifcations not enabled for this acccount."];
+            }
+            
+            break;
         default:
             path = [NSString stringWithFormat:@"%@?%@=%@", [session trackCollectPath], @"tid", [NUTrackingHTTPRequestHelper generateTid:session]];
             queryParameters = [NUTrackingHTTPRequestHelper generateCollectDictionary:taskType withObject:trackObject withSession:session];

@@ -129,7 +129,7 @@
     return [self pathWithAPIName:SESSION_INIT_ENDPOINT];
 }
 
--(NSString *)trackDevicePath
+-(NSString *)trackDeviceTokenPath
 {
     return [self pathWithAPIName:TRACK_DEVICE_ENDPOINT];
 }

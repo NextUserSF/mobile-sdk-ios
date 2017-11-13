@@ -25,16 +25,16 @@
     if (![string length]) return nil;
     
     NSData *decoded = nil;
-    
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0
-    
+  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    #if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0
+
     if (![NSData instancesRespondToSelector:@selector(initWithBase64EncodedString:options:)])
     {
         decoded = [[self alloc] initWithBase64Encoding:[string stringByReplacingOccurrencesOfString:@"[^A-Za-z0-9+/=]" withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, [string length])]];
     }
     else
         
-#endif
+    #endif
         
     {
         decoded = [[self alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];

@@ -561,9 +561,8 @@
             UIUserNotificationSettings *settings =
             [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
             [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        } else {
+        } else if (@available(iOS 10, *)) {
             // iOS 10 or later
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             // For iOS 10 display notification (sent via APNS)
             UNAuthorizationOptions authOptions =
             UNAuthorizationOptionAlert
@@ -571,7 +570,7 @@
             | UNAuthorizationOptionBadge;
             [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
             }];
-#endif
+
         }
         
         [[UIApplication sharedApplication]  registerForRemoteNotifications];

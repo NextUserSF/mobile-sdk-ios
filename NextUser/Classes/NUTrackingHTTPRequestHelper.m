@@ -15,6 +15,7 @@
 #import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
 #import "Base64.h"
+#import "NUDeviceToken+Serialization.h"
 
 @implementation NUTrackingHTTPRequestHelper
 
@@ -164,6 +165,14 @@
     payload[TRACK_PARAM_API_KEY] = session.apiKey;
     
     return payload;
+}
+
++(NSMutableDictionary *)trackDeviceToken:(NUDeviceToken *)deviceToken
+{
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[TRACK_DEVICE_PARAM] = [deviceToken httpRequestParameterRepresentation];
+    
+    return parameters;
 }
 
 @end
