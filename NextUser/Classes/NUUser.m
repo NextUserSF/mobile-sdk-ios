@@ -54,7 +54,7 @@
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_customerID]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"cid=", _customerID]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"uid=", _customerID]];
     }
     
     if ([NUObjectPropertyStatusUtils isStringValueSet:_subscription]) {
@@ -89,8 +89,9 @@
         [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"locale=", _locale]];
     }
     
-    if ([NUObjectPropertyStatusUtils isStringValueSet:_gender]) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=", _gender]];
+    if (_gender >= MALE && _gender <= FEMALE) {
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=",
+                                 [NSNumber numberWithInt:_gender]]];
     }
     
     return [paramsArray componentsJoinedByString:@","];

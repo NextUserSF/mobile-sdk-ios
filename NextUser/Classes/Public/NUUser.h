@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "NUUserVariables.h"
 
+typedef NS_ENUM(NSUInteger, NUUserGender) {
+    MALE = 0,
+    FEMALE = 1
+};
+
 /**
  *  This class creates an user instance
  */
@@ -89,7 +94,7 @@
 /**
  *  User Gender.
  */
-@property (nonatomic) NSString *gender;
+@property (nonatomic) NUUserGender gender;
 
 /**
  *  User Variables.
