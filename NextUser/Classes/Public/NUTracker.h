@@ -27,7 +27,7 @@ extern NSString * const NU_TRACK_EVENT;
 
 - (void)trackUser:(NUUser *)user;
 - (void)setUser:(NUUser *)user;
-- (NSString *)currentUserIdenifier;
+- (NSString *)currentUserIdentifier;
 - (void)trackUserVariables:(NUUserVariables *)userVariables;
 - (void)trackScreenWithName:(NSString *)screenName;
 - (void)trackEvent:(NUEvent *)event;

@@ -101,7 +101,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [[NextUserManager sharedInstance] getSession].user = user;
 }
 
-- (NSString *)currentUserIdenifier
+- (NSString *)currentUserIdentifier
 {
     if (![[NextUserManager sharedInstance] getSession]) {
         return nil;

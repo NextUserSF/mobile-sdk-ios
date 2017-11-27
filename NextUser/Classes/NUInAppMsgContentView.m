@@ -199,7 +199,11 @@
     [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateNormal];
     [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateSelected];
     
-    [button.titleLabel setFont: [UIFont systemFontOfSize:settings.contentTitleFontSize weight:UIFontWeightLight]];
+    if (@available(iOS 8.2, *)) {
+        [button.titleLabel setFont: [UIFont systemFontOfSize:settings.contentTitleFontSize weight:UIFontWeightLight]];
+    } else {
+        // Fallback on earlier versions
+    }
     [button setTitle:buttonConfig.text forState:UIControlStateNormal];
     [button setTitleColor:[InAppMsgViewHelper textColor: buttonConfig.textColor] forState:UIControlStateNormal];
     [button setTitleColor:[[button titleColorForState:UIControlStateNormal] colorWithAlphaComponent:0.5] forState:UIControlStateHighlighted];
