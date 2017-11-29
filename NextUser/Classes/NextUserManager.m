@@ -247,7 +247,7 @@
     subDevice.trackingSource = @"nu.ios";
     subDevice.trackingVersion = TRACKER_VERSION;
     subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
-    subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", [NUHardwareInfo screenWidth], [NUHardwareInfo screenHeight]];
+    subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", (long)[NUHardwareInfo screenWidth],(long)[NUHardwareInfo screenHeight]];
     NSBundle *bundle = [NSBundle mainBundle];
     subDevice.browser =[[bundle infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
     subDevice.browserVersion = [[bundle infoDictionary] objectForKey:@"CFBundleShortVersionString"];
