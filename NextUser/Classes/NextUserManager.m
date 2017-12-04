@@ -445,26 +445,17 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did enter background, start app wake up manager");
-        [wakeUpManager start];
-    }
+
 }
 
 - (void)applicationWillTerminateNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application will terminate, start app wake up manager");
-        [wakeUpManager start];
-    }
+
 }
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did become active, stop app wake up manager");
-        [wakeUpManager stop];
-    }
+
 }
 
 - (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)(void))completion
