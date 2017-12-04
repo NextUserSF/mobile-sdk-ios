@@ -11,7 +11,7 @@
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
 #import "NUHTTPRequestUtils.h"
-#import "SSKeychain.h"
+#import "SAMKeychain.h"
 #import "NSString+LGUtils.h"
 #import "NULogLevel.h"
 
@@ -47,7 +47,7 @@
         _sessionState = None;
         _requestInAppMessages = NO;
         _deviceCookie = [self serializedDeviceCookie];
-        [SSKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
+        [SAMKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
     }
     
     return self;
@@ -63,7 +63,7 @@
    _deviceCookie = dCookie;
     NSAssert(_deviceCookie, @"deviceCookie can not be nil");
     NSError *error = nil;
-    [SSKeychain setPassword:_deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    [SAMKeychain setPassword:_deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while setting device cookie in keychain. %@", error);
     }
@@ -72,7 +72,7 @@
 - (void)clearSerializedDeviceCookie
 {
     NSError *error = nil;
-    [SSKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    [SAMKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while deleting device cookie from keychain. %@", error);
     }
@@ -105,7 +105,7 @@
 - (NSString *)serializedDeviceCookie
 {
     NSError *error = nil;
-    NSString *password = [SSKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey
+    NSString *password = [SAMKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey
                                                   error:&error];
     if (error != nil) {
         DDLogError(@"Error while fetching device cookie from keychain. %@", error);

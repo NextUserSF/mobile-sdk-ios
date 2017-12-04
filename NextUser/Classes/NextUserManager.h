@@ -6,7 +6,6 @@
 #import "Reachability.h"
 #import "NUAppWakeUpManager.h"
 #import "NUPushMessageService.h"
-#import "NUPushMessageServiceFactory.h"
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 #import "NUInAppMessageManager.h"
@@ -29,19 +28,19 @@
 -(void)refreshPendingRequests;
 -(void)unsubscribeFromAppStateNotifications;
 -(void)scheduleLocalNotificationForMessage:(NUPushMessage *)message;
--(void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
 -(void)requestLocationPersmissions;
 -(BOOL)isNextUserLocalNotification:(UILocalNotification *)note;
 -(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
--(UIUserNotificationType)allNotificationTypes;
 -(NUTrackerSession *) getSession;
 -(WorkflowManager *) workflowManager;
 -(InAppMsgCacheManager *) inAppMsgCacheManager;
 -(InAppMsgImageManager *) inAppMsgImageManager;
 -(InAppMsgUIManager *) inAppMsgUIManager;
 
-
 -(NUTracker* ) getTracker;
 -(void) inAppMessagesRequested;
+
+- (void)submitFCMRegistrationToken:(NSString *) fcmToken;
+- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken;
 
 @end
