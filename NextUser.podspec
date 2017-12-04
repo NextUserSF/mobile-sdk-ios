@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NextUser'
-  s.version          = '1.0.3'
+  s.version          = '1.0.4'
   s.summary          = 'NextUser analytics for IOS.'
   s.description      = 'NextUser SDK for IOS platform'
 
@@ -17,8 +17,11 @@ Pod::Spec.new do |s|
     'NextUser' => ['NextUser/Assets/*.png']
   }
 
-    s.dependency 'CocoaLumberjack'
-    s.dependency 'AFNetworking', '~> 3.0'
-    s.dependency 'PubNub', '~> 4'
-    s.frameworks = 'SystemConfiguration'
+  s.framework = 'SystemConfiguration'
+
+  s.dependency 'CocoaLumberjack'
+  s.dependency 'AFNetworking', '~> 3.0'
+  s.dependency 'SAMKeychain'
+  s.dependency 'Base64'
+  
 end

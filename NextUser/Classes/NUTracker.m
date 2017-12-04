@@ -50,22 +50,11 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 - (void)requestDefaultPermissions
 {
     [self requestLocationPersmissions];
-    [self requestNotificationPermissions];
 }
 
 - (void)requestLocationPersmissions
 {
    [[NextUserManager sharedInstance] requestLocationPersmissions];
-}
-
-- (void)requestNotificationPermissions
-{
-   [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes:[[NextUserManager sharedInstance] allNotificationTypes]];
-}
-
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
-{
-    [[NextUserManager sharedInstance] requestNotificationPermissionsForNotificationTypes: types];
 }
 
 - (void)trackUser:(NUUser *)user
@@ -182,6 +171,16 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
     [[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
+}
+
+- (void)submitFCMRegistrationToken:(NSString *) fcmToken
+{
+    
+}
+
+- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken
+{
+    
 }
 
 @end

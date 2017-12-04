@@ -14,7 +14,7 @@
 #import "NUUser+Serialization.h"
 #import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
-#import "Base64.h"
+#import "MF_Base64Additions.h"
 
 @implementation NUTrackingHTTPRequestHelper
 
@@ -105,7 +105,7 @@
     NSString *tid = [session apiKey];
     if (session.user != nil && ![NSString lg_isEmptyString: session.user.userIdentifier]) {
         NSData *inputData = [session.user.userIdentifier dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *base64Id = [inputData base64EncodedStringWithWrapWidth:0];
+        NSString *base64Id = [inputData base64String];
         tid = [tid stringByAppendingFormat:@"+%@", base64Id];
     }
     

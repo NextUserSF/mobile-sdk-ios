@@ -11,7 +11,7 @@
 #import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
-#import "Base64.h"
+#import "MF_Base64Additions.h"
 #import "NUTrackerTask.h"
 #import "NUTaskManager.h"
 #import "NUTask.h"
@@ -56,6 +56,7 @@
 
 @implementation NextUserManager
 
+NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 + (instancetype) sharedInstance
 {
@@ -87,6 +88,7 @@
         wakeUpManager = [NUAppWakeUpManager manager];
         wakeUpManager.delegate = self;
         sessionRequestLock = [[NSLock alloc] init];
+        [self subscribeToAppStateNotificationsOnce];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveTaskManagerNotification:)
@@ -94,6 +96,8 @@
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+        
+        
         
         reachability = [Reachability reachabilityForInternetConnection];
         [reachability startNotifier];
@@ -218,12 +222,6 @@
         [session setSessionState: Initialized];
         [self trackSubscriberDevice];
         
-        if (session.shouldListenForPushMessages) {
-            [self connectPushMessageService];
-        } else {
-            [self disconnectPushMessageService];
-        }
-        
         if (session.requestInAppMessages == YES) {
             inAppMessagesRequested = NO;
             [self initInAppMsgSessionManagers];
@@ -247,7 +245,7 @@
     subDevice.trackingSource = @"nu.ios";
     subDevice.trackingVersion = TRACKER_VERSION;
     subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
-    subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", [NUHardwareInfo screenWidth], [NUHardwareInfo screenHeight]];
+    subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", (long)[NUHardwareInfo screenWidth],(long)[NUHardwareInfo screenHeight]];
     NSBundle *bundle = [NSBundle mainBundle];
     subDevice.browser =[[bundle infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
     subDevice.browserVersion = [[bundle infoDictionary] objectForKey:@"CFBundleShortVersionString"];
@@ -447,26 +445,17 @@
 
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did enter background, start app wake up manager");
-        [wakeUpManager start];
-    }
+
 }
 
 - (void)applicationWillTerminateNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application will terminate, start app wake up manager");
-        [wakeUpManager start];
-    }
+
 }
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
-    if (session.shouldListenForPushMessages) {
-        DDLogInfo(@"Application did become active, stop app wake up manager");
-        [wakeUpManager stop];
-    }
+
 }
 
 - (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)(void))completion
@@ -524,12 +513,14 @@
     return note;
 }
 
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types
+- (void)submitFCMRegistrationToken:(NSString *) fcmToken
 {
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [self userNotificationSettingsForNotificationTypes:types];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-    }
+    //request to server
+}
+
+- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken
+{
+    //request to server
 }
 
 -(void)requestLocationPersmissions
@@ -588,32 +579,6 @@
 - (UIUserNotificationType)allNotificationTypes
 {
     return  UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-}
-
-#pragma mark - Push Messages Service Connect/Disconnect
-
-- (void)connectPushMessageService
-{
-    // connect push service
-    if (pushMessageService != nil) {
-        [pushMessageService stopListening];
-    }
-    pushMessageService = [NUPushMessageServiceFactory createPushMessageServiceWithSession:session];
-    pushMessageService.delegate = self;
-    [pushMessageService startListening];
-    
-    [self subscribeToAppStateNotificationsOnce];
-}
-
-- (void)disconnectPushMessageService
-{
-    // disconnect push service
-    if (pushMessageService != nil) {
-        [pushMessageService stopListening];
-    }
-    pushMessageService = nil;
-    
-    //[self unsubscribeFromAppStateNotifications];
 }
 
 @end

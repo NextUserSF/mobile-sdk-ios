@@ -42,8 +42,7 @@
             NSDictionary *props = (NSDictionary *)plist;
             _wid = props[kWidKey];
             _api_key       = props[kApiKey];
-            _production_release = (props[kProductionRelease] != nil ?
-                                   [[props valueForKey:kProductionRelease] boolValue] : YES);
+            _production_release = YES;
             _log_level     = props[kLogLvl];
             _useGeneratedKey = NO;
             _valid           = YES;

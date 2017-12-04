@@ -22,8 +22,6 @@ extern NSString * const NU_TRACK_EVENT;
 
 - (void)requestDefaultPermissions;
 - (void)requestLocationPersmissions;
-- (void)requestNotificationPermissions;
-- (void)requestNotificationPermissionsForNotificationTypes:(UIUserNotificationType)types;
 
 - (void)trackUser:(NUUser *)user;
 - (void)setUser:(NUUser *)user;
@@ -34,6 +32,9 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)trackEvents:(NSArray<NUEvent *> *)events;
 - (void)trackPurchase:(NUPurchase *)purchase;
 - (void)trackPurchases:(NSArray *)purchases;
+
+- (void)submitFCMRegistrationToken:(NSString *) fcmToken;
+- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken;
 
 @end
 

@@ -11,8 +11,6 @@
 #import "NUUser.h"
 #import "NUTrackerProperties.h"
 
-@class NUPubNubConfiguration;
-
 typedef NS_ENUM(NSUInteger, NUSessionState) {
     Initialized,
     Initializing,
@@ -30,8 +28,6 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 @property (nonatomic) NUSessionState sessionState;
 @property (nonatomic) NUUser *user;
 @property (nonatomic) NSString *trackingIdentifier;
-@property (nonatomic) BOOL shouldListenForPushMessages;
-@property (nonatomic) NUPubNubConfiguration *pubNubConfiguration;
 @property (nonatomic) NSString *instantWorkflows;
 @property (nonatomic) BOOL requestInAppMessages;
 
@@ -47,14 +43,5 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (NSString *) sessionInitPath;
 - (NSString *) trackDevicePath;
 - (NSString *) iamsRequestPath;
-
-@end
-
-@interface NUPubNubConfiguration : NSObject
-
-@property (nonatomic, readonly) NSString *subscribeKey;
-@property (nonatomic, readonly) NSString *publishKey;
-@property (nonatomic, readonly) NSString *publicChannel;
-@property (nonatomic, readonly) NSString *privateChannel;
 
 @end
