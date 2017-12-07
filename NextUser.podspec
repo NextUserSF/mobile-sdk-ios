@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NextUser'
-  s.version          = '1.0.4'
+  s.version          = '1.0.5'
   s.summary          = 'NextUser analytics for IOS.'
   s.description      = 'NextUser SDK for IOS platform'
   s.homepage         = 'https://github.com/NextUserSF/mobile-sdk-ios'
