@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import "NUTracker.h"
 
-@interface Nextuser : NSObject
+@interface NextUser : NSObject
 
 + (NUTracker *) tracker;
 
