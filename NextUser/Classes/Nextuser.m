@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Nextuser.h"
+#import "NextUser.h"
 #import "NextUserManager.h"
 
-@implementation Nextuser
+@implementation NextUser
 
 + (NUTracker *) tracker
 {
