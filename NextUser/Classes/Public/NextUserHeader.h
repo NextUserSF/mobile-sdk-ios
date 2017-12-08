@@ -1,3 +1,11 @@
+#import <Foundation/Foundation.h>
+
+//! Project version number for NextUserHeader.
+FOUNDATION_EXPORT double NextUserHeaderVersionNumber;
+
+//! Project version string for NextUserHeader.
+FOUNDATION_EXPORT const unsigned char NextUserHeaderVersionString[];
+
 #import <NextUser/NextUser.h>
 #import <NextUser/NUErrorDefinitions.h>
 #import <NextUser/NUEvent.h>
