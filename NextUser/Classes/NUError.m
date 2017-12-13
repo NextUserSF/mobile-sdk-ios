@@ -7,7 +7,6 @@
 //
 
 #import "NUError.h"
-#import "NUErrorDefinitions.h"
 
 NSString * const NUNextUserErrorDomain = @"com.nextuser.base";
 

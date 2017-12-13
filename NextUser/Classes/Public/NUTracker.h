@@ -11,6 +11,15 @@
 #import "NUEvent.h"
 #import "NUUser.h"
 
+typedef NS_ENUM(NSUInteger, NUTrackedAction) {
+    NU_SESSION = 0,
+    NU_EVENT,
+    NU_SCREEN,
+    NU_PURCHASE,
+    NU_USER,
+    NU_USER_VARIABLES
+};
+
 extern NSString * const COMPLETION_NU_TRACKER_NOTIFICATION_NAME;
 extern NSString * const NU_TRACK_RESPONSE;
 extern NSString * const NU_TRACK_EVENT;

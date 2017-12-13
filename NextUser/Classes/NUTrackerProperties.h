@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
 
-
 @interface NUTrackerProperties : NSObject
 
 @property (nonatomic, readonly) NSString *wid;
