@@ -111,11 +111,13 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     static dispatch_once_t appInitToken;
     dispatch_once(&appInitToken, ^{
         DDLogInfo(@"Did finish launching with options: %@", launchOptions);
-        UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-        if (localNotification && [self isNextUserLocalNotification:localNotification]) {
-            [self handleLocalNotification:localNotification application:application];
+        if (launchOptions != nil) {
+            UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+            if (localNotification && [self isNextUserLocalNotification:localNotification]) {
+                [self handleLocalNotification:localNotification application:application];
+            }
         }
-        
+    
         [[NUTaskManager manager] submitTask: [[NUTrackerInitializationTask alloc] init]];
     });
 }

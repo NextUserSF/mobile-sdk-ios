@@ -39,6 +39,8 @@
 
 -(NUTracker* ) getTracker;
 -(void) inAppMessagesRequested;
+- (void)setLogLevel:(NSString *)logLevel;
+- (NULogLevel)logLevel;
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void)unregisterFCMRegistrationToken:(NSString *) fcmToken;
