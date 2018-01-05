@@ -15,6 +15,7 @@
 #import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
 #import "MF_Base64Additions.h"
+#import "NUDEviceToken.h"
 
 @implementation NUTrackingHTTPRequestHelper
 
@@ -163,6 +164,20 @@
     payload[TRACK_PARAM_SC] = session.sessionCookie;
     payload[TRACK_PARAM_API_KEY] = session.apiKey;
     
+    return payload;
+}
+
++(NSMutableDictionary *) generateDeviceTokenDictionary:(NUDEviceToken *) deviceToken
+{
+    NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+    payload[TRACK_PARAM_TOKEN] = deviceToken.token;
+    payload[TRACK_PARAM_TOKEN_PROVIDER] = deviceToken.provider;
+    
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
+    if (jsonData == nil) {
+        return nil;
+    }
+
     return payload;
 }
 

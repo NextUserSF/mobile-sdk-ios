@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (NSString *) trackPath;
 - (NSString *) trackCollectPath;
 - (NSString *) sessionInitPath;
-- (NSString *) trackDevicePath;
+- (NSString *) deviceTokenPath:(BOOL) isUnsubscribe;
 - (NSString *) iamsRequestPath;
 
 @end

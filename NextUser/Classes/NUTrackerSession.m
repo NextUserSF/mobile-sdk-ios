@@ -10,7 +10,7 @@
 
 #pragma mark - Session Keys
 #define kDeviceCookieSerializationKey @"nu_device_ide"
-#define kKeychainServiceName @"com.nextuser.nextuserkit"
+#define kKeychainServiceName @"nu.ios"
 
 
 #pragma mark - Tracker Session
@@ -93,37 +93,50 @@
 
 -(NSString *)trackPath
 {
-    return [self pathWithAPIName:TRACK_ENDPOINT];
+    return [self trackerPathWithAPIName:TRACK_ENDPOINT];
 }
 
 -(NSString *)trackCollectPath
 {
-    return [self pathWithAPIName:TRACK_COLLECT_ENDPOINT];
+    return [self trackerPathWithAPIName:TRACK_COLLECT_ENDPOINT];
 }
 
 -(NSString *)sessionInitPath
 {
-    return [self pathWithAPIName:SESSION_INIT_ENDPOINT];
+    return [self trackerPathWithAPIName:SESSION_INIT_ENDPOINT];
 }
 
--(NSString *)trackDevicePath
+-(NSString *)deviceTokenPath:(BOOL) isUnsubscribe
 {
-    return [self pathWithAPIName:TRACK_DEVICE_ENDPOINT];
+    NSString *url = isUnsubscribe == YES ?  [self aiPathWithAPIName: UNREGISTER_TOKEN_ENDPOINT] : [self aiPathWithAPIName: REGISTER_TOKEN_ENDPOINT];
+    url = [NSString stringWithFormat:url, [_trackerProperties apiKey], _deviceCookie];
+    
+    return url;
 }
 
 - (NSString *)iamsRequestPath
 {
-    return [self pathWithAPIName:IAMS_REQUEST_ENDPOINT];
+    return [self trackerPathWithAPIName:IAMS_REQUEST_ENDPOINT];
 }
 
-- (NSString *)basePath
+- (NSString *)trackerBasePath
 {
     return _trackerProperties.production_release ? TRACKER_PROD : TRACKER_DEV;
 }
 
-- (NSString *)pathWithAPIName:(NSString *)APIName
+- (NSString *)trackerPathWithAPIName:(NSString *)APIName
 {
-    return [[self basePath] stringByAppendingFormat:@"%@", APIName];
+    return [[self trackerBasePath] stringByAppendingFormat:@"%@", APIName];
+}
+
+- (NSString *)aiBasePath
+{
+    return _trackerProperties.production_release ? AI_PROD : AI_DEV;
+}
+
+- (NSString *)aiPathWithAPIName:(NSString *)APIName
+{
+    return [[self aiBasePath] stringByAppendingFormat:@"%@", APIName];
 }
 
 @end

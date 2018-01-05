@@ -11,6 +11,7 @@
 #import "NUSubscriberDevice.h"
 #import "NUTrackerSession.h"
 #import "NUTask.h"
+#import "NUDeviceToken.h"
 
 #define TRACK_PARAM_NUTMS @"nutm_s"
 #define TRACK_PARAM_NUTMSC @"nutm_sc"
@@ -30,13 +31,18 @@
 #define TRACK_SUBSCRIBER_VARIABLE_PARAM @"sv"
 #define TRACK_SUBSCRIBER_DEVICE_PARAM @"sd"
 #define TRACK_DEVICE_PARAM @"dt"
-#define TRACKER_VERSION @"1.1.0"
+#define TRACKER_VERSION @"1.1.1"
 #define TRACKER_PROD @"https://track.nextuser.com"
 #define TRACKER_DEV @"https://track-dev.nextuser.com"
+#define AI_PROD @"https://ai.nextuser.com"
+#define AI_DEV @"https://ai-dev.nextuser.com"
+#define REGISTER_TOKEN_ENDPOINT @"/%@/%@/register"
+#define UNREGISTER_TOKEN_ENDPOINT @"/%@/%@/unsubscribe"
+#define TRACK_PARAM_TOKEN @"token"
+#define TRACK_PARAM_TOKEN_PROVIDER @"provider"
 #define SESSION_INIT_ENDPOINT @"/sdk.js"
 #define TRACK_ENDPOINT @"/__nutm.gif"
 #define TRACK_COLLECT_ENDPOINT @"/collect"
-#define TRACK_DEVICE_ENDPOINT @"/dt.js"
 #define IAMS_REQUEST_ENDPOINT @"/m_wf.js"
 
 
@@ -52,5 +58,6 @@
 +(NSMutableDictionary *)trackUserDeviceParametersWithVariables:(NUSubscriberDevice *)userDevice;
 +(NSString *) generateTid:(NUTrackerSession *) session;
 +(NSMutableDictionary *) generateCollectDictionary:(NUTaskType) type withObject:(id) trackObject withSession:(NUTrackerSession *) session;
++(NSMutableDictionary *) generateDeviceTokenDictionary:(NUDEviceToken *) deviceToken;
 
 @end

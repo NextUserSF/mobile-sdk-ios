@@ -54,7 +54,7 @@
 
 - (NSString *)apiKey
 {
-    if (!_useGeneratedKey) {
+    if (_useGeneratedKey == NO) {
         return _wid;
     }
     

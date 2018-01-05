@@ -43,7 +43,7 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)trackPurchases:(NSArray *)purchases;
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
-- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken;
+- (void)unregisterFCMRegistrationToken;
 
 @end
 

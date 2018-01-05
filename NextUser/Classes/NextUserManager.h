@@ -43,6 +43,6 @@
 - (NULogLevel)logLevel;
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
-- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken;
+- (void)unregisterFCMRegistrationToken;
 
 @end

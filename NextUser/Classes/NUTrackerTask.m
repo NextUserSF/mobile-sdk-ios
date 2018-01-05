@@ -19,6 +19,7 @@
     switch (type) {
         case SESSION_INITIALIZATION:
         case REQUEST_IN_APP_MESSAGES:
+        case UNREGISTER_DEVICE_TOKENS:
             requestMethod = @"GET";
             break;
         default:
@@ -65,6 +66,14 @@
             queryParameters = [NSMutableDictionary dictionary];
             [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
             break;
+        case REGISTER_DEVICE_TOKEN:
+            path = [session deviceTokenPath:NO];
+            queryParameters = [NUTrackingHTTPRequestHelper generateDeviceTokenDictionary:trackObject];
+            break;
+        case UNREGISTER_DEVICE_TOKENS:
+            path = [session deviceTokenPath:YES];
+            queryParameters = [NSMutableDictionary dictionary];
+            break;
         default:
             path = [NSString stringWithFormat:@"%@?%@=%@", [session trackCollectPath], @"tid", [NUTrackingHTTPRequestHelper generateTid:session]];
             queryParameters = [NUTrackingHTTPRequestHelper generateCollectDictionary:taskType withObject:trackObject withSession:session];
@@ -82,7 +91,16 @@
 {
     if ([requestMethod isEqualToString:@"POST"]) {
         NSMutableURLRequest *postRequest = [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path parameters: nil error:&error];
-        [postRequest setValue:@"text/plain; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+        
+        switch (taskType) {
+            case REGISTER_DEVICE_TOKEN:
+                [postRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                break;
+            default:
+                [postRequest setValue:@"text/plain; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+                break;
+        }
+        
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:queryParameters options:0 error:&error];
         [postRequest setHTTPBody: jsonData];
         

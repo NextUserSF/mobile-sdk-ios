@@ -175,12 +175,12 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken
 {
-    
+    [[NextUserManager sharedInstance] submitFCMRegistrationToken:fcmToken];
 }
 
-- (void)unregisterFCMRegistrationToken:(NSString *) fcmToken
+- (void)unregisterFCMRegistrationToken
 {
-    
+    [[NextUserManager sharedInstance] unregisterFCMRegistrationToken];
 }
 
 @end
