@@ -18,7 +18,7 @@
 #import "NUTrackerInitializationTask.h"
 #import "NUSubscriberDevice.h"
 #import "NUHardwareInfo.h"
-#import "NUDeviceToken.h"
+#import "NURegistrationToken.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
@@ -518,7 +518,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken
 {
-    NUDEviceToken *deviceToken = [[NUDEviceToken alloc] init];
+    NURegistrationToken *deviceToken = [[NURegistrationToken alloc] init];
     deviceToken.token = fcmToken;
     deviceToken.provider = @"google";
     

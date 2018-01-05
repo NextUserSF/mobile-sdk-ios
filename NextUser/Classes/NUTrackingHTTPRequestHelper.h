@@ -11,7 +11,7 @@
 #import "NUSubscriberDevice.h"
 #import "NUTrackerSession.h"
 #import "NUTask.h"
-#import "NUDeviceToken.h"
+#import "NURegistrationToken.h"
 
 #define TRACK_PARAM_NUTMS @"nutm_s"
 #define TRACK_PARAM_NUTMSC @"nutm_sc"
@@ -58,6 +58,6 @@
 +(NSMutableDictionary *)trackUserDeviceParametersWithVariables:(NUSubscriberDevice *)userDevice;
 +(NSString *) generateTid:(NUTrackerSession *) session;
 +(NSMutableDictionary *) generateCollectDictionary:(NUTaskType) type withObject:(id) trackObject withSession:(NUTrackerSession *) session;
-+(NSMutableDictionary *) generateDeviceTokenDictionary:(NUDEviceToken *) deviceToken;
++(NSMutableDictionary *) generateDeviceTokenDictionary:(NURegistrationToken *) deviceToken;
 
 @end
