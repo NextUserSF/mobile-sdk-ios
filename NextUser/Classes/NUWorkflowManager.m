@@ -91,7 +91,7 @@
             [[NextUserManager sharedInstance] inAppMessagesRequested];
             break;
         case TRACK_EVENT:
-            for(NUEvent* event in [taskResponse getTrackObject]) {
+            for(NUEvent* event in taskResponse.trackObject) {
                 [queue addOperation:[self createWorkflowOperationForType:EVENT
                                                                withValue:[event eventName]]];
             }

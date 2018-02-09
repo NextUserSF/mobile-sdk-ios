@@ -164,7 +164,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     switch (taskResponse.taskType) {
         case APPLICATION_INITIALIZATION:
             [self onTrackerInitialization:taskResponse];
-            break;
+            return;
         case SESSION_INITIALIZATION:
             [self onSessionInitialization:taskResponse];
             surfaceType = SESSION_INITIALIZATION;
@@ -175,6 +175,12 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         case TRACK_PURCHASE:
         case TRACK_SCREEN:
             surfaceType = taskResponse.taskType;
+            [self checkNetworkError: taskResponse];
+            break;
+        case REGISTER_DEVICE_TOKEN:
+        case UNREGISTER_DEVICE_TOKENS:
+            [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue:[taskResponse successfull]];
+            [self checkNetworkError: taskResponse];
             break;
         default:
             break;
@@ -191,11 +197,22 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     }
 }
 
+- (void) checkNetworkError: (NUTrackResponse *) response
+{
+    if ([response successfull] == NO) {
+        NSInteger errorCode = [response.error code];
+        if (errorCode == -1009 || errorCode == -1005 || errorCode == -1001) {
+            [self queueTrackObject:response.trackObject withType:response.type];
+        }
+    }
+}
+
 -(void)onTrackerInitialization:(NUTrackerInitializationResponse *) response
 {
     if ([response successfull]) {
         session = response.session;
         [self setLogLevel: [session logLevel]];
+        initializationFailed = NO;
         [self requestSession];
     } else {
         initializationFailed = YES;
@@ -216,9 +233,12 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         if (![session sessionCookie]) {
             [session setSessionState: Failed];
             DDLogError(@"Setup tracker error: %@", @"Server Error.");
+            initializationFailed = YES;
             
             return;
         }
+        
+        initializationFailed = NO;
         
         [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
         [session setInstantWorkflows: responseDict[kInstantWorkflowsJSONKey]];
@@ -230,8 +250,9 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             [self initInAppMsgSessionManagers];
         } else {
             inAppMessagesRequested = YES;
-            [self sendPendingTrackRequests];
         }
+        
+        [self sendPendingTrackRequests];
         
     } else {
         DDLogError(@"Setup tracker error: %@", response.error);
@@ -267,7 +288,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void) initInAppMsgSessionManagers
 {
-
     if (inAppMessageCacheManager == nil) {
         inAppMessageCacheManager = [InAppMsgCacheManager initWithCache:[[NUCache alloc] init]];
     }
@@ -298,7 +318,13 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 -(void)reachabilityChanged: (NSNotification*) notification
 {
     if(reachability.currentReachabilityStatus != NotReachable) {
-        [self requestSession];
+        if ([self validTracker] == NO) {
+            [self requestSession];
+            
+            return;
+        }
+        
+        [self sendPendingTrackRequests];
     }
 }
 
@@ -308,7 +334,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         return NO;
     }
     
-    if (![self validTracker] || !inAppMessagesRequested) {
+    if (![self validTracker] || !inAppMessagesRequested || reachability.currentReachabilityStatus == NotReachable) {
         DDLogWarn(@"Cannot sendTrackTask, session or network connection not available...");
         [self queueTrackObject:trackObject withType:taskType];
         
@@ -324,7 +350,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     NUTaskManager *manager = [NUTaskManager manager];
     [manager submitTask:trackTask];
-
 }
 
 -(BOOL)validTracker
@@ -334,7 +359,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)queueTrackObject:(id)trackObject withType:(NUTaskType) taskType
 {
-    if (pendingTrackRequests.count > 10) {
+    if (pendingTrackRequests.count > 100) {
         return;
     }
     
@@ -522,12 +547,26 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     deviceToken.token = fcmToken;
     deviceToken.provider = @"google";
     
-    [self track:deviceToken withType:REGISTER_DEVICE_TOKEN];
+    if (session.trackerProperties.notifications == NO) {
+        return;
+    }
+    
+    NSString *persistedUserToken = [session readStringValueForKey: USER_TOKEN_KEY];
+    BOOL tokenSubmitted = [session readBoolValueForKey:USER_TOKEN_SUBMITTED_KEY];
+    
+    if (persistedUserToken != nil && [persistedUserToken isEqualToString:fcmToken] && tokenSubmitted == YES) {
+        return;
+    }
+    
+    [session writeForKey:USER_TOKEN_KEY stringValue:fcmToken];
+    [self trackWithObject:deviceToken withType:REGISTER_DEVICE_TOKEN];
 }
 
 - (void)unregisterFCMRegistrationToken
 {
-    [self track:nil withType:UNREGISTER_DEVICE_TOKENS];
+    [session writeForKey:USER_TOKEN_KEY stringValue: nil];
+    [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue: NO];
+    [self trackWithObject:nil withType:UNREGISTER_DEVICE_TOKENS];
 }
 
 -(void)requestLocationPersmissions
@@ -565,16 +604,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         }
     }
 }
-
-#pragma mark - <UINavigationControllerDelegate>
-
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    
-    if (viewController != nil && [viewController restorationIdentifier] != nil) {
-        [self trackWithObject:[viewController restorationIdentifier] withType:TRACK_SCREEN];
-    }
-}
-
 
 #pragma mark - Notification Permissions
 

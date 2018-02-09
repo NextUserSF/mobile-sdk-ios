@@ -14,6 +14,7 @@
 #import "NUInAppMsgImageManager.h"
 #import "NUInAppMsgUIManager.h"
 #import "NUTracker.h"
+#import "NUTrackerTask.h"
 
 #define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
 #define kPushMessageContentURLKey @"nu_content_url"

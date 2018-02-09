@@ -44,4 +44,10 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (NSString *) deviceTokenPath:(BOOL) isUnsubscribe;
 - (NSString *) iamsRequestPath;
 
+- (BOOL) readBoolValueForKey: (NSString *) key;
+- (NSString *) readStringValueForKey: (NSString *) key;
+
+- (BOOL) writeForKey: (NSString *) key boolValue: (BOOL) value;
+- (BOOL) writeForKey: (NSString *) key stringValue: (NSString *) value;
+
 @end

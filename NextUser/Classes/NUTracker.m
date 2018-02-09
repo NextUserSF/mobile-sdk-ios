@@ -17,6 +17,7 @@
 #import "NULogLevel.h"
 #import "NUTaskManager.h"
 #import "NUTrackerInitializationTask.h"
+#import "NUTask.h"
 
 
 @implementation NUTracker
@@ -66,7 +67,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     
     [self setUser:user];
     DDLogInfo(@"Tracking user with identifier: %@", user.userIdentifier);
-    [[NextUserManager sharedInstance] trackWithObject:user withType:(TRACK_USER)];
+    [self trackObject:user withType:TRACK_USER];
 }
 
 - (void)trackUserVariables:(NUUserVariables *)userVariables
@@ -76,9 +77,8 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
         return;
     }
     
-    
     DDLogInfo(@"Tracking userVariables");
-    [[NextUserManager sharedInstance] trackWithObject:userVariables withType:(TRACK_USER_VARIABLES)];
+    [self trackObject:userVariables withType:TRACK_USER_VARIABLES];
 }
 
 - (void)setUser:(NUUser *)user
@@ -107,7 +107,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
     
     DDLogInfo(@"Track screen with name: %@", screenName);
-    [[NextUserManager sharedInstance] trackWithObject:screenName withType:TRACK_SCREEN];
+    [self trackObject:screenName withType:TRACK_SCREEN];
 }
 
 - (void)trackEvent:(NUEvent *)event
@@ -118,7 +118,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
     
     DDLogInfo(@"Track event: %@", event.eventName);
-    [[NextUserManager sharedInstance] trackWithObject:@[event] withType:TRACK_EVENT];
+    [self trackObject:@[event] withType:TRACK_EVENT];
 }
 - (void)trackEvents:(NSArray<NUEvent *> *)events
 {
@@ -128,7 +128,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
     
     DDLogInfo(@"Track events: %@", events);
-    [[NextUserManager sharedInstance] trackWithObject:events withType:TRACK_EVENT];
+    [self trackObject:events withType:TRACK_EVENT];
 }
 
 - (void)trackPurchase:(NUPurchase *)purchase
@@ -139,7 +139,7 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
         
     DDLogInfo(@"Track purchase: %@", purchase);
-    [[NextUserManager sharedInstance] trackWithObject:@[purchase] withType:TRACK_PURCHASE];
+    [self trackObject:@[purchase] withType:TRACK_PURCHASE];
 }
 
 - (void)trackPurchases:(NSArray *)purchases
@@ -150,7 +150,12 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     }
     
     DDLogInfo(@"Track purchases: %@", purchases);
-    [[NextUserManager sharedInstance] trackWithObject:purchases withType:TRACK_PURCHASE];
+    [self trackObject:purchases withType:TRACK_PURCHASE];
+}
+
+- (void) trackObject:(id) trackObject withType:(NUTaskType) type
+{
+    [[NextUserManager sharedInstance] trackWithObject:trackObject withType:type];
 }
 
 + (void)releaseSharedInstance

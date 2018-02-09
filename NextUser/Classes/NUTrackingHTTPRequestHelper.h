@@ -44,7 +44,8 @@
 #define TRACK_ENDPOINT @"/__nutm.gif"
 #define TRACK_COLLECT_ENDPOINT @"/collect"
 #define IAMS_REQUEST_ENDPOINT @"/m_wf.js"
-
+#define USER_TOKEN_KEY @"user_token_key"
+#define USER_TOKEN_SUBMITTED_KEY @"user_token_submitted_key"
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 

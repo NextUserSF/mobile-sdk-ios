@@ -8,6 +8,7 @@
 @property (nonatomic, readonly) NSString *log_level;
 @property (nonatomic, readonly) BOOL useGeneratedKey;
 @property (nonatomic, readonly) BOOL valid;
+@property (nonatomic, readonly) BOOL notifications;
 
 + (instancetype)properties;
 

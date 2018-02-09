@@ -14,9 +14,8 @@
 @interface NUHttpResponse : NUConcurrentOperationResponse
 
 @property (nonatomic) long      responseCode;
-@property (nonatomic) NSError*  error;
-@property (nonatomic) NSData*   reponseData;
-
+@property (nonatomic) NSError  *error;
+@property (nonatomic) NSData  *reponseData;
 
 @end
 

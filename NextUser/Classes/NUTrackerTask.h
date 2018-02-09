@@ -22,12 +22,10 @@
 @end
 
 @interface NUTrackResponse : NUHttpResponse
-{
-    id trackObject;
-}
+
+@property (nonatomic) id trackObject;
+@property (nonatomic) NUTaskType type;
 
 - (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj;
-
-- (id) getTrackObject;
 
 @end

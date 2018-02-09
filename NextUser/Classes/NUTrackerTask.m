@@ -49,8 +49,9 @@
     }
     
     responseInstance = [super execute:responseInstance];
+    NUTrackResponse *response = (NUTrackResponse *) responseInstance;
     
-    return responseInstance;
+    return response;
 }
 
 -(NSError *) setupRequestData
@@ -117,15 +118,11 @@
 - (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj
 {
     if (self = [self initWithType:type shouldNotifyListeners:YES]) {
-        trackObject = trackObj;
+        self.trackObject = trackObj;
+        self.type = type;
     }
     
     return self;
-}
-
-- (id) getTrackObject
-{
-    return trackObject;
 }
 
 @end

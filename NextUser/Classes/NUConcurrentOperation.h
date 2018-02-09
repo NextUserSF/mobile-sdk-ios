@@ -30,6 +30,6 @@
     id<NUTaskResponse> taskResponse;
 }
 
--(id<NUTaskResponse>) getTaskResponse;
+- (id<NUTaskResponse>) getTaskResponse;
 
 @end

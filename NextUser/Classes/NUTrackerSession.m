@@ -15,6 +15,9 @@
 
 #pragma mark - Tracker Session
 @implementation NUTrackerSession
+{
+    NSUserDefaults *preferences;
+}
 
 
 - (id)initWithProperties:(NUTrackerProperties *) properties
@@ -25,6 +28,7 @@
         _requestInAppMessages = NO;
         _deviceCookie = [self serializedDeviceCookie];
         [SAMKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
+        preferences = [NSUserDefaults standardUserDefaults];
     }
     
     return self;
@@ -137,6 +141,30 @@
 - (NSString *)aiPathWithAPIName:(NSString *)APIName
 {
     return [[self aiBasePath] stringByAppendingFormat:@"%@", APIName];
+}
+
+- (BOOL) readBoolValueForKey: (NSString *) key
+{
+    return [preferences objectForKey:key] == nil ? NO : [preferences boolForKey:key];
+}
+
+- (NSString *) readStringValueForKey: (NSString *) key
+{
+    return [preferences objectForKey:key] == nil ? nil : [preferences stringForKey:key];
+}
+
+- (BOOL) writeForKey: (NSString *) key boolValue: (BOOL) value
+{
+    [preferences setBool:value forKey:key];
+    
+    return [preferences synchronize];
+}
+
+- (BOOL) writeForKey: (NSString *) key stringValue: (NSString *) value
+{
+    [preferences setValue:key forKey:key];
+    
+    return [preferences synchronize];
 }
 
 @end
