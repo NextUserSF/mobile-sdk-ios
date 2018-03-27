@@ -29,7 +29,7 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
-- (void)requestDefaultPermissions;
+- (void)requestNotificationsPermissions;
 - (void)requestLocationPersmissions;
 
 - (void)trackUser:(NUUser *)user;
@@ -44,6 +44,7 @@ extern NSString * const NU_TRACK_EVENT;
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void)unregisterFCMRegistrationToken;
+- (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo;
 
 @end
 

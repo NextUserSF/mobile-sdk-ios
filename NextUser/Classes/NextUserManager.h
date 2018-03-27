@@ -1,5 +1,6 @@
 
 #import <Foundation/Foundation.h>
+
 #import "NUTask.h"
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
@@ -30,6 +31,7 @@
 -(void)unsubscribeFromAppStateNotifications;
 -(void)scheduleLocalNotificationForMessage:(NUPushMessage *)message;
 -(void)requestLocationPersmissions;
+-(void)requestNotificationsPermissions;
 -(BOOL)isNextUserLocalNotification:(UILocalNotification *)note;
 -(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
 -(NUTrackerSession *) getSession;
@@ -45,5 +47,6 @@
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void)unregisterFCMRegistrationToken;
+- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
 
 @end

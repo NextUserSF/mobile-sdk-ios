@@ -48,9 +48,16 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 
 #pragma mark -
 
-- (void)requestDefaultPermissions
+- (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    [self requestLocationPersmissions];
+    [[NextUserManager sharedInstance] didReceiveRemoteNotification:userInfo];
+    
+    return UIBackgroundFetchResultNewData;
+}
+
+- (void)requestNotificationsPermissions
+{
+     [[NextUserManager sharedInstance] requestNotificationsPermissions];
 }
 
 - (void)requestLocationPersmissions

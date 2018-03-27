@@ -24,6 +24,20 @@
 #define kSessionCookieJSONKey @"session_cookie"
 #define kInstantWorkflowsJSONKey @"instant_workflows"
 
+// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
+#ifndef NSFoundationVersionNumber_iOS_9_x_Max
+#define NSFoundationVersionNumber_iOS_9_x_Max 1299
+#endif
+
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+@import UserNotifications;
+#endif
+
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+@interface NextUserManager () <UNUserNotificationCenterDelegate>
+@end
+#endif
+
 @interface PendingTask : NSObject
 @property (nonatomic) id trackingObject;
 @property (nonatomic) NUTaskType taskType;
@@ -569,6 +583,89 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     [self trackWithObject:nil withType:UNREGISTER_DEVICE_TOKENS];
 }
 
+-(void)requestNotificationsPermissions
+{
+    //Register for remote notifications
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+        // iOS 7.1 or earlier. Disable the deprecation warnings.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        UIRemoteNotificationType allNotificationTypes =
+        (UIRemoteNotificationTypeSound |
+         UIRemoteNotificationTypeAlert |
+         UIRemoteNotificationTypeBadge);
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:allNotificationTypes];
+#pragma clang diagnostic pop
+    } else {
+        //iOS 8 or later
+        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber10_0) {
+            UIUserNotificationType allNotificationTypes =
+            (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+            UIUserNotificationSettings *settings =
+            [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        } else if (@available(iOS 10.0, *)) {
+            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+            UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+            
+            UNNotificationCategory* nextuserCategory = [UNNotificationCategory
+                                                       categoryWithIdentifier:@"NextUser"
+                                                       actions:@[]
+                                                       intentIdentifiers:@[]
+                                                       options:UNNotificationCategoryOptionCustomDismissAction];
+            
+            // Register the notification categories.
+            
+            [center setNotificationCategories:[NSSet setWithObjects:nextuserCategory, nil]];
+            UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNAuthorizationOptionCarPlay;
+            [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted,
+                                                                                                                                  NSError * _Nullable error) {
+                if (granted == YES) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[UIApplication sharedApplication] registerForRemoteNotifications];
+                    });
+                }
+            }];
+        }
+    }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler NS_AVAILABLE_IOS(10.0) {
+    
+    NSLog(@"willPresentNotification %@", notification);
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response
+           withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0) {
+    
+    DDLogInfo(@"didReceiveNotificationResponse %@", response);
+    //NSDictionary *userInfo = [[[[response notification] request] content] userInfo];
+    //grab tracking actions
+    
+    if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
+        // The user dismissed the notification without taking action.
+        //track dismiss
+        DDLogInfo(@"The user dismissed the notification without taking action %@", response);
+    }
+    else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+        // The user launched the app.
+        //track clicked
+        DDLogInfo(@"The user launched the app %@", response);
+    }
+    
+    // Else handle any custom actions. . .
+    completionHandler();
+}
+
+- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    //track delivered
+}
+
 -(void)requestLocationPersmissions
 {
     [wakeUpManager requestLocationUsageAuthorization];
@@ -603,18 +700,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:YES];
         }
     }
-}
-
-#pragma mark - Notification Permissions
-
-- (UIUserNotificationSettings *)userNotificationSettingsForNotificationTypes:(UIUserNotificationType)types
-{
-    return [UIUserNotificationSettings settingsForTypes:types categories:nil];
-}
-
-- (UIUserNotificationType)allNotificationTypes
-{
-    return  UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 }
 
 @end
