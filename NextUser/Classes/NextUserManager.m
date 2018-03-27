@@ -643,27 +643,53 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
            withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0) {
     
     DDLogInfo(@"didReceiveNotificationResponse %@", response);
-    //NSDictionary *userInfo = [[[[response notification] request] content] userInfo];
-    //grab tracking actions
+    NSDictionary *userInfo = [[[[response notification] request] content] userInfo];
+    NSArray *eventsArray = nil;
     
     if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
-        // The user dismissed the notification without taking action.
         //track dismiss
+        eventsArray = userInfo[@"acme_dismissed"];
         DDLogInfo(@"The user dismissed the notification without taking action %@", response);
     }
     else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
-        // The user launched the app.
         //track clicked
+        eventsArray = userInfo[@"acme_clicked"];
         DDLogInfo(@"The user launched the app %@", response);
     }
     
-    // Else handle any custom actions. . .
+    if (eventsArray != nil) {
+        NSMutableArray<NUEvent *> * trackEvents = [self extractTrackingEvent:eventsArray];
+        [self track:trackEvents withType:TRACK_EVENT];
+    }
+
     completionHandler();
+}
+
+-(NSMutableArray<NUEvent *> *) extractTrackingEvent:(NSArray *) eventsArray
+{
+    NSMutableArray<NUEvent * >* events = nil;
+    if (eventsArray != nil)
+    {
+        events = [[NSMutableArray alloc] init];
+        for(id nextEventDict in eventsArray)
+        {
+            NSString *eventName = [nextEventDict objectForKey:@"eventName"];
+            NSMutableArray *parameters = [nextEventDict objectForKey:@"parameters"];
+            NUEvent *event = [NUEvent eventWithName:eventName andParameters:parameters];
+            [events addObject:event];
+        }
+    }
+    
+    return events;
 }
 
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
+    DDLogInfo(@"Notification devilvered %@", userInfo);
     //track delivered
+    NSArray *eventsArray = [userInfo objectForKey:@"acme_delivered"];
+    NSMutableArray<NUEvent *> * trackEvents = [self extractTrackingEvent:eventsArray];
+    [self track:trackEvents withType:TRACK_EVENT];
 }
 
 -(void)requestLocationPersmissions

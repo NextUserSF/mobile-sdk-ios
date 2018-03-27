@@ -48,5 +48,6 @@
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void)unregisterFCMRegistrationToken;
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
+-(NSMutableArray<NUEvent *> *) extractTrackingEvent:(NSArray *) eventJSON;
 
 @end

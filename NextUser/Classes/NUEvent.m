@@ -141,7 +141,7 @@
     NSMutableString *parametersString = [NSMutableString stringWithString:@""];
     
     // max 10 parameters are allowed
-    if (actionParameters.count > 10) {
+    if (actionParameters.count > 11) {
         actionParameters = [actionParameters subarrayWithRange:NSMakeRange(0, 10)];
     }
     
