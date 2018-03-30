@@ -18,25 +18,13 @@
 #import "NUTrackerInitializationTask.h"
 #import "NUSubscriberDevice.h"
 #import "NUHardwareInfo.h"
-#import "NURegistrationToken.h"
+
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
 #define kInstantWorkflowsJSONKey @"instant_workflows"
 
-// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
-#ifndef NSFoundationVersionNumber_iOS_9_x_Max
-#define NSFoundationVersionNumber_iOS_9_x_Max 1299
-#endif
 
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@import UserNotifications;
-#endif
-
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@interface NextUserManager () <UNUserNotificationCenterDelegate>
-@end
-#endif
 
 @interface PendingTask : NSObject
 @property (nonatomic) id trackingObject;
@@ -57,12 +45,14 @@
     InAppMsgCacheManager* inAppMessageCacheManager;
     InAppMsgUIManager* inAppMsgUIManager;
     InAppMsgImageManager* inAppMsgImageManager;
+    NUPushNotificationsManager *notificationsManager;
     NSMutableArray *pendingTrackRequests;
     NSLock *sessionRequestLock;
     BOOL disabled;
     BOOL initializationFailed;
     BOOL subscribedToAppStatusNotifications;
     BOOL inAppMessagesRequested;
+    
 }
 
 -(void) trackSubscriberDevice;
@@ -97,22 +87,18 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     if (self) {
         pendingTrackRequests = [NSMutableArray array];
         tracker = [[NUTracker alloc] init];
+        notificationsManager = [[NUPushNotificationsManager alloc] init];
         initializationFailed = NO;
         inAppMessagesRequested = NO;
         disabled = NO;
-        wakeUpManager = [NUAppWakeUpManager manager];
-        wakeUpManager.delegate = self;
         sessionRequestLock = [[NSLock alloc] init];
         [self subscribeToAppStateNotificationsOnce];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveTaskManagerNotification:)
                                                      name:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-        
-        
         
         reachability = [Reachability reachabilityForInternetConnection];
         [reachability startNotifier];
@@ -128,8 +114,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         DDLogInfo(@"Did finish launching with options: %@", launchOptions);
         if (launchOptions != nil) {
             UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-            if (localNotification && [self isNextUserLocalNotification:localNotification]) {
-                [self handleLocalNotification:localNotification application:application];
+            if (localNotification && [NUPushNotificationsManager isNextUserLocalNotification:localNotification]) {
+                [notificationsManager handleLocalNotification:localNotification application:application];
             }
         }
     
@@ -145,6 +131,11 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 -(NUTrackerSession *) getSession
 {
     return session;
+}
+
+- (NUPushNotificationsManager *) getNotificationsManager
+{
+    return notificationsManager;
 }
 
 -(WorkflowManager *) workflowManager
@@ -322,7 +313,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     }
 }
 
-
 -(void)track:(id)trackObject withType:(NUTaskType) taskType
 {
     NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:taskType withTrackObject:trackObject withSession:session];
@@ -436,8 +426,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         level = DDLogLevelOff;
     }
     
-    
-    
     [NUDDLog setLogLevel:level];
 }
 
@@ -480,11 +468,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     }
 }
 
-- (void)unsubscribeFromAppStateNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
 {
 
@@ -499,233 +482,4 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
 
 }
-
-- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)(void))completion
-{
-    // fetch missed messages (history)
-    // schedule local notes
-    // call completion
-    
-    NSLog(@"Did wake up application");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSString *text = [NSString stringWithFormat:@"AS: %@, BG time: %@", @([[UIApplication sharedApplication] applicationState]), @([[UIApplication sharedApplication] backgroundTimeRemaining])];
-        
-        UILocalNotification *note = [[UILocalNotification alloc] init];
-        note.timeZone = [NSTimeZone defaultTimeZone];
-        note.alertBody = text;
-        note.fireDate = [NSDate dateWithTimeIntervalSinceNow:5];
-        
-        [[UIApplication sharedApplication] presentLocalNotificationNow:note];
-        
-        completion();
-    });
-}
-
-#pragma mark - Push Message Service Delegate
-
-- (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
-{
-    // TODO: figure out scheduling logic. Schedule all messages or skip some of them if they are overlapping.
-    for (NUPushMessage *message in messages) {
-        [self scheduleLocalNotificationForMessage:message];
-    }
-}
-
-- (void)scheduleLocalNotificationForMessage:(NUPushMessage *)message
-{
-    DDLogInfo(@"Schedule local note for message: %@", message);
-    UILocalNotification *note = [self localNotificationFromPushMessage:message];
-    [[UIApplication sharedApplication] scheduleLocalNotification:note];
-}
-
-- (UILocalNotification *)localNotificationFromPushMessage:(NUPushMessage *)message
-{
-    UILocalNotification *note = [[UILocalNotification alloc] init];
-    note.timeZone = [NSTimeZone defaultTimeZone];
-    note.alertBody = message.messageText;
-    note.fireDate = message.fireDate;
-    
-    NSData *UIThemeData = [NSKeyedArchiver archivedDataWithRootObject:message.UITheme];
-    
-    NSDictionary *userInfo = @{kPushMessageLocalNoteTypeKey : @YES,
-                               kPushMessageContentURLKey : message.contentURL.absoluteString,
-                               kPushMessageUIThemeDataKey : UIThemeData};
-    note.userInfo = userInfo;
-    
-    return note;
-}
-
-- (void)submitFCMRegistrationToken:(NSString *) fcmToken
-{
-    NURegistrationToken *deviceToken = [[NURegistrationToken alloc] init];
-    deviceToken.token = fcmToken;
-    deviceToken.provider = @"google";
-    
-    if (session.trackerProperties.notifications == NO) {
-        return;
-    }
-    
-    NSString *persistedUserToken = [session readStringValueForKey: USER_TOKEN_KEY];
-    BOOL tokenSubmitted = [session readBoolValueForKey:USER_TOKEN_SUBMITTED_KEY];
-    
-    if (persistedUserToken != nil && [persistedUserToken isEqualToString:fcmToken] && tokenSubmitted == YES) {
-        return;
-    }
-    
-    [session writeForKey:USER_TOKEN_KEY stringValue:fcmToken];
-    [self trackWithObject:deviceToken withType:REGISTER_DEVICE_TOKEN];
-}
-
-- (void)unregisterFCMRegistrationToken
-{
-    [session writeForKey:USER_TOKEN_KEY stringValue: nil];
-    [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue: NO];
-    [self trackWithObject:nil withType:UNREGISTER_DEVICE_TOKENS];
-}
-
--(void)requestNotificationsPermissions
-{
-    //Register for remote notifications
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
-        // iOS 7.1 or earlier. Disable the deprecation warnings.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        UIRemoteNotificationType allNotificationTypes =
-        (UIRemoteNotificationTypeSound |
-         UIRemoteNotificationTypeAlert |
-         UIRemoteNotificationTypeBadge);
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:allNotificationTypes];
-#pragma clang diagnostic pop
-    } else {
-        //iOS 8 or later
-        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber10_0) {
-            UIUserNotificationType allNotificationTypes =
-            (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-            UIUserNotificationSettings *settings =
-            [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-        } else if (@available(iOS 10.0, *)) {
-            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-            UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-            
-            UNNotificationCategory* nextuserCategory = [UNNotificationCategory
-                                                       categoryWithIdentifier:@"NextUser"
-                                                       actions:@[]
-                                                       intentIdentifiers:@[]
-                                                       options:UNNotificationCategoryOptionCustomDismissAction];
-            
-            // Register the notification categories.
-            
-            [center setNotificationCategories:[NSSet setWithObjects:nextuserCategory, nil]];
-            UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNAuthorizationOptionCarPlay;
-            [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted,
-                                                                                                                                  NSError * _Nullable error) {
-                if (granted == YES) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[UIApplication sharedApplication] registerForRemoteNotifications];
-                    });
-                }
-            }];
-        }
-    }
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler NS_AVAILABLE_IOS(10.0) {
-    
-    NSLog(@"willPresentNotification %@", notification);
-    completionHandler(UNNotificationPresentationOptionAlert);
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response
-           withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0) {
-    
-    DDLogInfo(@"didReceiveNotificationResponse %@", response);
-    NSDictionary *userInfo = [[[[response notification] request] content] userInfo];
-    NSArray *eventsArray = nil;
-    
-    if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
-        //track dismiss
-        eventsArray = userInfo[@"acme_dismissed"];
-        DDLogInfo(@"The user dismissed the notification without taking action %@", response);
-    }
-    else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
-        //track clicked
-        eventsArray = userInfo[@"acme_clicked"];
-        DDLogInfo(@"The user launched the app %@", response);
-    }
-    
-    if (eventsArray != nil) {
-        NSMutableArray<NUEvent *> * trackEvents = [self extractTrackingEvent:eventsArray];
-        [self track:trackEvents withType:TRACK_EVENT];
-    }
-
-    completionHandler();
-}
-
--(NSMutableArray<NUEvent *> *) extractTrackingEvent:(NSArray *) eventsArray
-{
-    NSMutableArray<NUEvent * >* events = nil;
-    if (eventsArray != nil)
-    {
-        events = [[NSMutableArray alloc] init];
-        for(id nextEventDict in eventsArray)
-        {
-            NSString *eventName = [nextEventDict objectForKey:@"eventName"];
-            NSMutableArray *parameters = [nextEventDict objectForKey:@"parameters"];
-            NUEvent *event = [NUEvent eventWithName:eventName andParameters:parameters];
-            [events addObject:event];
-        }
-    }
-    
-    return events;
-}
-
-- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    DDLogInfo(@"Notification devilvered %@", userInfo);
-    //track delivered
-    NSArray *eventsArray = [userInfo objectForKey:@"acme_delivered"];
-    NSMutableArray<NUEvent *> * trackEvents = [self extractTrackingEvent:eventsArray];
-    [self track:trackEvents withType:TRACK_EVENT];
-}
-
--(void)requestLocationPersmissions
-{
-    [wakeUpManager requestLocationUsageAuthorization];
-}
-
-- (NUPushMessage *)pushMessageFromLocalNotification:(UILocalNotification *)notification
-{
-    NUPushMessage *message = [[NUPushMessage alloc] init];
-    message.messageText = notification.alertBody;
-    message.contentURL = [NSURL URLWithString:notification.userInfo[kPushMessageContentURLKey]];
-    message.UITheme = [NSKeyedUnarchiver unarchiveObjectWithData:notification.userInfo[kPushMessageUIThemeDataKey]];
-    
-    return message;
-}
-
-- (BOOL)isNextUserLocalNotification:(UILocalNotification *)note
-{
-    return note.userInfo[kPushMessageLocalNoteTypeKey] != nil;
-}
-
-- (void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application
-{
-    if ([self isNextUserLocalNotification:notification]) {
-        
-        DDLogInfo(@"Handle local notification. App state: %@", @(application.applicationState));
-        NUPushMessage *message = [self pushMessageFromLocalNotification:notification];
-        
-        if (application.applicationState == UIApplicationStateActive) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:NO];
-        } else if (application.applicationState == UIApplicationStateInactive ||
-                   application.applicationState == UIApplicationStateBackground) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:YES];
-        }
-    }
-}
-
 @end

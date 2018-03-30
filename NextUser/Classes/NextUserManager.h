@@ -6,7 +6,7 @@
 #import "NUTrackingHTTPRequestHelper.h"
 #import "Reachability.h"
 #import "NUAppWakeUpManager.h"
-#import "NUPushMessageService.h"
+
 #import "NUPushMessage.h"
 #import "NUIAMUITheme.h"
 #import "NUInAppMessageManager.h"
@@ -16,38 +16,26 @@
 #import "NUInAppMsgUIManager.h"
 #import "NUTracker.h"
 #import "NUTrackerTask.h"
+#import "NUPushNotificationsManager.h"
 
-#define kPushMessageLocalNoteTypeKey @"nu_local_note_type"
-#define kPushMessageContentURLKey @"nu_content_url"
-#define kPushMessageUIThemeDataKey @"nu_ui_theme_data"
-
-@interface NextUserManager : NSObject <NUAppWakeUpManagerDelegate, NUPushMessageServiceDelegate>
+@interface NextUserManager : NSObject
 
 + (instancetype) sharedInstance;
 
--(void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
--(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType;
--(void)refreshPendingRequests;
--(void)unsubscribeFromAppStateNotifications;
--(void)scheduleLocalNotificationForMessage:(NUPushMessage *)message;
--(void)requestLocationPersmissions;
--(void)requestNotificationsPermissions;
--(BOOL)isNextUserLocalNotification:(UILocalNotification *)note;
--(void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application;
--(NUTrackerSession *) getSession;
--(WorkflowManager *) workflowManager;
--(InAppMsgCacheManager *) inAppMsgCacheManager;
--(InAppMsgImageManager *) inAppMsgImageManager;
--(InAppMsgUIManager *) inAppMsgUIManager;
+- (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
+- (BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType;
+- (void)refreshPendingRequests;
 
--(NUTracker* ) getTracker;
--(void) inAppMessagesRequested;
+- (NUTrackerSession *) getSession;
+- (NUPushNotificationsManager *) getNotificationsManager;
+- (WorkflowManager *) workflowManager;
+- (InAppMsgCacheManager *) inAppMsgCacheManager;
+- (InAppMsgImageManager *) inAppMsgImageManager;
+- (InAppMsgUIManager *) inAppMsgUIManager;
+
+- (NUTracker* ) getTracker;
+- (void) inAppMessagesRequested;
 - (void)setLogLevel:(NSString *)logLevel;
 - (NULogLevel)logLevel;
-
-- (void)submitFCMRegistrationToken:(NSString *) fcmToken;
-- (void)unregisterFCMRegistrationToken;
-- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
--(NSMutableArray<NUEvent *> *) extractTrackingEvent:(NSArray *) eventJSON;
 
 @end

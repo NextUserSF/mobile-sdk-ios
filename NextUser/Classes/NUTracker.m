@@ -35,14 +35,14 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NextUserManager sharedInstance] unsubscribeFromAppStateNotifications];
+    [[[NextUserManager sharedInstance] getNotificationsManager] unsubscribeFromAppStateNotifications];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
-    if ([[NextUserManager sharedInstance] isNextUserLocalNotification:notification]) {
-        [[NextUserManager sharedInstance] handleLocalNotification:notification application:application];
+    if ([NUPushNotificationsManager isNextUserLocalNotification:notification]) {
+        [[[NextUserManager sharedInstance] getNotificationsManager] handleLocalNotification:notification application:application];
     }
 }
 
@@ -50,19 +50,17 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 
 - (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    [[NextUserManager sharedInstance] didReceiveRemoteNotification:userInfo];
-    
-    return UIBackgroundFetchResultNewData;
+    return [[[NextUserManager sharedInstance] getNotificationsManager] didReceiveRemoteNotification:userInfo];
 }
 
 - (void)requestNotificationsPermissions
 {
-     [[NextUserManager sharedInstance] requestNotificationsPermissions];
+     [[[NextUserManager sharedInstance] getNotificationsManager] requestNotificationsPermissions];
 }
 
 - (void)requestLocationPersmissions
 {
-   [[NextUserManager sharedInstance] requestLocationPersmissions];
+   [[[NextUserManager sharedInstance] getNotificationsManager] requestLocationPersmissions];
 }
 
 - (void)trackUser:(NUUser *)user
@@ -182,17 +180,17 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     message.UITheme = [NUIAMUITheme defautTheme];
     message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
     
-    [[NextUserManager sharedInstance] scheduleLocalNotificationForMessage:message];
+    [[[NextUserManager sharedInstance] getNotificationsManager] scheduleLocalNotificationForMessage:message];
 }
 
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken
 {
-    [[NextUserManager sharedInstance] submitFCMRegistrationToken:fcmToken];
+    [[[NextUserManager sharedInstance] getNotificationsManager] submitFCMRegistrationToken:fcmToken];
 }
 
 - (void)unregisterFCMRegistrationToken
 {
-    [[NextUserManager sharedInstance] unregisterFCMRegistrationToken];
+    [[[NextUserManager sharedInstance] getNotificationsManager] unregisterFCMRegistrationToken];
 }
 
 @end
