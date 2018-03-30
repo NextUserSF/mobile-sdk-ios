@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     'NextUser' => ['NextUser/Assets/*.png']
   }
 
-  s.framework = 'SystemConfiguration'
+  s.frameworks = 'SystemConfiguration', 'UserNotifications', 'UserNotificationUI'
 
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking', '~> 3.0'

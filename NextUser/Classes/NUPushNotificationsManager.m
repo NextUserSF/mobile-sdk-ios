@@ -1,7 +1,6 @@
 #import "NUPushNotificationsManager.h"
 #import "NextUserManager.h"
 
-@import UserNotifications;
 
 @interface NUPushNotificationsManager() <UNUserNotificationCenterDelegate>
 {
@@ -88,9 +87,8 @@
 -(void)requestNotificationsPermissions
 {
     if (@available(iOS 10.0, *)) {
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
         UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-        
+
         UNNotificationCategory* nextuserCategory = [UNNotificationCategory
                                                     categoryWithIdentifier:@"NextUser"
                                                     actions:@[]
@@ -103,6 +101,7 @@
                                                                                 NSError * _Nullable error) {
             if (granted == YES) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    center.delegate = self;
                     [[UIApplication sharedApplication] registerForRemoteNotifications];
                 });
             }

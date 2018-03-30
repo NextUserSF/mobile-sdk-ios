@@ -1,4 +1,7 @@
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
+
 #import "NUPushMessage.h"
 #import "NUEvent.h"
 #import "NUDDLog.h"
