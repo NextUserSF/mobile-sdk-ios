@@ -43,6 +43,7 @@
 {
     NSError *error = nil;
     NSMutableURLRequest* request = [self buildRequestInstance: error];
+    
     if (error) {
         return[self response: responseInstance withError:error];
     }
@@ -51,6 +52,7 @@
     
     NSHTTPURLResponse *httpResponse;
     error = nil;
+    request.timeoutInterval = 20.0;
     responseInstance.reponseData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&httpResponse error:&error];
     responseInstance.responseCode = (long)[httpResponse statusCode];
     

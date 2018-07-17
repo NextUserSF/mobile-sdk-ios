@@ -31,7 +31,7 @@
 #define TRACK_SUBSCRIBER_VARIABLE_PARAM @"sv"
 #define TRACK_SUBSCRIBER_DEVICE_PARAM @"sd"
 #define TRACK_DEVICE_PARAM @"dt"
-#define TRACKER_VERSION @"1.1.4"
+#define TRACKER_VERSION @"1.1.5"
 #define TRACKER_PROD @"https://track.nextuser.com"
 #define TRACKER_DEV @"https://track-dev.nextuser.com"
 #define AI_PROD @"https://ai.nextuser.com"

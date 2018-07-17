@@ -3,7 +3,6 @@
 #import "NUTrackerProperties.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
-#import "NUHTTPRequestUtils.h"
 #import "SAMKeychain.h"
 #import "NSString+LGUtils.h"
 #import "NULogLevel.h"
@@ -18,7 +17,6 @@
 {
     NSUserDefaults *preferences;
 }
-
 
 - (id)initWithProperties:(NUTrackerProperties *) properties
 {

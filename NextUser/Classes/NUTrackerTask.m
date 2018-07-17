@@ -92,7 +92,6 @@
 {
     if ([requestMethod isEqualToString:@"POST"]) {
         NSMutableURLRequest *postRequest = [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path parameters: nil error:&error];
-        
         switch (taskType) {
             case REGISTER_DEVICE_TOKEN:
                 [postRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

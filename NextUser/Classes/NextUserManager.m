@@ -7,7 +7,6 @@
 //
 
 #import "NextUserManager.h"
-#import "NUHTTPRequestUtils.h"
 #import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
@@ -169,20 +168,35 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     switch (taskResponse.taskType) {
         case APPLICATION_INITIALIZATION:
             [self onTrackerInitialization:taskResponse];
+            
             return;
         case SESSION_INITIALIZATION:
             [self onSessionInitialization:taskResponse];
             surfaceType = SESSION_INITIALIZATION;
+            
             break;
         case TRACK_USER:
         case TRACK_USER_VARIABLES:
         case TRACK_EVENT:
         case TRACK_PURCHASE:
         case TRACK_SCREEN:
+            if (taskResponse.taskType == TRACK_PURCHASE && [taskResponse successfull]) {
+                NUEvent *purchaseCompletedEvent = [NUEvent eventWithName:@"purchase_completed"];
+                [self trackWithObject:@[purchaseCompletedEvent] withType:TRACK_EVENT];
+            }
             surfaceType = taskResponse.taskType;
             [self checkNetworkError: taskResponse];
+        
             break;
         case REGISTER_DEVICE_TOKEN:
+            if ([taskResponse successfull] == YES) {
+                NUEvent *subscribedEvent = [NUEvent eventWithName:@"ios_subscribed"];
+                [self trackWithObject:@[subscribedEvent] withType:TRACK_EVENT];
+
+                NUUserVariables *userVariable = [[NUUserVariables alloc] init];
+                [userVariable addVariable:@"ios_subscribed" withValue:@"true"];
+                [self trackWithObject:userVariable withType:TRACK_USER_VARIABLES];
+            }
         case UNREGISTER_DEVICE_TOKENS:
             [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue:[taskResponse successfull]];
             [self checkNetworkError: taskResponse];
