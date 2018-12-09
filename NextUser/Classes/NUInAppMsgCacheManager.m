@@ -13,22 +13,23 @@
 #import "NextUserManager.h"
 
 #define IAMS_JSON_FILE @"in_app_messages.json"
+#define IAMS_SHA_JSON_FILE @"in_app_messages_sha.json"
 
 @interface InAppMsgCacheManager()
 {
     InAppMessage* pendingMessage;
     NUCache* nuCache;
-    NSLock* CACHE_LOCK;
-    NSLock* PENDING_IAM_LOCK;
+    NSLock* IAM_CACHE_LOCK;
+    NSLock* SHA_CACHE_LOCK;
 }
-- (NSMutableArray<InAppMessage* >*) internalFetchMessages;
+
 - (void) internalCacheMessages:(NSMutableArray<InAppMessage* >*) messages;
+- (void) internalCacheShaList:(NSMutableArray<NSString* >*) shaList;
 
 @end
 
 
 @implementation InAppMsgCacheManager
-
 
 + (instancetype)initWithCache:(NUCache*) cache
 {
@@ -41,10 +42,9 @@
 {
     self = [super init];
     if (self) {
-        CACHE_LOCK = [[NSLock alloc] init];
-        PENDING_IAM_LOCK = [[NSLock alloc] init];
+        IAM_CACHE_LOCK = [[NSLock alloc] init];
+        SHA_CACHE_LOCK = [[NSLock alloc] init];
         nuCache = cache;
-        [self clearAll];
     }
     
     return self;
@@ -52,22 +52,15 @@
 
 - (InAppMessage* ) fetchMessage:(NSString *) iamID
 {
-    if ([CACHE_LOCK tryLock]) {
-        @try {
-            NSArray<InAppMessage* >* localMessages = [self internalFetchMessages];
-            if (localMessages == nil || [localMessages count] == 0) {
-                return nil;
-            }
-            
-            for(InAppMessage* msg in localMessages) {
-                if ([msg.ID isEqual:iamID]) {
-                    return msg;
-                }
-            }
-        } @catch (NSException *exception) {
-            DDLogError(@"Exception on fetchMessage %@", [exception reason]);
-        } @finally {
-            [CACHE_LOCK unlock];
+    NSArray<InAppMessage* >* localMessages = [self fetchMessages];
+    if (localMessages == nil || [localMessages count] == 0) {
+        return nil;
+    }
+    
+    for (InAppMessage* msg in localMessages) {
+        if ([msg.ID isEqual:iamID])
+        {
+            return msg;
         }
     }
     
@@ -77,84 +70,59 @@
 - (void) clearAll
 {
     [nuCache deleteFile:IAMS_JSON_FILE];
+    [nuCache deleteFile:IAMS_SHA_JSON_FILE];
 }
 
 - (void) cacheMessages:(NSMutableArray<InAppMessage* >*) messages
 {
-    if ([CACHE_LOCK tryLock]) {
-        @try {
-            NSMutableArray<InAppMessage* >* localMessages = [self internalFetchMessages];
-            if (localMessages != nil && [localMessages count] > 0) {
-                [localMessages addObjectsFromArray:messages];
-            } else {
-                localMessages = messages;
-            }
-            [self internalCacheMessages:localMessages];
-            
-        } @catch (NSException *exception) {
-            DDLogError(@"Exception on cacheMessages %@", [exception reason]);
-        } @finally {
-            [CACHE_LOCK unlock];
-        }
+    NSMutableArray<InAppMessage* >* localMessages = [self fetchMessages];
+    if (localMessages != nil && [localMessages count] > 0) {
+        [localMessages addObjectsFromArray:messages];
+    } else {
+        localMessages = messages;
     }
+    [self internalCacheMessages:localMessages];
 }
 
 - (void) cacheMessage:(InAppMessage* ) message
 {
-    if ([CACHE_LOCK tryLock]) {
-        @try {
-            NSMutableArray<InAppMessage* >* localMessages = [self internalFetchMessages];
-            if (localMessages == nil && [localMessages count] == 0) {
-                localMessages = [[NSMutableArray alloc] init];
-            }
-            
-            if ([localMessages containsObject:message]) {
-                [localMessages removeObject:message];
-            }
-            
-            [localMessages addObject:message];
-            [self internalCacheMessages:localMessages];
-            
-        } @catch (NSException *exception) {
-            DDLogError(@"Exception on cacheMessage %@", [exception reason]);
-        } @finally {
-            [CACHE_LOCK unlock];
-        }
+    NSMutableArray<InAppMessage* >* localMessages = [self fetchMessages];
+    if (localMessages == nil || [localMessages count] == 0) {
+        localMessages = [[NSMutableArray alloc] init];
     }
+    
+    if ([localMessages containsObject:message]) {
+        [localMessages removeObject:message];
+    }
+    
+    [localMessages addObject:message];
+    [self internalCacheMessages:localMessages];
 }
 
 
 - (void) updateMessage:(InAppMessage* ) message withRemoval:(BOOL) remove
 {
-    if ([CACHE_LOCK tryLock]) {
-        @try {
-            NSMutableArray<InAppMessage* >* localMessages = [self internalFetchMessages];
-            if (localMessages != nil && [localMessages count] > 0 && [localMessages containsObject:message]) {
-                [localMessages removeObject:message];
-                if (remove == NO)
-                {
-                     [localMessages addObject:message];
-                }
-                [self internalCacheMessages:localMessages];
-            }
-        } @catch (NSException *exception) {
-            DDLogError(@"Exception on cacheMessage %@", [exception reason]);
-        } @finally {
-            [CACHE_LOCK unlock];
+    NSMutableArray<InAppMessage* >* localMessages = [self fetchMessages];
+    if (localMessages != nil && [localMessages count] > 0 && [localMessages containsObject:message]) {
+        [localMessages removeObject:message];
+        if (remove == NO)
+        {
+            [localMessages addObject:message];
         }
+        [self internalCacheMessages:localMessages];
     }
 }
 
 
 - (void) setPendingMessage:(InAppMessage* ) message
 {
-    if ([PENDING_IAM_LOCK tryLock]) {
+    if ([IAM_CACHE_LOCK tryLock]) {
         @try {
             pendingMessage = message;
         } @catch (NSException *exception) {
             DDLogError(@"Exception on setPendingMessage %@", [exception reason]);
         } @finally {
-            [PENDING_IAM_LOCK unlock];
+            [IAM_CACHE_LOCK unlock];
         }
     }
 }
@@ -162,13 +130,13 @@
 
 - (InAppMessage* ) getPendingMessage
 {
-    if ([PENDING_IAM_LOCK tryLock]) {
+    if ([IAM_CACHE_LOCK tryLock]) {
         @try {
             return pendingMessage;
         } @catch (NSException *exception) {
             DDLogError(@"Exception on setPendingMessage %@", [exception reason]);
         } @finally {
-            [PENDING_IAM_LOCK unlock];
+            [IAM_CACHE_LOCK unlock];
         }
     }
 }
@@ -176,18 +144,15 @@
 
 - (void) clearPendingMessage
 {
-    if ([PENDING_IAM_LOCK tryLock]) {
+    if ([IAM_CACHE_LOCK tryLock]) {
         @try {
             int displayLimit = [pendingMessage.displayLimit intValue];
             if (displayLimit >= 0) {
                 BOOL remove = displayLimit == 0;
-                if (remove == YES) {
-                    //[[[NextUserManager sharedInstance] getWorkflowManager] removeWorkflow:pendingMessage.ID];
-                } else {
+                if (remove == NO) {
                     displayLimit = displayLimit - 1;
                     pendingMessage.displayLimit = [NSString stringWithFormat:@"%d",displayLimit];
                 }
-                
                 [self updateMessage:pendingMessage withRemoval:remove];
             }
             
@@ -195,55 +160,149 @@
         } @catch (NSException *exception) {
             DDLogError(@"Exception on setPendingMessage %@", [exception reason]);
         } @finally {
-            [PENDING_IAM_LOCK unlock];
+            [IAM_CACHE_LOCK unlock];
         }
     }
 }
 
 - (void) internalCacheMessages:(NSArray<InAppMessage* >*) messages
 {
-    @try
+    if ([IAM_CACHE_LOCK tryLock])
     {
-        NSError *error = nil;
-        NSArray* messagesJSONArray = [NUJSONTransformer toInAppMessagesJSON:messages];
-        NSData *json = [NSJSONSerialization dataWithJSONObject:messagesJSONArray options:NSJSONWritingPrettyPrinted error:&error];
-        if (json != nil && error == nil) {
-            [nuCache writeData:json toFile:IAMS_JSON_FILE];
-        } else {
-            DDLogDebug(@"Exception on json serialization of messages %@", error);
+        @try
+        {
+            NSError *error = nil;
+            NSArray* messagesJSONArray = [NUJSONTransformer toInAppMessagesJSON:messages];
+            NSData *json = [NSJSONSerialization dataWithJSONObject:messagesJSONArray options:NSJSONWritingPrettyPrinted error:&error];
+            if (json != nil && error == nil) {
+                [nuCache writeData:json toFile:IAMS_JSON_FILE];
+            } else {
+                DDLogDebug(@"Exception on json serialization of messages %@", error);
+            }
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on internalCacheMessages %@", [exception reason]);
+        } @catch (NUError *error) {
+            DDLogError(@"Error on internalCacheMessages %@", error);
+        } @finally {
+            [IAM_CACHE_LOCK unlock];
         }
-    } @catch (NSException *exception) {
-        DDLogError(@"Exception on internalCacheMessages %@", [exception reason]);
-    } @catch (NUError *error) {
-        DDLogError(@"Error on internalCacheMessages %@", error);
     }
 }
 
-- (NSMutableArray<InAppMessage* >*) internalFetchMessages
+- (NSMutableArray<InAppMessage* >*) fetchMessages
 {
-    @try
+    if ([IAM_CACHE_LOCK tryLock])
     {
-        NSError *error = nil;
-        NSData *jsonData = [nuCache readFromFile:IAMS_JSON_FILE];
-        if (jsonData == nil || [jsonData length] == 0) {
-            return nil;
+        @try
+        {
+            NSError *error = nil;
+            NSData *jsonData = [nuCache readFromFile:IAMS_JSON_FILE];
+            if (jsonData == nil || [jsonData length] == 0) {
+                return nil;
+            }
+            
+            id object = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&error];
+            if (error != nil) {
+                DDLogError(@"Exception on internalFetchMessages on data deserialization %@", error);
+                return nil;
+            }
+            
+            return [NUJSONTransformer toInAppMessages:object];
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on internalFetchMessages %@", [exception reason]);
+        } @catch (NUError *error) {
+            DDLogError(@"Error on internalFetchMessages %@", error);
+        } @finally {
+            [IAM_CACHE_LOCK unlock];
         }
-        
-        id object = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&error];
-        if (error != nil) {
-            DDLogError(@"Exception on internalFetchMessages on data deserialization %@", error);
-            return nil;
-        }
-        
-        return [NUJSONTransformer toInAppMessages:object];
-    } @catch (NSException *exception) {
-        DDLogError(@"Exception on internalFetchMessages %@", [exception reason]);
-    } @catch (NUError *error) {
-        DDLogError(@"Error on internalFetchMessages %@", error);
     }
+}
 
+- (void) internalCacheShaList:(NSMutableArray<NSString* >*) shaList
+{
+    if ([SHA_CACHE_LOCK tryLock])
+    {
+        @try
+        {
+            NSError *error = nil;
+            NSData *json = [NSJSONSerialization dataWithJSONObject:shaList options:NSJSONWritingPrettyPrinted error:&error];
+            if (json != nil && error == nil) {
+                [nuCache writeData:json toFile:IAMS_SHA_JSON_FILE];
+            } else {
+                DDLogDebug(@"Exception on json serialization of sha list %@", error);
+            }
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on internalCacheShaList %@", [exception reason]);
+        } @catch (NUError *error) {
+            DDLogError(@"Error on internalCacheShaList %@", error);
+        } @finally {
+            [SHA_CACHE_LOCK unlock];
+        }
+    }
+}
+
+- (NSMutableArray<NSString* >*) fetchShaList
+{
+    if ([SHA_CACHE_LOCK tryLock])
+    {
+        @try
+        {
+            NSError *error = nil;
+            NSData *jsonData = [nuCache readFromFile:IAMS_SHA_JSON_FILE];
+            if (jsonData == nil || [jsonData length] == 0) {
+                
+                return nil;
+            }
+            
+            id object = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&error];
+            if (error != nil) {
+                DDLogError(@"Exception on internalFetchShaList on data deserialization %@", error);
+                
+                return nil;
+            }
+            
+            if (object != nil && [object isKindOfClass:[NSArray class]])
+            {
+                NSMutableArray<NSString* >* shaList = [[NSMutableArray alloc] init];
+                for(id sha in object)
+                {
+                    [shaList addObject: sha];
+                }
+                
+                return shaList;
+            }
+            
+            return nil;
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on internalFetchShaList %@", [exception reason]);
+        } @catch (NUError *error) {
+            DDLogError(@"Error on internalFetchShaList %@", error);
+        } @finally {
+            [SHA_CACHE_LOCK unlock];
+        }
+    }
+}
+
+- (void) removeSha:(NSString *) sha
+{
+    NSMutableArray<NSString* >* shaList = [self fetchShaList];
+    if (shaList != nil && [shaList count] > 0 && [shaList containsObject: sha] == YES) {
+        [shaList removeObject: sha];
+        [self internalCacheShaList: shaList];
+    }
+}
+
+- (void) addNewSha:(NSString *) sha;
+{
+    NSMutableArray<NSString* >* shaList = [self fetchShaList];
+    if (shaList == nil) {
+        shaList = [[NSMutableArray alloc] init];
+    }
     
-    return nil;
+    if ([shaList containsObject: sha] == NO) {
+        [shaList addObject: sha];
+        [self internalCacheShaList: shaList];
+    }
 }
 
 @end

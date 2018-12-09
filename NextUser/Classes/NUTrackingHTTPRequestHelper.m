@@ -180,4 +180,24 @@
     return payload;
 }
 
++(NSMutableDictionary *) generateCheckEventDictionary: (id) trackObject withSession:(NUTrackerSession *) session
+{
+    NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+    NSArray<NUEvent *> *events = (NSArray<NUEvent *> *) trackObject;
+    NSMutableArray *eventNamesArray = [NSMutableArray array];
+    for (int i = 0; i < events.count; i++) {
+        eventNamesArray[i] = [events[i] eventName];
+    }
+    payload[CHECK_EVENT_PARAM_EVENTS] = eventNamesArray;
+    payload[CHECK_EVENT_PARAM_DC] = [session deviceCookie];
+    payload[CHECK_EVENT_PARAM_WID] = [session apiKey];
+    
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
+    if (jsonData == nil) {
+        return nil;
+    }
+    
+    return payload;
+}
+
 @end

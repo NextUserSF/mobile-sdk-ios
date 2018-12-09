@@ -14,8 +14,7 @@
 @interface InAppMsgClick : NUJSONObject
 
 @property (nonatomic) InAppMsgAction action;
-@property (nonatomic) NSString* value;
-@property (nonatomic) NSString* track;
-@property (nonatomic) NSString* params;
+@property (nonatomic) NSString *value;
+@property (nonatomic) NSArray *trackEvents;
 
 @end

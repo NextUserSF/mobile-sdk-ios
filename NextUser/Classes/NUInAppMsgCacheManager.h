@@ -18,11 +18,15 @@
 +(instancetype)initWithCache:(NUCache*) cache;
 - (void) cacheMessages:(NSArray<InAppMessage* >*) messages;
 - (InAppMessage* ) fetchMessage:(NSString *) iamID;
+- (NSMutableArray<InAppMessage* >*) fetchMessages;
 - (void) clearAll;
 - (void) cacheMessage:(InAppMessage* ) message;
 - (void) updateMessage:(InAppMessage* ) message withRemoval:(BOOL) remove;
 - (void) setPendingMessage:(InAppMessage* ) message;
 - (InAppMessage* ) getPendingMessage;
 - (void) clearPendingMessage;
+- (NSMutableArray<NSString* >*) fetchShaList;
+- (void) removeSha:(NSString *) sha;
+- (void) addNewSha:(NSString *) sha;
 
 @end

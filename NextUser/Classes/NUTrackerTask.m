@@ -18,7 +18,7 @@
     requestMethod = @"POST";
     switch (type) {
         case SESSION_INITIALIZATION:
-        case REQUEST_IN_APP_MESSAGES:
+        case NEW_IAM:
         case UNREGISTER_DEVICE_TOKENS:
             requestMethod = @"GET";
             break;
@@ -62,10 +62,13 @@
             path = [session sessionInitPath];
             queryParameters = [NUTrackingHTTPRequestHelper sessionInitializationParameters: session];
             break;
-        case REQUEST_IN_APP_MESSAGES:
-            path = [session iamsRequestPath];
+        case IAM_CHECK_EVENT:
+            path = [session checkEventPath];
+            queryParameters = [NUTrackingHTTPRequestHelper generateCheckEventDictionary:trackObject withSession: session];
+            break;
+        case NEW_IAM:
+            path = [session getIAMPath: trackObject];
             queryParameters = [NSMutableDictionary dictionary];
-            [NUTrackingHTTPRequestHelper appendSessionDefaultParameters:session withTrackParameters:queryParameters];
             break;
         case REGISTER_DEVICE_TOKEN:
             path = [session deviceTokenPath:NO];
@@ -94,6 +97,7 @@
         NSMutableURLRequest *postRequest = [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path parameters: nil error:&error];
         switch (taskType) {
             case REGISTER_DEVICE_TOKEN:
+            case IAM_CHECK_EVENT:
                 [postRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
                 break;
             default:

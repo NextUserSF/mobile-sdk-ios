@@ -110,12 +110,9 @@
                             return;
                     }
                     
-                    __weak NSString* trackParams = nil;
-                    if (message.interactions != nil && message.interactions.dismiss != nil) {
-                        if (message.interactions.dismiss.params != nil) {
-                            trackParams = message.interactions.dismiss.params;
-                            currentParams = message.interactions.dismiss.params;
-                        }
+                    __weak NSString *trackParams = nil;
+                    if (message.interactions != nil && message.interactions.nuTrackingParams != nil) {
+                        trackParams = message.interactions.nuTrackingParams;
                     }
                     
                     
@@ -202,10 +199,9 @@
             break;
     }
     
-    if (clickConfig.track != nil) {
-        [InternalEventTracker trackEvent:clickConfig.track withParams:currentParams];
+    if (clickConfig.trackEvents != nil) {
+        [[[NextUserManager sharedInstance] getTracker] trackEvents:clickConfig.trackEvents];
     }
-    
 }
 
 @end

@@ -24,7 +24,6 @@
 #define kInstantWorkflowsJSONKey @"instant_workflows"
 
 
-
 @interface PendingTask : NSObject
 @property (nonatomic) id trackingObject;
 @property (nonatomic) NUTaskType taskType;
@@ -50,8 +49,6 @@
     BOOL disabled;
     BOOL initializationFailed;
     BOOL subscribedToAppStatusNotifications;
-    BOOL inAppMessagesRequested;
-    
 }
 
 -(void) trackSubscriberDevice;
@@ -79,7 +76,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return instance;
 }
 
-
 -(instancetype)init
 {
     self = [super init];
@@ -88,7 +84,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         tracker = [[NUTracker alloc] init];
         notificationsManager = [[NUPushNotificationsManager alloc] init];
         initializationFailed = NO;
-        inAppMessagesRequested = NO;
         disabled = NO;
         sessionRequestLock = [[NSLock alloc] init];
         [self subscribeToAppStateNotificationsOnce];
@@ -253,22 +248,18 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             [session setSessionState: Failed];
             DDLogError(@"Setup tracker error: %@", @"Server Error.");
             initializationFailed = YES;
-            
+    
             return;
         }
         
         initializationFailed = NO;
         
         [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
-        [session setInstantWorkflows: responseDict[kInstantWorkflowsJSONKey]];
         [session setSessionState: Initialized];
         [self trackSubscriberDevice];
         
         if (session.requestInAppMessages == YES) {
-            inAppMessagesRequested = NO;
             [self initInAppMsgSessionManagers];
-        } else {
-            inAppMessagesRequested = YES;
         }
         
         [self sendPendingTrackRequests];
@@ -292,17 +283,10 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     NSBundle *bundle = [NSBundle mainBundle];
     subDevice.browser =[[bundle infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
     subDevice.browserVersion = [[bundle infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    
     subDevice.tablet = [subDevice.deviceModel containsString:@"Pad"];
     subDevice.mobile = !subDevice.tablet;
     
     [self trackWithObject:subDevice withType:TRACK_USER_DEVICE];
-}
-
--(void) inAppMessagesRequested
-{
-    inAppMessagesRequested = YES;
-    [self sendPendingTrackRequests];
 }
 
 -(void) initInAppMsgSessionManagers
@@ -321,9 +305,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     
     if (workflowManager == nil) {
         workflowManager = [WorkflowManager initWithSession:session];
-    } else {
-        workflowManager.session = session;
-        [workflowManager requestInstantWorkflows: SESSION_INITIALIZATION];
     }
 }
 
@@ -352,7 +333,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         return NO;
     }
     
-    if (![self validTracker] || !inAppMessagesRequested || reachability.currentReachabilityStatus == NotReachable) {
+    if (![self validTracker] || reachability.currentReachabilityStatus == NotReachable) {
         DDLogWarn(@"Cannot sendTrackTask, session or network connection not available...");
         [self queueTrackObject:trackObject withType:taskType];
         

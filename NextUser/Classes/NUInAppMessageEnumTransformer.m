@@ -73,15 +73,15 @@
         }
     } else if ([align isKindOfClass:[NSString class]]) {
         
-        if ([@"center" isEqualToString:align]) {
+        if ([@"CENTER" isEqualToString:align]) {
             return CENTER;
-        } else if ([@"right" isEqualToString:align]) {
+        } else if ([@"RIGHT" isEqualToString:align]) {
             return RIGHT;
-        } else if ([@"left" isEqualToString:align]) {
+        } else if ([@"LEFT" isEqualToString:align]) {
             return LEFT;
-        } else if ([@"top" isEqualToString:align]) {
+        } else if ([@"TOP" isEqualToString:align]) {
             return TOP;
-        } else if ([@"bottom" isEqualToString:align]) {
+        } else if ([@"BOTTOM" isEqualToString:align]) {
             return BOTTOM;
         } else if ([NSString lg_isEmptyString:align]) {
             return NO_ALIGN;
@@ -114,13 +114,13 @@
                 break;
         }
     } else if ([action isKindOfClass:[NSString class]]) {
-        if ([@"dismiss" isEqualToString:action]) {
+        if ([@"DISMISS" isEqualToString:action]) {
             return DISMISS;
-        } else if ([@"landing" isEqualToString:action]) {
+        } else if ([@"LANDING" isEqualToString:action]) {
             return LANDING_PAGE;
-        } else if ([@"url" isEqualToString:action]) {
+        } else if ([@"URL" isEqualToString:action]) {
             return URL;
-        } else if ([@"deep_link" isEqualToString:action]) {
+        } else if ([@"DEEP_LINK" isEqualToString:action]) {
             return DEEP_LINK;
         } else if ([NSString lg_isEmptyString:action]) {
             return NO_ACTION;

@@ -45,6 +45,7 @@ extern NSString * const NU_TRACK_EVENT;
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void)unregisterFCMRegistrationToken;
 - (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo;
+- (void) didReceiveRemoteMessage: (NSDictionary *) data;
 
 @end
 

@@ -16,5 +16,6 @@
 @property (nonatomic) InAppMsgClick* click0;
 @property (nonatomic) InAppMsgClick* click1;
 @property (nonatomic) InAppMsgClick* dismiss;
+@property (nonatomic) NSString* nuTrackingParams;
 
 @end

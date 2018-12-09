@@ -23,7 +23,7 @@
     if (self = [super init]) {
         _trackerProperties = properties;
         _sessionState = None;
-        _requestInAppMessages = NO;
+        _requestInAppMessages = YES;
         _deviceCookie = [self serializedDeviceCookie];
         [SAMKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
         preferences = [NSUserDefaults standardUserDefaults];
@@ -112,6 +112,21 @@
 {
     NSString *url = isUnsubscribe == YES ?  [self aiPathWithAPIName: UNREGISTER_TOKEN_ENDPOINT] : [self aiPathWithAPIName: REGISTER_TOKEN_ENDPOINT];
     url = [NSString stringWithFormat:url, [_trackerProperties apiKey], _deviceCookie];
+    
+    return url;
+}
+
+-(NSString *)checkEventPath
+{
+    NSString *url = [self aiPathWithAPIName: CHECK_EVENT_ENDPOINT];
+    url = [NSString stringWithFormat:url, [_trackerProperties apiKey], _deviceCookie];
+    
+    return url;
+}
+
+-(NSString *)getIAMPath: (NSString *) sha
+{
+   NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:[self aiPathWithAPIName: GET_IAM_ENDPOINT], [_trackerProperties apiKey], _deviceCookie], @"key", sha];
     
     return url;
 }

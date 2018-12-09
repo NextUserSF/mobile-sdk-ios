@@ -14,8 +14,6 @@
 @interface WorkflowManager : NSObject
 
 +(instancetype)initWithSession:(NUTrackerSession*) tSession;
--(void) requestInstantWorkflows:(NUTaskType) type;
--(void) removeWorkflow:(NSString*) iamID;
 -(void) setSession:(NUTrackerSession*) session;
 
 @end

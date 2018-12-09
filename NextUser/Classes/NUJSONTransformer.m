@@ -10,6 +10,7 @@
 #import "NUJSONTransformer.h"
 #import "NUDDLog.h"
 #import "NSString+LGUtils.h"
+#import "NUEvent.h"
 
 @implementation NUJSONTransformer
 
@@ -60,6 +61,7 @@
         message.interactions.click0 = [self convertToInMessageClick: [interactionsObject objectForKey:@"click0"]];
         message.interactions.click1 = [self convertToInMessageClick: [interactionsObject objectForKey:@"click1"]];
         message.interactions.dismiss = [self convertToInMessageClick: [interactionsObject objectForKey:@"dismiss"]];
+        message.interactions.nuTrackingParams = [interactionsObject objectForKey:@"nuTrackingParams"];
     }
     
     
@@ -106,9 +108,26 @@
     InAppMsgClick* inAppMsgClick = nil;
     inAppMsgClick = [[InAppMsgClick alloc] init];
     inAppMsgClick.action = [InAppMessageEnumTransformer toInAppMsgAction:[object objectForKey:@"action"]];
-    inAppMsgClick.track = [object objectForKey:@"track"];
     inAppMsgClick.value = [object objectForKey:@"value"];
-    inAppMsgClick.params = [object objectForKey:@"params"];
+    
+    id trackEventsArrObj = [object objectForKey:@"trackEvents"];
+    if (trackEventsArrObj != nil && [trackEventsArrObj isKindOfClass:[NSArray class]]) {
+        NSMutableArray<NUEvent* >* trackEventsArr = [[NSMutableArray alloc] init];
+        for(id eventJSON in trackEventsArrObj)
+        {
+            NUEvent *event = nil;
+            id parametersJSONString = [eventJSON objectForKey:@"parameters"];
+            if (parametersJSONString != nil)
+            {
+                NSArray *parametersArr = [parametersJSONString componentsSeparatedByString:@","];
+                event = [NUEvent eventWithName: [eventJSON objectForKey:@"eventName"] andParameters:[NSMutableArray arrayWithArray:parametersArr]];
+            } else
+            {
+                event = [NUEvent eventWithName: [eventJSON objectForKey:@"eventName"]];
+            }
+            [trackEventsArr addObject:event];
+        }
+    }
     
     return inAppMsgClick;
 }
@@ -141,49 +160,6 @@
     inAppMsgBtn.unSelectedBgColor = [object objectForKey:@"unSelectedBgColor"];
     
     return inAppMsgBtn;
-}
-
-+ (NSMutableArray<Workflow* >*) toWorkflows:(id) workflowsJSONArray
-{
-    NSMutableArray<Workflow* >* workFlows;
-    if (workflowsJSONArray != nil && [workflowsJSONArray isKindOfClass:[NSArray class]])
-    {
-        Workflow* workflow;
-        workFlows = [[NSMutableArray alloc] init];
-        for(id object in workflowsJSONArray)
-        {
-            if (object == nil || [object isKindOfClass:[NSString class]]) {
-                continue;
-            }
-            
-            workflow = [[Workflow alloc] init];
-            workflow.ID = [object objectForKey:@"id"];
-            workflow.iamID = [object objectForKey:@"iamId"];
-            
-            if ([[object objectForKey:@"conditions"] isKindOfClass:[NSArray class]])
-            {
-                WorkflowCondition* condition;
-                id conditionsObject = [object objectForKey:@"conditions"];
-                if (conditionsObject == nil || [conditionsObject isKindOfClass:[NSString class]]) {
-                    continue;
-                }
-                
-                NSMutableArray<WorkflowCondition *> * wkConditions = [NSMutableArray arrayWithCapacity:[conditionsObject count]];
-                for(id condObject in conditionsObject)
-                {
-                    condition = [[WorkflowCondition alloc] init];
-                    condition.rule = [WorkflowEnumTransformer toWorkflowRule: [condObject objectForKey:@"rule"]];
-                    condition.value = [condObject objectForKey:@"value"];
-                    [wkConditions addObject:condition];
-                }
-                workflow.conditions = wkConditions;
-            }
-            
-            [workFlows addObject:workflow];
-        }
-    }
-    
-    return workFlows;
 }
 
 + (id) toInAppMessagesJSON:(NSArray<InAppMessage* >*) messages

@@ -17,7 +17,7 @@
 +(void) trackEvent:(NSString *) eventName withParams:(NSString*) paramsAsString
 {
     NSArray *params = [paramsAsString componentsSeparatedByString:@","];
-    if (params != nil && [params count] > 9) {
+    if (params != nil && [params count] > 10) {
         NSError* error = [NUError nextUserErrorWithMessage: @"invalid params string provided"];
         @throw error;
     }

@@ -34,7 +34,6 @@
 - (InAppMsgUIManager *) inAppMsgUIManager;
 
 - (NUTracker* ) getTracker;
-- (void) inAppMessagesRequested;
 - (void)setLogLevel:(NSString *)logLevel;
 - (NULogLevel)logLevel;
 

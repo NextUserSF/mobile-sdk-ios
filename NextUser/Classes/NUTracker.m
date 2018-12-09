@@ -193,4 +193,22 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [[[NextUserManager sharedInstance] getNotificationsManager] unregisterFCMRegistrationToken];
 }
 
+- (void) didReceiveRemoteMessage: (NSDictionary *) data
+{
+    if ([data objectForKey: @"_nu_ri"] != nil) {
+        NSError *errorJson = nil;
+        NSString *messageStr = [data objectForKey: @"_nu_ri"];
+        NSData *messageData = [messageStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:messageData options:kNilOptions error:&errorJson];
+        NSString *newSha = [responseDict objectForKey: @"sha_key"];
+        if (newSha != nil)
+        {
+            [[[NextUserManager sharedInstance] inAppMsgCacheManager] addNewSha: newSha];
+            NUTaskManager* manager = [NUTaskManager manager];
+            NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:newSha withSession:[[NextUserManager sharedInstance] getSession]];
+            [manager submitTask:task];
+        }
+    }
+}
+
 @end
