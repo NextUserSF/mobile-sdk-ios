@@ -15,5 +15,6 @@
 @property (nonatomic) NSString* textColor;
 @property (nonatomic) NSString* selectedBGColor;
 @property (nonatomic) NSString* unSelectedBgColor;
+@property (nonatomic) CGFloat textSize;
 
 @end

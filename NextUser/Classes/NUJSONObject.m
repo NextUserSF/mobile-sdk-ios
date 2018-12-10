@@ -26,7 +26,6 @@
             property = attributes[i];
             key = [NSString stringWithUTF8String:property_getName(property)];
             value = [self valueForKey:key];
-            
             id val;
             if ([value isKindOfClass:[NUJSONObject class]]) {
                 val = (NUJSONObject*) value;
@@ -34,13 +33,13 @@
             } else if ([value isKindOfClass:[NSArray<NUJSONObject*> class]]) {
                 NSArray<NUJSONObject*>* valArray = (NSArray<NUJSONObject*>*) value;
                 val = [NSMutableArray arrayWithCapacity:[valArray count]];
-                for (NUJSONObject* v in valArray) {
+                for (NUJSONObject* v in valArray)
+                {
                     [val addObject: [v dictionaryReflectFromAttributes]];
                 }
             } else {
                 val = value;
             }
-            
             
             [dict setObject:(val ? val : @"") forKey:key];
         }

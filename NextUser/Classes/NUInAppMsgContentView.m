@@ -113,7 +113,7 @@
     [headerTitle setClipsToBounds:YES];
     [headerTitle setTranslatesAutoresizingMaskIntoConstraints:NO];
     [headerTitle setTextColor: [InAppMsgViewHelper textColor:headerTitleMsg.textColor]];
-    [headerTitle setFont: [UIFont boldSystemFontOfSize:settings.headerTitleFontSize]];
+    [headerTitle setFont: [UIFont boldSystemFontOfSize:headerTitleMsg.textSize]];
     [headerTitle setText: headerTitleMsg.text] ;
     [headerTitle setTextAlignment: [InAppMsgViewHelper toTextAlignment:headerTitleMsg.align]];
 }
@@ -148,7 +148,7 @@
     InAppMsgText *titleMsg = [wrapper getTitle];
     [contentTitleView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [contentTitleView setTextColor: [InAppMsgViewHelper textColor:titleMsg.textColor]];
-    [contentTitleView setFont: [UIFont boldSystemFontOfSize:settings.contentTitleFontSize]];
+    [contentTitleView setFont: [UIFont boldSystemFontOfSize: titleMsg.textSize]];
     [contentTitleView setText: titleMsg.text];
     [contentTitleView setTextAlignment: [InAppMsgViewHelper toTextAlignment:titleMsg.align]];
     
@@ -159,7 +159,7 @@
     InAppMsgText *contentMsg = [wrapper getContent];
     [contentTextView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [contentTextView setTextColor: [InAppMsgViewHelper textColor:contentMsg.textColor]];
-    [contentTextView setFont: [UIFont systemFontOfSize:settings.contentBodyFontSize]];
+    [contentTextView setFont: [UIFont systemFontOfSize:contentMsg.textSize]];
     [contentTextView setText: contentMsg.text];
     [contentTextView setTextAlignment:[InAppMsgViewHelper toTextAlignment:contentMsg.align]];
     contentTextView.numberOfLines = 5;
@@ -200,7 +200,7 @@
     [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateSelected];
     
     if (@available(iOS 8.2, *)) {
-        [button.titleLabel setFont: [UIFont systemFontOfSize:settings.contentTitleFontSize weight:UIFontWeightLight]];
+        [button.titleLabel setFont: [UIFont systemFontOfSize:buttonConfig.textSize weight:UIFontWeightLight]];
     } else {
         // Fallback on earlier versions
     }
@@ -210,7 +210,7 @@
     
     [button addTarget:self
             action:selector
-  forControlEvents:UIControlEventTouchUpInside|UIControlEventAllEvents];
+  forControlEvents:UIControlEventTouchDown];
     
     return button;
 }

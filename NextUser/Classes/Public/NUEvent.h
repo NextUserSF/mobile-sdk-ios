@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@interface NUEvent : NSObject
+#import "NUJSONObject.h"
+
+@interface NUEvent : NUJSONObject
 
 @property (nonatomic, readonly) NSString *eventName;
 

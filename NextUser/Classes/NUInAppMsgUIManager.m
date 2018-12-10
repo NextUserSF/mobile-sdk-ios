@@ -89,9 +89,6 @@
                 DDLogInfo(@"we have the wrapper:%@", iamID);
                 wrapper.interactionListener = self;
                 
-               
-                
-                
                 dispatch_async(dispatch_get_main_queue(), ^{
                     InAppMsgContentView *contentView;
                     switch (wrapper.message.type) {
@@ -113,8 +110,8 @@
                     __weak NSString *trackParams = nil;
                     if (message.interactions != nil && message.interactions.nuTrackingParams != nil) {
                         trackParams = message.interactions.nuTrackingParams;
+                        currentParams = message.interactions.nuTrackingParams;
                     }
-                    
                     
                     NUPopUpLayout layout = [contentView getLayout];
                     
@@ -181,6 +178,10 @@
         return;
     }
     
+    if (clickConfig.trackEvents != nil) {
+        [[[NextUserManager sharedInstance] getTracker] trackEvents:clickConfig.trackEvents];
+    }
+    
     DDLogInfo(@"interacted with iam:%lu", (unsigned long)clickConfig.action);
     
     switch (clickConfig.action) {
@@ -197,10 +198,6 @@
             break;
         default:
             break;
-    }
-    
-    if (clickConfig.trackEvents != nil) {
-        [[[NextUserManager sharedInstance] getTracker] trackEvents:clickConfig.trackEvents];
     }
 }
 

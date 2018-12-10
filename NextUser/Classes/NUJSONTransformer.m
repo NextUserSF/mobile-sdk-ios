@@ -95,7 +95,11 @@
     inAppMsgTxt.text = [object objectForKey:@"text"];
     inAppMsgTxt.align = [InAppMessageEnumTransformer toInAppMsgAlign: [object objectForKey:@"align"]];
     inAppMsgTxt.textColor = [object objectForKey:@"textColor"];
-
+    if ([object valueForKey:@"textSize"] != nil)
+    {
+        inAppMsgTxt.textSize = [[object valueForKey:@"textSize"] doubleValue];
+    }
+    
     return inAppMsgTxt;
 }
 
@@ -123,10 +127,11 @@
                 event = [NUEvent eventWithName: [eventJSON objectForKey:@"eventName"] andParameters:[NSMutableArray arrayWithArray:parametersArr]];
             } else
             {
-                event = [NUEvent eventWithName: [eventJSON objectForKey:@"eventName"]];
+                event = [NUEvent eventWithName: [eventJSON objectForKey:@"eventName"] andParameters: [NSMutableArray array]];
             }
             [trackEventsArr addObject:event];
         }
+        inAppMsgClick.trackEvents = trackEventsArr;
     }
     
     return inAppMsgClick;
@@ -158,6 +163,10 @@
     inAppMsgBtn.textColor = [object objectForKey:@"textColor"];
     inAppMsgBtn.selectedBGColor = [object objectForKey:@"selectedBGColor"];
     inAppMsgBtn.unSelectedBgColor = [object objectForKey:@"unSelectedBgColor"];
+    if ([object valueForKey:@"textSize"] != nil)
+    {
+        inAppMsgBtn.textSize = [[object valueForKey:@"textSize"] doubleValue];
+    }
     
     return inAppMsgBtn;
 }
