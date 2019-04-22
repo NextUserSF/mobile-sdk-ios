@@ -1,11 +1,3 @@
-//
-//  NUJSONTransformer.m
-//  Pods
-//
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUJSONTransformer.h"
 #import "NUDDLog.h"
@@ -23,6 +15,7 @@
     InAppMessage* message = [[InAppMessage alloc] init];
     
     message.ID = [messageJSON objectForKey:@"id"] ? [messageJSON objectForKey:@"id"] : [messageJSON objectForKey:@"ID"];
+    message.storageIdentifier = [messageJSON objectForKey:@"storageIdentifier"];
     message.type = [InAppMessageEnumTransformer toInAppMsgType: [messageJSON objectForKey:@"type"]];
     message.autoDismiss = [[messageJSON objectForKey:@"autoDismiss"] boolValue];
     message.dismissTimeout = [messageJSON objectForKey:@"dismissTimeout"];
@@ -41,6 +34,7 @@
         message.body.title = [self convertToInMessageText: [bodyObject objectForKey:@"title"]];
         message.body.content = [self convertToInMessageText: [bodyObject objectForKey:@"content"]];
         message.body.cover = [self convertToInMessageCover: [bodyObject objectForKey:@"cover"]];
+        message.body.contentHTML = [self convertToInMessageContentHTML: [bodyObject objectForKey:@"contentHTML"]];
         
         NSArray* footerObjArray;
         if ([[bodyObject objectForKey:@"footer"] isKindOfClass:[NSArray class]])
@@ -101,6 +95,20 @@
     }
     
     return inAppMsgTxt;
+}
+
++ (InAppMsgContentHtml*) convertToInMessageContentHTML:(id) object
+{
+    if (object == nil || [object isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    
+    InAppMsgContentHtml *inAppMsgContentHTML = nil;
+    inAppMsgContentHTML = [[InAppMsgContentHtml alloc] init];
+    inAppMsgContentHTML.html = [object objectForKey:@"html"];
+    inAppMsgContentHTML.css = [object objectForKey:@"css"];
+    
+    return inAppMsgContentHTML;
 }
 
 + (InAppMsgClick*) convertToInMessageClick:(id) object
@@ -192,6 +200,69 @@
     }
     
     return [message dictionaryReflectFromAttributes];
+}
+
++ (NUCart *) toNUCart: (id)cartJSON
+{
+    if (cartJSON == nil) {
+        return nil;
+    }
+    
+    NUCart* cart = [[NUCart alloc] init];
+    cart.total = [[cartJSON objectForKey:@"total"] doubleValue];
+    cart.tracked = [[cartJSON objectForKey:@"tracked"] boolValue];
+    cart.details = [self convertToPurchaseDetails:[cartJSON objectForKey:@"details"]];
+    
+    NSArray *itemsObjArray;
+    if ([[cartJSON objectForKey:@"items"] isKindOfClass:[NSArray class]])
+    {
+        itemsObjArray = [cartJSON objectForKey:@"items"];
+        NSMutableArray<NUCartItem*> * items = [NSMutableArray arrayWithCapacity:[itemsObjArray count]];
+        for (id nextItemObject in itemsObjArray) {
+            [items addObject:[self convertToCartItem:nextItemObject]];
+        }
+        cart.items = items;
+    }
+    
+    return cart;
+}
+
++ (NUCartItem*) convertToCartItem:(id) object
+{
+    if (object == nil || [object isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    
+    NUCartItem *item = [[NUCartItem alloc] init];
+    item.ID = [object objectForKey:@"ID"];
+    item.quantity = [[object objectForKey:@"quantity"] doubleValue];
+    item.name = [object objectForKey:@"name"];
+    item.category = [object objectForKey:@"category"];
+    item.price = [[object objectForKey:@"price"] doubleValue];
+    item.desc = [object objectForKey:@"desc"];
+    
+    return item;
+}
+
++ (NUPurchaseDetails *) convertToPurchaseDetails:(id) object
+{
+    if (object == nil || [object isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    
+    NUPurchaseDetails *detail = [[NUPurchaseDetails alloc] init];
+    detail.discount = [[object objectForKey:@"discount"] doubleValue];
+    detail.shipping = [[object objectForKey:@"shipping"] doubleValue];
+    detail.tax = [[object objectForKey:@"tax"] doubleValue];
+    detail.incomplete = [[object objectForKey:@"incomplete"] boolValue];
+    detail.currency = [object objectForKey:@"currency"];
+    detail.paymentMethod = [object objectForKey:@"paymentMethod"];
+    detail.affiliation = [object objectForKey:@"affiliation"];
+    detail.state = [object objectForKey:@"state"];
+    detail.city = [object objectForKey:@"city"];
+    detail.zip = [object objectForKey:@"zip"];
+    
+    return detail;
 }
 
 @end

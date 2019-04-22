@@ -1,17 +1,10 @@
-//
-//  NUTrackingHTTPRequestHelper.h
-//  NextUserKit
-//
-//  Created by NextUser on 11/11/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 #import "NUUser.h"
 #import "NUSubscriberDevice.h"
 #import "NUTrackerSession.h"
 #import "NUTask.h"
 #import "NURegistrationToken.h"
+#import "NUCart.h"
 
 #define TRACK_PARAM_NUTMS @"nutm_s"
 #define TRACK_PARAM_NUTMSC @"nutm_sc"
@@ -53,12 +46,14 @@
 #define IAMS_REQUEST_ENDPOINT @"/m_wf.js"
 #define USER_TOKEN_KEY @"user_token_key"
 #define USER_TOKEN_SUBMITTED_KEY @"user_token_submitted_key"
+#define TRACK_VARIABLE_CART_STATE @"cart_state"
+#define TRACKING_SOURCE_NAME @"nu.ios"
 
 @interface NUTrackingHTTPRequestHelper : NSObject
 
 +(NSMutableDictionary *)trackScreenParametersWithScreenName:(NSString *)screenName;
 +(NSMutableDictionary *)trackEventsParametersWithEvents:(NSArray *)actions;
-+(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray *)purchases;
++(NSMutableDictionary *)trackCartParametersWithCart:(NUCart *)cart;
 +(NSMutableDictionary *)trackUserParametersWithVariables:(NUUser *)user;
 +(NSMutableDictionary *)trackUserVariables:(NUUserVariables *)userVariables;
 +(NSMutableDictionary *)sessionInitializationParameters:(NUTrackerSession*) session;

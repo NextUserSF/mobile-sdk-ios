@@ -1,15 +1,6 @@
-//
-//  NSObject+NUUser.m
-//  Pods
-//
-//  Created by Adrian Lazea on 28/04/2017.
-//
-//
-
 #import "NUUser.h"
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
-
 
 @implementation NUUser
 

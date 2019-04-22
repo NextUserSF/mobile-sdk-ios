@@ -1,4 +1,3 @@
-
 #import "NUTrackerSession.h"
 #import "NUTrackerProperties.h"
 #import "NUTrackingHTTPRequestHelper.h"
@@ -9,6 +8,7 @@
 
 #pragma mark - Session Keys
 #define kDeviceCookieSerializationKey @"nu_device_ide"
+#define kDeviceFCMTokenSerializationKey @"nu_device_fcm_token"
 #define kKeychainServiceName @"nu.ios"
 
 
@@ -156,28 +156,34 @@
     return [[self aiBasePath] stringByAppendingFormat:@"%@", APIName];
 }
 
-- (BOOL) readBoolValueForKey: (NSString *) key
+- (void)persistFCMToken:(NSString *) fcmToken
 {
-    return [preferences objectForKey:key] == nil ? NO : [preferences boolForKey:key];
+    NSError *error = nil;
+    [SAMKeychain setPassword:fcmToken forService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
+    if (error != nil) {
+        DDLogError(@"Error while setting fcm token in keychain. %@", error);
+    }
 }
 
-- (NSString *) readStringValueForKey: (NSString *) key
+- (void)clearFcmToken
 {
-    return [preferences objectForKey:key] == nil ? nil : [preferences stringForKey:key];
+    NSError *error = nil;
+    [SAMKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
+    if (error != nil) {
+        DDLogError(@"Error while deleting fcm token from keychain. %@", error);
+    }
 }
 
-- (BOOL) writeForKey: (NSString *) key boolValue: (BOOL) value
+- (NSString *)getdDeviceFCMToken
 {
-    [preferences setBool:value forKey:key];
+    NSError *error = nil;
+    NSString *password = [SAMKeychain passwordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey
+                                                   error:&error];
+    if (error != nil) {
+        DDLogError(@"Error while fetching fcm token from keychain. %@", error);
+    }
     
-    return [preferences synchronize];
-}
-
-- (BOOL) writeForKey: (NSString *) key stringValue: (NSString *) value
-{
-    [preferences setValue:key forKey:key];
-    
-    return [preferences synchronize];
+    return password;
 }
 
 @end

@@ -1,12 +1,3 @@
-////
-////  NUInAppMsgCacheManager.h
-////  Pods
-////
-////  Created by Adrian Lazea on 29/08/2017.
-////
-////
-//
-//
 #import <Foundation/Foundation.h>
 #import "NUError.h"
 #import "NSString+LGUtils.h"
@@ -15,17 +6,13 @@
 
 @interface InAppMsgCacheManager : NSObject
 
-+(instancetype)initWithCache:(NUCache*) cache;
 - (void) cacheMessages:(NSArray<InAppMessage* >*) messages;
 - (InAppMessage* ) fetchMessage:(NSString *) iamID;
-- (NSMutableArray<InAppMessage* >*) fetchMessages;
-- (void) clearAll;
+- (NSString *) getNextMessageID;
 - (void) cacheMessage:(InAppMessage* ) message;
-- (void) updateMessage:(InAppMessage* ) message withRemoval:(BOOL) remove;
-- (void) setPendingMessage:(InAppMessage* ) message;
-- (InAppMessage* ) getPendingMessage;
-- (void) clearPendingMessage;
-- (NSMutableArray<NSString* >*) fetchShaList;
+- (void) onMessageDismissed:(NSString* ) messageID;
+
+- (NSString *) getNextSHAKey;
 - (void) removeSha:(NSString *) sha;
 - (void) addNewSha:(NSString *) sha;
 

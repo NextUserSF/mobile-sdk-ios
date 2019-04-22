@@ -1,10 +1,3 @@
-//
-//  UIColor+CreateMethods.h
-//  Pods
-//
-//  Created by Adrian Lazea on 31/08/2017.
-//
-//
 #import <UIKit/UIKit.h>
 
 @interface UIColor (CreateMethods)

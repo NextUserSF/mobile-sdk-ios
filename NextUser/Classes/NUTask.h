@@ -1,11 +1,3 @@
-//
-//  NUTaskNotificationHandler.h
-//  Pods
-//
-//  Created by Adrian Lazea on 26/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, NUTaskType) {
@@ -23,6 +15,9 @@ typedef NS_ENUM(NSUInteger, NUTaskType) {
     TRACK_USER_DEVICE,
     NEW_IAM,
     IAM_CHECK_EVENT,
+    CHECK_CACHES,
+    IAM_DISMISSED,
+    SOCIAL_SHARE,
     TASK_NO_TYPE
 };
 

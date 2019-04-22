@@ -1,10 +1,3 @@
-//
-//  NUSubscriberDevice.m
-//  NextUser
-//
-//  Created by Adrian Lazea on 27/09/2017.
-//
-
 #import <Foundation/Foundation.h>
 #import "NUSubscriberDevice.h"
 #import "NUObjectPropertyStatusUtils.h"

@@ -1,15 +1,6 @@
-//
-//  NUTrackerInitializationTask.m
-//  Pods
-//
-//  Created by Adrian Lazea on 23/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUTrackerInitializationTask.h"
 #import "NUTrackerProperties.h"
-
 
 @implementation NUTrackerInitializationTask
 

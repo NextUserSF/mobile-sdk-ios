@@ -1,11 +1,3 @@
-//
-//  NUDDLog.h
-//  NextUserKit
-//
-//  Created by NextUser on 11/16/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import "CocoaLumberjack.h"
 
 extern DDLogLevel ddLogLevel;

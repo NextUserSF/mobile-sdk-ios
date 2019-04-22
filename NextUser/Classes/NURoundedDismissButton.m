@@ -1,11 +1,3 @@
-//
-//  NURoundedDismissButton.m
-//  NextUserKit
-//
-//  Created by Dino on 4/20/16.
-//  Copyright © 2016 NextUser. All rights reserved.
-//
-
 #import "NURoundedDismissButton.h"
 
 @interface NURoundedDismissButton ()

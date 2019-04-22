@@ -1,11 +1,6 @@
 //
 //  NUTrackTask.h
 //  Pods
-//
-//  Created by Adrian Lazea on 19/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUHttpTask.h"
 #import "NUTask.h"
@@ -17,7 +12,10 @@
     id trackObject;
 }
 
+@property (nonatomic) BOOL queued;
+
 -(instancetype)initForType:(NUTaskType)type  withTrackObject:(id) trackingObject withSession:(NUTrackerSession*) session;
+
 
 @end
 
@@ -25,7 +23,8 @@
 
 @property (nonatomic) id trackObject;
 @property (nonatomic) NUTaskType type;
+@property (nonatomic) BOOL queued;
 
-- (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj;
+- (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj andQueued:(BOOL) queued;
 
 @end

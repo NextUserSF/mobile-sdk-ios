@@ -1,11 +1,3 @@
-//
-//  NUTrackTask.m
-//  Pods
-//
-//  Created by Adrian Lazea on 19/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUTrackerTask.h"
 #import "NUTrackingHTTPRequestHelper.h"
@@ -31,6 +23,7 @@
         taskType = type;
         trackObject = trackingObject;
         session = tSession;
+        _queued = NO;
     }
     
     return self;
@@ -38,7 +31,7 @@
 
 -(id<NUTaskResponse>) responseInstance
 {
-    return [[NUTrackResponse alloc] initWithType:taskType withTrackingObject:trackObject];
+    return [[NUTrackResponse alloc] initWithType:taskType withTrackingObject:trackObject andQueued:_queued];
 }
 
 - (id<NUTaskResponse>) execute: (NUHttpResponse*) responseInstance
@@ -118,11 +111,12 @@
 
 @implementation NUTrackResponse
 
-- (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj
+- (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj andQueued:(BOOL) queued
 {
     if (self = [self initWithType:type shouldNotifyListeners:YES]) {
         self.trackObject = trackObj;
         self.type = type;
+        self.queued = queued;
     }
     
     return self;

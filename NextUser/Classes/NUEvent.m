@@ -1,11 +1,3 @@
-//
-//  NUAction.m
-//  NextUserKit
-//
-//  Created by NextUser on 12/7/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import "NUEvent+Serialization.h"
 #import "NSString+LGUtils.h"
 

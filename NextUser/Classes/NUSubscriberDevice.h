@@ -1,10 +1,3 @@
-//
-//  NUSubscriberDevice.h
-//  NextUser
-//
-//  Created by Adrian Lazea on 27/09/2017.
-//
-
 #import <Foundation/Foundation.h>
 
 @interface NUSubscriberDevice : NSObject

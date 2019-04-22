@@ -1,27 +1,21 @@
-//
-//  NUPrefetchTrackerClient.m
-//  NextUserKit
-//
-//  Created by Dino on 2/10/16.
-//  Copyright © 2016 NextUser. All rights reserved.
-//
-
 #import "NextUserManager.h"
 #import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 #import "MF_Base64Additions.h"
 #import "NUTrackerTask.h"
-#import "NUTaskManager.h"
 #import "NUTask.h"
 #import "NUTrackerInitializationTask.h"
 #import "NUSubscriberDevice.h"
 #import "NUHardwareInfo.h"
+#import "NUInternalTracker.h"
 
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
 #define kInstantWorkflowsJSONKey @"instant_workflows"
+
+const int MAX_PENDING_TASKS = 100;
 
 
 @interface PendingTask : NSObject
@@ -37,18 +31,17 @@
     NUTracker* tracker;
     NUTrackerSession *session;
     Reachability *reachability;
-    NUPushMessageService *pushMessageService;
-    NUAppWakeUpManager *wakeUpManager;
     WorkflowManager* workflowManager;
     InAppMsgCacheManager* inAppMessageCacheManager;
     InAppMsgUIManager* inAppMsgUIManager;
     InAppMsgImageManager* inAppMsgImageManager;
     NUPushNotificationsManager *notificationsManager;
+    NUCartManager *cartManager;
     NSMutableArray *pendingTrackRequests;
     NSLock *sessionRequestLock;
+    NSLock *pendingTasksLock;
     BOOL disabled;
     BOOL initializationFailed;
-    BOOL subscribedToAppStatusNotifications;
 }
 
 -(void) trackSubscriberDevice;
@@ -80,19 +73,24 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     self = [super init];
     if (self) {
-        pendingTrackRequests = [NSMutableArray array];
+        pendingTrackRequests = [NSMutableArray arrayWithCapacity:100];
         tracker = [[NUTracker alloc] init];
         notificationsManager = [[NUPushNotificationsManager alloc] init];
         initializationFailed = NO;
         disabled = NO;
         sessionRequestLock = [[NSLock alloc] init];
-        [self subscribeToAppStateNotificationsOnce];
+        pendingTasksLock = [[NSLock alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveTaskManagerNotification:)
-                                                     name:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME
+                                                     name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidBecomeActiveNotification:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
         
         reachability = [Reachability reachabilityForInternetConnection];
         [reachability startNotifier];
@@ -106,13 +104,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     static dispatch_once_t appInitToken;
     dispatch_once(&appInitToken, ^{
         DDLogInfo(@"Did finish launching with options: %@", launchOptions);
-        if (launchOptions != nil) {
-            UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-            if (localNotification && [NUPushNotificationsManager isNextUserLocalNotification:localNotification]) {
-                [notificationsManager handleLocalNotification:localNotification application:application];
-            }
-        }
-    
         [[NUTaskManager manager] submitTask: [[NUTrackerInitializationTask alloc] init]];
     });
 }
@@ -127,7 +118,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return session;
 }
 
-- (NUPushNotificationsManager *) getNotificationsManager
+- (NUPushNotificationsManager *) notificationsManager
 {
     return notificationsManager;
 }
@@ -153,10 +144,15 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return inAppMsgUIManager;
 }
 
+- (NUCartManager *) cartManager
+{
+    return cartManager;
+}
+
 -(void)receiveTaskManagerNotification:(NSNotification *) notification
 {
     NSDictionary *userInfo = notification.userInfo;
-    id<NUTaskResponse> taskResponse = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
+    id<NUTaskResponse> taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
     
     NUTaskType surfaceType = TASK_NO_TYPE;
     
@@ -175,49 +171,58 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         case TRACK_EVENT:
         case TRACK_PURCHASE:
         case TRACK_SCREEN:
-            if (taskResponse.taskType == TRACK_PURCHASE && [taskResponse successfull]) {
-                NUEvent *purchaseCompletedEvent = [NUEvent eventWithName:@"purchase_completed"];
-                [self trackWithObject:@[purchaseCompletedEvent] withType:TRACK_EVENT];
-            }
             surfaceType = taskResponse.taskType;
-            [self checkNetworkError: taskResponse];
+            [self checkRequestStatus: taskResponse];
         
             break;
         case REGISTER_DEVICE_TOKEN:
             if ([taskResponse successfull] == YES) {
-                NUEvent *subscribedEvent = [NUEvent eventWithName:@"ios_subscribed"];
+                NUEvent *subscribedEvent = [NUEvent eventWithName:TRACK_EVENT_IOS_SUBSCRIBED];
                 [self trackWithObject:@[subscribedEvent] withType:TRACK_EVENT];
 
                 NUUserVariables *userVariable = [[NUUserVariables alloc] init];
-                [userVariable addVariable:@"ios_subscribed" withValue:@"true"];
+                [userVariable addVariable:TRACK_EVENT_IOS_SUBSCRIBED withValue:@"true"];
                 [self trackWithObject:userVariable withType:TRACK_USER_VARIABLES];
+                
+                NUTrackResponse *trackResp = (NUTrackResponse *) taskResponse;
+                NURegistrationToken *regToken = (NURegistrationToken *) [trackResp trackObject];
+                [session persistFCMToken: [regToken token]];
             }
-        case UNREGISTER_DEVICE_TOKENS:
-            [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue:[taskResponse successfull]];
-            [self checkNetworkError: taskResponse];
+            [self checkRequestStatus: taskResponse];
+            
             break;
         default:
             break;
     }
     
     if (surfaceType != TASK_NO_TYPE) {
-        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-        [dictionary setValue:[NSNumber numberWithBool:taskResponse.successfull ] forKey: NU_TRACK_RESPONSE];
-        [dictionary setValue:[NSNumber numberWithInt:surfaceType] forKey: NU_TRACK_EVENT];
-        [[NSNotificationCenter defaultCenter]
-             postNotificationName:COMPLETION_NU_TRACKER_NOTIFICATION_NAME
-             object:nil
-             userInfo:dictionary];
+        id object = nil;
+        if ([taskResponse isKindOfClass:[NUTrackResponse class]]) {
+            NUTrackResponse *trackResp = (NUTrackResponse *) taskResponse;
+            object = [trackResp trackObject];
+        }
+        [self sendNextUserLocalNotification:surfaceType withObject:object andStatus:taskResponse.successfull];
     }
 }
 
-- (void) checkNetworkError: (NUTrackResponse *) response
+- (void) sendNextUserLocalNotification: (NUTaskType )event withObject:(id)object andStatus:(BOOL)status
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setValue:[NSNumber numberWithBool:status] forKey: NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION];
+    [dictionary setValue:[NSNumber numberWithInt:event] forKey: NEXTUSER_LOCAL_NOTIFICATION_EVENT];
+    if (object != nil) {
+        [dictionary setValue: object forKey: NEXTUSER_LOCAL_NOTIFICATION_OBJECT];
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:NEXTUSER_LOCAL_NOTIFICATION object:nil userInfo:dictionary];
+}
+
+- (void) checkRequestStatus: (NUTrackResponse *) response
 {
     if ([response successfull] == NO) {
-        NSInteger errorCode = [response.error code];
-        if (errorCode == -1009 || errorCode == -1005 || errorCode == -1001) {
-            [self queueTrackObject:response.trackObject withType:response.type];
-        }
+        [self queueTrackObject:response.trackObject withType:response.type];
+    } else if ([response queued] == YES) {
+        [self onPendingTaskSuccess];
     }
 }
 
@@ -258,11 +263,13 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         [session setSessionState: Initialized];
         [self trackSubscriberDevice];
         
+        cartManager = [[NUCartManager alloc] init];
+        
         if (session.requestInAppMessages == YES) {
             [self initInAppMsgSessionManagers];
         }
         
-        [self sendPendingTrackRequests];
+        [self popNextPendingTask];
         
     } else {
         DDLogError(@"Setup tracker error: %@", response.error);
@@ -276,7 +283,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     NUSubscriberDevice *subDevice = [[NUSubscriberDevice alloc] init];
     subDevice.os = [NUHardwareInfo systemName];
     subDevice.osVersion = [NUHardwareInfo systemVersion];
-    subDevice.trackingSource = @"nu.ios";
+    subDevice.trackingSource = TRACKING_SOURCE_NAME;
     subDevice.trackingVersion = TRACKER_VERSION;
     subDevice.deviceModel = [NSString stringWithFormat:@"Apple %@", [NUHardwareInfo systemDeviceTypeFormatted:YES]];
     subDevice.resolution = [NSString stringWithFormat:@"%ldx%ld", (long)[NUHardwareInfo screenWidth],(long)[NUHardwareInfo screenHeight]];
@@ -292,11 +299,11 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 -(void) initInAppMsgSessionManagers
 {
     if (inAppMessageCacheManager == nil) {
-        inAppMessageCacheManager = [InAppMsgCacheManager initWithCache:[[NUCache alloc] init]];
+        inAppMessageCacheManager = [[InAppMsgCacheManager alloc] init];
     }
     
     if (inAppMsgImageManager == nil) {
-        inAppMsgImageManager = [InAppMsgImageManager initWithCache:[[NUCache alloc] init]];
+        inAppMsgImageManager = [[InAppMsgImageManager alloc] init];
     }
     
     if (inAppMsgUIManager == nil) {
@@ -308,9 +315,10 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     }
 }
 
--(void)track:(id)trackObject withType:(NUTaskType) taskType
+-(void)track:(id)trackObject withType:(NUTaskType) taskType andQueued:(BOOL) queued
 {
     NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:taskType withTrackObject:trackObject withSession:session];
+    trackTask.queued = queued;
     [self submitTrackerTask:trackTask];
 }
 
@@ -322,8 +330,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             
             return;
         }
-        
-        [self sendPendingTrackRequests];
+        [cartManager trackCartState];
+        [self refreshPendingRequests];
     }
 }
 
@@ -340,7 +348,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         return false;
     }
     
-    [self track:trackObject withType:taskType];
+    [self track:trackObject withType:taskType andQueued:NO];
     
     return YES;
 }
@@ -358,29 +366,38 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)queueTrackObject:(id)trackObject withType:(NUTaskType) taskType
 {
-    if (pendingTrackRequests.count > 100) {
-        return;
+    [pendingTasksLock lock];
+    if (pendingTrackRequests.count == MAX_PENDING_TASKS) {
+        [pendingTrackRequests removeLastObject];
     }
-    
     PendingTask *pendingTask = [PendingTask alloc];
     pendingTask.trackingObject = trackObject;
     pendingTask.taskType = taskType;
-    [pendingTrackRequests addObject:pendingTask];
+    [pendingTrackRequests insertObject:pendingTask atIndex:0];
+    [pendingTasksLock unlock];
+}
+
+-(void) onPendingTaskSuccess
+{
+    [pendingTasksLock lock];
+    [pendingTrackRequests removeLastObject];
+    [self popNextPendingTask];
+    [pendingTasksLock unlock];
 }
 
 - (void)refreshPendingRequests
 {
-    [self sendPendingTrackRequests];
+    [pendingTasksLock lock];
+    [self popNextPendingTask];
+    [pendingTasksLock unlock];
 }
 
-- (void)sendPendingTrackRequests
+- (void)popNextPendingTask
 {
-    while (pendingTrackRequests.count > 0) {
-        PendingTask *pendingTask = pendingTrackRequests.firstObject;
-        [pendingTrackRequests removeObjectAtIndex:0];
-        
+    if (pendingTrackRequests.count > 0) {
+        PendingTask *pendingTask = pendingTrackRequests.lastObject;
         DDLogVerbose(@"Popped request: %@", pendingTask);
-        [self trackWithObject:pendingTask.trackingObject withType:pendingTask.taskType];
+        //[self track:pendingTask.trackingObject withType:pendingTask.taskType andQueued:YES];
     }
 }
 
@@ -392,7 +409,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             if (session && ([session sessionState] == None || [session sessionState] == Failed)) {
                 [session setSessionState: Initializing];
                 DDLogVerbose(@"Start tracker session for apikey: %@", [session apiKey]);
-                [self track:nil withType:SESSION_INITIALIZATION];
+                [self track:nil withType:SESSION_INITIALIZATION andQueued:NO];
             }
             
         } @catch (NSException *exception) {
@@ -441,40 +458,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return level;
 }
 
-- (void)subscribeToAppStateNotificationsOnce
-{
-    if (!subscribedToAppStatusNotifications) {
-        subscribedToAppStatusNotifications = YES;
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidBecomeActiveNotification:)
-                                                     name:UIApplicationDidBecomeActiveNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackgroundNotification:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillTerminateNotification:)
-                                                     name:UIApplicationWillTerminateNotification
-                                                   object:nil];
-    }
-}
-
-- (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
-{
-
-}
-
-- (void)applicationWillTerminateNotification:(NSNotification *)notification
-{
-
-}
-
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
 {
-
+    [self requestSession];
 }
 @end

@@ -1,11 +1,3 @@
-//
-//  NUHardwareInfo.h
-//  Pods
-//
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 
 @interface NUHardwareInfo : NSObject

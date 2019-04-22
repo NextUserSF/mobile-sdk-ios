@@ -1,43 +1,83 @@
-//
-//  NUPurchase.m
-//  NextUserKit
-//
-//  Created by NextUser on 12/7/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
-#import "NUPurchase+Serialization.h"
-#import "NUPurchaseItem.h"
-#import "NUPurchaseDetails.h"
-#import "NSString+LGUtils.h"
+#import <Foundation/Foundation.h>
+#import "NUCart.h"
+#import "NUCart+Serialization.h"
 #import "NUObjectPropertyStatusUtils.h"
+#import "NSString+LGUtils.h"
+#import "Nextuser.h"
+#define TRACK_EVENT_ADD_TO_CART @"add_to_cart"
+#define TRACK_EVENT_REMOVE_FROM_CART @"remove_from_cart"
 
-@interface NUPurchase ()
+@implementation NUCart
 
-// redefinition to be r&w
-@property (nonatomic) double totalAmount;
-@property (nonatomic) NSArray *items; // array of NUPurchaseItem objects
-@property (nonatomic) NUPurchaseDetails *details; // optional
-
-@end
-
-@implementation NUPurchase
-
-+ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items
+- (instancetype)init
 {
-    return [self purchaseWithTotalAmount:totalAmount items:items details:nil];
+    self = [super init];
+    if (self) {
+        _total = 0.0;
+        _items = [[NSMutableArray<NUCartItem *> alloc] init];
+        _tracked = NO;
+    }
+    
+    return self;
 }
 
-+ (instancetype)purchaseWithTotalAmount:(double)totalAmount items:(NSArray *)items details:(NUPurchaseDetails *)details
+-(BOOL) addOrUpdateItem:(NUCartItem *) item
 {
-    NUPurchase *purchase = [[NUPurchase alloc] init];
+    if (_items == nil) {
+        _items = [[NSMutableArray<NUCartItem *> alloc] init];
+    }
     
-    purchase.totalAmount = totalAmount;
-    purchase.items = items;
-    purchase.details = details;
+    if (item.quantity <= 0) {
+        
+        return [self removeItemForID: item.ID];
+    }
     
-    return purchase;
+    if ([_items containsObject:item] == NO) {
+        [_items addObject:item];
+        [self trackCartActionWithEvent:TRACK_EVENT_ADD_TO_CART andProductID:item.ID];
+    } else {
+        for (NUCartItem *next in _items) {
+            if ([next isEqual:item] == YES) {
+                next.quantity = item.quantity;
+            }
+        }
+    }
+    
+    return YES;
 }
+
+-(BOOL) removeItemForID:(NSString *) ID
+{
+    if (ID == nil) {
+        
+        return NO;
+    }
+    
+    if (_items != nil && [_items count] > 0) {
+        NUCartItem *remove = nil;
+        for (NUCartItem *next in _items) {
+            if ([next.ID isEqual:ID]) {
+                remove = next;
+            }
+        }
+        if (remove != nil) {
+            [_items removeObject:remove];
+            [self trackCartActionWithEvent:TRACK_EVENT_REMOVE_FROM_CART andProductID:ID];
+            
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+- (void) trackCartActionWithEvent:(NSString *) eventName andProductID:(NSString *) productID
+{
+    NUEvent *event = [NUEvent eventWithName:eventName];
+    [event setFirstParameter: productID];
+    [[NextUser tracker] trackEvent:event];
+}
+
 
 #pragma mark - Trackable
 
@@ -48,32 +88,32 @@
 
 #pragma mark - Serialization
 
-+ (NSString *)serializedPurchaseStringWithPurchase:(NUPurchase *)purchase
++ (NSString *)serializedPurchaseStringWithPurchase:(NUCart *)cart
 {
     NSMutableString *parametersString = [NSMutableString stringWithString:@""];
     
     // serialize total amount
-    [parametersString appendString:[self URLParameterValueFromDouble:purchase.totalAmount encodeDot:NO]];
+    [parametersString appendString:[self URLParameterValueFromDouble:cart.total encodeDot:NO]];
     
     // serialize items
-    NSString *itemsString = [self serializedPurchaseItemsStringWithItems:purchase.items];
+    NSString *itemsString = [self serializedPurchaseItemsStringWithItems:cart.items];
     [parametersString appendFormat:@",%@", itemsString];
     
     // serialize details
-    if (purchase.details) {
-        NSString *serializedDetails = [self serializedPurchaseDetailsStringWithDetails:purchase.details];
+    if (cart.details) {
+        NSString *serializedDetails = [self serializedPurchaseDetailsStringWithDetails:cart.details];
         [parametersString appendFormat:@",%@", serializedDetails];
     }
     
     return [parametersString copy];
 }
 
-+ (NSString *)serializedPurchaseItemsStringWithItems:(NSArray *)items
++ (NSString *)serializedPurchaseItemsStringWithItems:(NSArray<NUCartItem*> *)items
 {
     NSMutableString *itemsString = [NSMutableString stringWithString:@""];
     
     for (int i=0; i<items.count; i++) {
-        NUPurchaseItem *item = items[i];
+        NUCartItem *item = items[i];
         if (i > 0) {
             [itemsString appendString:@","];
         }
@@ -85,15 +125,15 @@
     return [itemsString copy];
 }
 
-+ (NSString *)serializedPurchaseItemStringWithItem:(NUPurchaseItem *)item
++ (NSString *)serializedPurchaseItemStringWithItem:(NUCartItem *)item
 {
     NSMutableString *itemString = [NSMutableString stringWithFormat:@"%@=",
-                                   [self URLParameterValueFromString:item.productName]];
+                                   [self URLParameterValueFromString:item.name]];
     
     NSMutableArray *keyValuePairs = [NSMutableArray array];
-    if ([NUObjectPropertyStatusUtils isStringValueSet:item.SKU]) {
+    if ([NUObjectPropertyStatusUtils isStringValueSet:item.ID]) {
         [keyValuePairs addObject:[self URLParameterKeyValuePairWithKey:@"SKU"
-                                                           stringValue:item.SKU]];
+                                                           stringValue:item.ID]];
     }
     if ([NUObjectPropertyStatusUtils isStringValueSet:item.category]) {
         [keyValuePairs addObject:[self URLParameterKeyValuePairWithKey:@"category"
@@ -107,9 +147,9 @@
         [keyValuePairs addObject:[self URLParameterKeyValuePairWithKey:@"quantity"
                                                   unsignedIntegerValue:item.quantity]];
     }
-    if ([NUObjectPropertyStatusUtils isStringValueSet:item.productDescription]) {
+    if ([NUObjectPropertyStatusUtils isStringValueSet:item.desc]) {
         [keyValuePairs addObject:[self URLParameterKeyValuePairWithKey:@"description"
-                                                           stringValue:item.productDescription]];
+                                                           stringValue:item.desc]];
     }
     
     [itemString appendString:[keyValuePairs componentsJoinedByString:@";"]];

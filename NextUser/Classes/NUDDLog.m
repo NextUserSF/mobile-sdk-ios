@@ -1,11 +1,3 @@
-//
-//  NUDDLog.m
-//  NextUserKit
-//
-//  Created by NextUser on 11/16/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import "NUDDLog.h"
 
 DDLogLevel ddLogLevel = DDLogLevelVerbose;

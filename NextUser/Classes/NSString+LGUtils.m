@@ -1,11 +1,3 @@
-//
-//  NSString+LGUtils.m
-//  Looks Good
-//
-//  Created by NextUser Bartosak on 07/02/15.
-//  Copyright (c) 2015 Dino Bartosak. All rights reserved.
-//
-
 #import "NSString+LGUtils.h"
 #import <CommonCrypto/CommonDigest.h>
 

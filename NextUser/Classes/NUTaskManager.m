@@ -1,11 +1,3 @@
-//
-//  NSObject+NSOperationManager.m
-//  Pods
-//
-//  Created by Adrian Lazea on 17/05/2017.
-//
-//
-
 #import "NUTaskManager.h"
 #import "NUConcurrentOperation.h"
 #import "NUTrackerTask.h"
@@ -17,8 +9,11 @@
 
 @implementation NUTaskManager
 
-NSString * const COMPLETION_TASK_MANAGER_NOTIFICATION_NAME = @"NUTaskManagerNotification";
-NSString * const COMPLETION_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerNotifObject";
+NSString * const COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME = @"NUTaskManagerHttpRequestNotification";
+NSString * const COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerHttpRequestNotifObject";
+NSString * const COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME = @"NUTaskManagerMessageNotificationName";
+NSString * const COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerMessageNotifObject";
+NSString * const COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY = @"NUTaskManagerMessageNotifType";
 
 #pragma mark - Public
 
@@ -48,8 +43,17 @@ NSString * const COMPLETION_NOTIFICATION_OBJECT_KEY = @"NUTaskManagerNotifObject
 }
 
 -(void) dispatchCompletionNotification:(id<NUTaskResponse>) taskResponse {
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:taskResponse forKey:COMPLETION_NOTIFICATION_OBJECT_KEY];
-    [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME object:nil
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:taskResponse forKey:COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
+    [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME object:nil
+                                                      userInfo:dictionary];
+}
+
+- (void) dispatchMessageNotification:(NUTaskType) type withObject:(id) object;
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]initWithCapacity:2];
+    [dictionary setObject:@(type) forKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY];
+    [dictionary setObject:object forKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
+    [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil
                                                       userInfo:dictionary];
 }
 

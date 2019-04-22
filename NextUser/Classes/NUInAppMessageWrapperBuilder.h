@@ -1,15 +1,20 @@
-//
-//  NUInAppMessageWrapperBuilder.h
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgWrapper.h"
+#import "NUInAppMsgViewSettings.h"
+#import <UIKit/UIKit.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
-@interface InAppMessageWrapperBuilder : NSObject
+typedef void (^InAppMsgPrepareCompletionBlock)(InAppMsgWrapper* wrapper);
 
-+(InAppMsgWrapper*) toWrapper:(InAppMessage* ) message;
+@protocol NUJSExport <JSExport>
+-(void)trackEvent: (NSString*) eventString;
+@end
+
+@interface InAppMessageWrapperBuilder : NSObject <UIWebViewDelegate, NUJSExport>
+
+-(instancetype)initWithCompetion: (InAppMsgPrepareCompletionBlock) completion;
+-(void) prepare:(InAppMessage* ) message;
 
 @end
+
+

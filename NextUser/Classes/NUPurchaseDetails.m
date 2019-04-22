@@ -1,11 +1,3 @@
-//
-//  NUPurchaseDetails.m
-//  NextUserKit
-//
-//  Created by NextUser on 11/18/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import "NUPurchaseDetails.h"
 #import "NUObjectPropertyStatusUtils.h"
 

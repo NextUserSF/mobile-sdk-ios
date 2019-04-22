@@ -1,9 +1,8 @@
-
-
 #import <Foundation/Foundation.h>
 #import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUInAppMessage.h"
+#import "NUCart.h"
 
 @interface NUJSONTransformer : NSObject
 
@@ -11,5 +10,6 @@
 + (id) toInAppMessagesJSON:(NSArray<InAppMessage* >*) messages;
 + (id) toInAppMessageJSON:(InAppMessage* ) message;
 + (InAppMessage* ) toInAppMessage:(id) messageJSON;
++ (NUCart *) toNUCart:(id)cartJSON;
 
 @end

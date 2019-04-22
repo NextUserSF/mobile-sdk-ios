@@ -1,20 +1,12 @@
-//
-//  NUTrackingHTTPRequestHelper.m
-//  NextUserKit
-//
-//  Created by NextUser on 11/11/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUEvent+Serialization.h"
-#import "NUPurchase+Serialization.h"
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
 #import "NUUser+Serialization.h"
 #import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
 #import "MF_Base64Additions.h"
+#import "NUCart+Serialization.h"
 
 @implementation NUTrackingHTTPRequestHelper
 
@@ -45,19 +37,12 @@
 }
 
 
-+(NSMutableDictionary *)trackPurchasesParametersWithPurchases:(NSArray<NUPurchase*> *)purchases
++(NSMutableDictionary *)trackCartParametersWithCart:(NUCart *)cart
 {
-    if (purchases.count > 10) {
-        purchases = [purchases subarrayWithRange:NSMakeRange(0, 10)];
-    }
-    
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:purchases.count];
-    for (int i=0; i<purchases.count; i++) {
-        NSString *purchaseKey = [NSString stringWithFormat:TRACK_PARAM_PU"%d", i];
-        NSString *purchaseValue = [purchases[i] httpRequestParameterRepresentation];
-        
-        parameters[purchaseKey] = purchaseValue;
-    }
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSString *purchaseKey = [NSString stringWithFormat:TRACK_PARAM_PU"%d", 0];
+    NSString *purchaseValue = [cart httpRequestParameterRepresentation];
+    parameters[purchaseKey] = purchaseValue;
     
     return parameters;
 }
@@ -138,7 +123,7 @@
             [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackEventsParametersWithEvents: trackObject]];
             break;
         case TRACK_PURCHASE:
-            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackPurchasesParametersWithPurchases: trackObject]];
+            [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackCartParametersWithCart: trackObject]];
             break;
         case TRACK_USER:
             [data addEntriesFromDictionary:[NUTrackingHTTPRequestHelper trackUserParametersWithVariables: trackObject]];

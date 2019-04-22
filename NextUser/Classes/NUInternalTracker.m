@@ -1,11 +1,3 @@
-//
-//  NUInternalTracker.m
-//  Pods
-//
-//  Created by Adrian Lazea on 08/09/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInternalTracker.h"
 #import "NUEvent+Serialization.h"

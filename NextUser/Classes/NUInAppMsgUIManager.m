@@ -1,11 +1,3 @@
-//
-//  NUInAppMsgUIManager.m
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgUIManager.h"
 #import "NextUserManager.h"
@@ -17,18 +9,18 @@
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
 #import "NUInternalTracker.h"
+#import "NUTaskManager.h"
 
 @interface InAppMsgUIManager()
 {
     NSOperationQueue *queue;
     InAppMsgViewSettings *viewSettings;
+    InAppMessageWrapperBuilder *wrapperBuilder;
     NUPopUpView *popup;
-    NSLock *IAMS_LOCK;
-    NSString *currentParams;
+    InAppMsgWrapper* currentWrapper;
+    dispatch_group_t iamPrepareGroup;
 }
-
 @end
-
 
 @implementation InAppMsgUIManager
 
@@ -40,7 +32,13 @@
         [queue setMaxConcurrentOperationCount:1];
         [queue setName:@"com.nextuser.iamsDisplayQueue"];
         viewSettings = [[InAppMsgViewSettings alloc] init];
-        IAMS_LOCK = [[NSLock alloc] init];
+        iamPrepareGroup = dispatch_group_create();
+        wrapperBuilder = [[InAppMessageWrapperBuilder alloc] initWithCompetion:^(InAppMsgWrapper *wrapper) {
+            currentWrapper = wrapper;
+            dispatch_group_leave(iamPrepareGroup);
+        }];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageNotification:)
+                                                     name:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil];
     }
     
     return self;
@@ -48,131 +46,101 @@
 
 -(void) sendToQueue:(NSString *) iamID
 {
-    if ([IAMS_LOCK tryLock]) {
-        @try
-        {
-            NSOperation *operation = [self createIamDisplayOperation:iamID];
-            [queue addOperation:operation];
-        } @catch (NSException *exception) {
-            DDLogError(@"Exception on workflows removal for iamID: %@%@",iamID, [exception reason]);
-        } @finally {
-            [IAMS_LOCK unlock];
-        }
-    }
-}
-
-
--(InAppMsgViewSettings *) viewSettings
-{
-    return viewSettings;
-}
-
-
--(NSOperation *) createIamDisplayOperation:(NSString *) iamID
-{
-    return [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayOperationSelector:) object:iamID];
-}
-
--(void)displayOperationSelector:(NSString *) iamID
-{
-    
-    DDLogInfo(@"got in que with id:%@", iamID);
-    dispatch_group_t iamDisplayGroup = dispatch_group_create();
-    dispatch_group_enter(iamDisplayGroup);
-    
     @try {
-        
-        InAppMessage* message = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchMessage:iamID];
-        if (message != nil) {
-            InAppMsgWrapper* wrapper = [InAppMessageWrapperBuilder toWrapper:message];
-            if (wrapper != nil) {
-                DDLogInfo(@"we have the wrapper:%@", iamID);
-                wrapper.interactionListener = self;
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    InAppMsgContentView *contentView;
-                    switch (wrapper.message.type) {
-                        case SKINNY:
-                            contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                            break;
-                        case MODAL:
-                            contentView = [[InAppMsgModalContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                            break;
-                        case FULL:
-                            contentView = [[InAppMsgFullContentView alloc] initWithWrapper:wrapper withSettings:viewSettings];
-                            break;
-                        default:
-                            DDLogError(@"Iam Type not defined.");
-                            dispatch_group_leave(iamDisplayGroup);
-                            return;
-                    }
-                    
-                    __weak NSString *trackParams = nil;
-                    if (message.interactions != nil && message.interactions.nuTrackingParams != nil) {
-                        trackParams = message.interactions.nuTrackingParams;
-                        currentParams = message.interactions.nuTrackingParams;
-                    }
-                    
-                    NUPopUpLayout layout = [contentView getLayout];
-                    
-                    if (UIApplication.sharedApplication.keyWindow == nil) {
-                        popup = [NUPopUpView popupWithContentView:contentView
-                                                        withFrame:UIApplication.sharedApplication.keyWindow.frame
-                                                         showType:NUPopUpShowTypeSlideInFromLeft
-                                                      dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                         maskType:NUPopUpMaskTypeNone
-                                         dismissOnBackgroundTouch:NO
-                                            dismissOnContentTouch:YES];
-                    } else {
-                        popup = [NUPopUpView popupWithContentView:contentView
-                                                         showType:NUPopUpShowTypeSlideInFromLeft
-                                                      dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                         maskType:NUPopUpMaskTypeNone
-                                         dismissOnBackgroundTouch:NO
-                                            dismissOnContentTouch:YES];
-                    }
-                    
-                    popup.didFinishShowingCompletion = ^{
-                        DDLogInfo(@"show iam completed: %@", iamID);
-                        [InternalEventTracker trackEvent:TRACK_ACTION_DISPLAYED withParams:trackParams];
-                    };
-                    
-                     __weak dispatch_group_t weakGroup = iamDisplayGroup;
-                    popup.didFinishDismissingCompletion = ^{
-                        DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
-                        [InternalEventTracker trackEvent:TRACK_ACTION_DISMISSED withParams:trackParams];
-                        dispatch_group_leave(weakGroup);
-                    };
-                    
-                    if (wrapper.message.dismissTimeout != 0) {
-                        [popup showWithLayout:layout duration: [wrapper.message.dismissTimeout intValue] / 1000];
-                    } else {
-                        DDLogInfo(@"before we show:%@", iamID);
-                        [popup showWithLayout:layout];
-                    }
-                });
-                
-                DDLogInfo(@"winter...%@", iamID);
-                dispatch_group_wait(iamDisplayGroup, DISPATCH_TIME_FOREVER);
-                DDLogInfo(@"summer again...%@", iamID);
-            }
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayOperationSelector:) object:iamID]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on sendToQueue for iamID: %@%@", iamID, [exception reason]);
+    }
+}
+
+-(void) displayOperationSelector:(NSString *) iamID
+{
+    DDLogInfo(@"got in que with id:%@", iamID);
+    dispatch_group_enter(iamPrepareGroup);
+    InAppMessage* message = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchMessage: iamID];
+    if (message != nil) {
+        [wrapperBuilder prepare:message];
+    }
+    
+    dispatch_group_notify(iamPrepareGroup, dispatch_get_main_queue(), ^{
+        if ([currentWrapper state] != READY) {
+            DDLogInfo(@" INVALID WRAPPER STATE :%@ ", iamID);
+            
+            return;
         }
         
-    }@catch(NSException *e) {
-        DDLogError(@"exception on iam display: %@", [e reason]);
-        dispatch_group_leave(iamDisplayGroup);
-    }@catch(NSError *e) {
-        DDLogError(@"error on iam display: %@", e);
-        dispatch_group_leave(iamDisplayGroup);
-    }
+        @try {
+            DDLogInfo(@"we have the wrapper:%@", iamID);
+            currentWrapper.interactionListener = self;
+            InAppMsgContentView *contentView;
+            switch (currentWrapper.message.type) {
+                case SKINNY:
+                    contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                    
+                    break;
+                case MODAL:
+                    contentView = [[InAppMsgModalContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                    
+                    break;
+                case FULL:
+                    contentView = [[InAppMsgFullContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                    
+                    break;
+                default:
+                    DDLogError(@"Iam Type not defined.");
+                    
+                    return;
+            }
+            
+            __weak NSString *trackParams = currentWrapper.message.interactions.nuTrackingParams;
+            NUPopUpLayout layout = [contentView getLayout];
+            if (UIApplication.sharedApplication.keyWindow == nil) {
+                popup = [NUPopUpView popupWithContentView:contentView
+                                                withFrame:UIApplication.sharedApplication.keyWindow.frame
+                                                 showType:NUPopUpShowTypeSlideInFromLeft
+                                              dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                 maskType:NUPopUpMaskTypeNone
+                                 dismissOnBackgroundTouch:NO
+                                    dismissOnContentTouch:NO];
+            } else {
+                popup = [NUPopUpView popupWithContentView:contentView
+                                                 showType:NUPopUpShowTypeSlideInFromLeft
+                                              dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                 maskType:NUPopUpMaskTypeNone
+                                 dismissOnBackgroundTouch:NO
+                                    dismissOnContentTouch:NO];
+            }
+            
+            popup.didFinishShowingCompletion = ^{
+                DDLogInfo(@"show iam completed: %@", iamID);
+                [InternalEventTracker trackEvent:TRACK_EVENT_DISPLAYED withParams:trackParams];
+            };
+            
+            popup.didFinishDismissingCompletion = ^{
+                DDLogInfo(@"dismiss iam completed..free queue:%@", iamID);
+                [InternalEventTracker trackEvent:TRACK_EVENT_DISMISSED withParams:trackParams];
+                [[NUTaskManager manager] dispatchMessageNotification:IAM_DISMISSED withObject:[message ID]];
+            };
+            
+            if (currentWrapper.message.dismissTimeout != 0) {
+                [popup showWithLayout:layout duration: [currentWrapper.message.dismissTimeout intValue] / 1000];
+            } else {
+                DDLogInfo(@"before we show:%@", iamID);
+                [popup showWithLayout:layout];
+            }
+        } @catch(NSException *e) {
+            DDLogError(@"exception on iam display: %@", [e reason]);
+        } @catch(NSError *e) {
+            DDLogError(@"error on iam display: %@", e);
+        }
+    });
 }
 
 - (void) onInteract:(InAppMsgClick *) clickConfig
 {
-    
     DDLogInfo(@"interacted with iam..");
-    [InternalEventTracker trackEvent:TRACK_ACTION_INTERACTED withParams:currentParams];
-    if (clickConfig == nil || !clickConfig.action || clickConfig.action == NO_ACTION) {
+    [InternalEventTracker trackEvent:TRACK_EVENT_CLICKED withParams:currentWrapper.message.interactions.nuTrackingParams];
+    if (clickConfig == nil || clickConfig.action == NO_ACTION) {
         [popup dismiss:YES];
         
         return;
@@ -185,20 +153,46 @@
     DDLogInfo(@"interacted with iam:%lu", (unsigned long)clickConfig.action);
     
     switch (clickConfig.action) {
-        case DISMISS:
-            [popup dismiss:YES];
-            break;
         case URL:
         case DEEP_LINK:
             if ([NSString lg_isEmptyString:clickConfig.value] == NO) {
                 [[UIApplication sharedApplication] openURL:[NSURL URLWithString: clickConfig.value]];
             }
             break;
-        case LANDING_PAGE:
+        default:
+            break;
+    }
+    [popup dismiss:YES];
+}
+
+-(InAppMsgViewSettings *) viewSettings
+{
+    return viewSettings;
+}
+
+-(BOOL) isShowing
+{
+    return currentWrapper != nil;
+}
+
+-(void)receiveMessageNotification:(NSNotification *) notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NUTaskType type = [[userInfo valueForKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY] intValue];
+    switch (type) {
+        case IAM_DISMISSED:
+            [self onIamDismissed:userInfo];
             break;
         default:
             break;
     }
+}
+
+- (void) onIamDismissed:(NSDictionary *)userInfo
+{
+    NSString *messageID = [userInfo objectForKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
+    [[[NextUserManager sharedInstance] inAppMsgCacheManager] onMessageDismissed: messageID];
+    currentWrapper = nil;
 }
 
 @end

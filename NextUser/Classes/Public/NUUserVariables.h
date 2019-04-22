@@ -1,11 +1,8 @@
 #import <Foundation/Foundation.h>
 
-/**
- *  This class creates an user instance
- */
 @interface NUUserVariables : NSObject
 
-@property (nonatomic) NSMutableDictionary *userVariables;
+@property (nonatomic) NSMutableDictionary *variables;
 
 - (BOOL) hasVariable:(NSString *)variableName;
 

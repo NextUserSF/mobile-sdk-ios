@@ -1,11 +1,3 @@
-//
-//  NUInAppMsgWrapper.h
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMessage.h"
 
@@ -13,11 +5,17 @@
 - (void) onInteract:(InAppMsgClick*) clickConfig;
 @end
 
+typedef NS_ENUM(NSUInteger, DisplayState) {
+    PREPARING = 0,
+    READY,
+    FAILED
+};
+
 
 @interface InAppMsgWrapper : NSObject
 
-@property(nonatomic) InAppMessage* message;
-@property(nonatomic) UIImage* messageImage;
+@property(nonatomic) InAppMessage *message;
+@property(nonatomic) UIImage *messageImage;
 @property(nonatomic) BOOL image;
 @property(nonatomic) BOOL content;
 @property(nonatomic) BOOL title;
@@ -25,14 +23,19 @@
 @property(nonatomic) BOOL dismiss;
 @property(nonatomic) BOOL footer;
 @property(nonatomic) BOOL interactions;
+@property(nonatomic) BOOL contentHTML;
 @property(nonatomic) CGSize imageSize;
 @property(nonatomic) id<InAppMsgInteractionListener> interactionListener;
+@property(nonatomic) UIWebView *webView;
+@property(nonatomic) DisplayState state;
+
 
 + (instancetype) initWithMessage:(InAppMessage*) message;
 
 - (BOOL) isSingleImage;
 - (BOOL) hasBody;
 - (BOOL) containsHeader;
+- (BOOL) isContentHTML;
 - (InAppMsgText* ) getHeader;
 - (InAppMsgText* ) getContent;
 - (InAppMsgText* ) getTitle;

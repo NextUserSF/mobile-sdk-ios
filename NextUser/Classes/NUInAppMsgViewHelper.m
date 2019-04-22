@@ -1,11 +1,3 @@
-//
-//  NUInAppMsgViewHelper.m
-//  Pods
-//
-//  Created by Adrian Lazea on 31/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgViewHelper.h"
 #import "UIColor+CreateMethods.h"

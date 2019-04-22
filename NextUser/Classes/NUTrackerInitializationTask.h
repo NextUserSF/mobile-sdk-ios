@@ -1,11 +1,3 @@
-//
-//  NUTrackerInitializationTask.h
-//  Pods
-//
-//  Created by Adrian Lazea on 23/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUConcurrentOperation.h"
 #import "NUTask.h"

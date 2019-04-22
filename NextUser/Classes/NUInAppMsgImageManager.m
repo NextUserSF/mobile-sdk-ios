@@ -1,11 +1,3 @@
-//
-//  NUInAppMsgImageManager.m
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
-
 #import "NUInAppMsgImageManager.h"
 #import "NSString+LGUtils.h"
 
@@ -16,18 +8,11 @@
     NSBundle *bundle;
 }
 
-+ (instancetype)initWithCache:(NUCache*) cache
-{
-    InAppMsgImageManager* instance = [[InAppMsgImageManager alloc] init: cache];
-    
-    return instance;
-}
-
-- (instancetype)init:(NUCache*)cache
+- (instancetype)init
 {
     self = [super init];
     if (self) {
-        nuCache = cache;
+        nuCache = [[NUCache alloc] init];
         bundle = [NSBundle bundleForClass:[self class]];
     }
     
@@ -36,22 +21,31 @@
 
 - (UIImage *)fetchImageSync:(NSString* )url toSize:(CGSize)theNewSize
 {
-    NSData * imageData;
-    BOOL fileExists = [nuCache containsFile:[url MD5String]] == YES;
-    if (fileExists == YES) {
-        imageData = [nuCache readFromFile:[url MD5String]];
-    } else {
-        imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString: url]];
-    }
-    
-    if (imageData != nil && [imageData length] > 0) {
-        if (fileExists == NO) {
-            [nuCache writeData:imageData toFile:[url MD5String]];
+    @try {
+        NSData * imageData;
+        BOOL fileExists = [nuCache containsFile:[url MD5String]] == YES;
+        if (fileExists == YES) {
+            imageData = [nuCache readFromFile:[url MD5String]];
+        } else {
+            imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString: url]];
         }
-        return [self scaleImage:[UIImage imageWithData: imageData] toSize:theNewSize];
-    }
     
-    return nil;
+        if (imageData != nil && [imageData length] > 0) {
+            if (fileExists == NO) {
+                [nuCache writeData:imageData toFile:[url MD5String]];
+            }
+        
+            return [self scaleImage:[UIImage imageWithData: imageData] toSize:theNewSize];
+        }
+    
+        return nil;
+    } @catch(NSException *e) {
+        
+        return nil;
+    }@catch(NSError *e) {
+        
+        return nil;
+    }
 }
 
 -(UIImage*) getImageResource:(NSString *) imageName

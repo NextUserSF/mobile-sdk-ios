@@ -1,19 +1,12 @@
 //
-//  NUInAppMsgContentView.h
-//  Pods
-//
-//  Created by Adrian Lazea on 31/08/2017.
-//
-//
-
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgWrapper.h"
 #import "NUInAppMsgViewSettings.h"
 #import "NUInAppMessageUIView.h"
 #import "NUUIButton.h"
+#import "NUDDLog.h"
 
-@interface InAppMsgContentView : UIView
+@interface InAppMsgContentView : UIView <UIWebViewDelegate>
 {
     InAppMsgWrapper *wrapper;
     InAppMsgViewSettings *settings;
@@ -50,7 +43,6 @@
 - (void)nuButton0Pressed:(id)sender;
 - (void)nuButton1Pressed:(id)sender;
 - (NUPopUpLayout) getLayout;
-
 
 #pragma mark Subclassing
 - (NUPopUpLayout) createLayout;

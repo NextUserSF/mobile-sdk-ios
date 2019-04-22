@@ -1,11 +1,3 @@
-//
-//  NUInAppMsgContentView.m
-//  Pods
-//
-//  Created by Adrian Lazea on 31/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgContentView.h"
 #import "UIColor+CreateMethods.h"
@@ -33,7 +25,6 @@
     return mainLayout;
 }
 
-
 -(void) build
 {
     [self validate];
@@ -44,49 +35,56 @@
         self.backgroundColor = [InAppMsgViewHelper bgColor:wrapper.message.backgroundColor];
     }
     
-    layoutWithMarginsView = [[UIView alloc] init];
-    [layoutWithMarginsView setTranslatesAutoresizingMaskIntoConstraints: NO];
-    [layoutWithMarginsView setClipsToBounds:YES];
-
-    if (wrapper.dismiss == YES || wrapper.headerText == YES) {
-        headerView = [[UILabel alloc] init];
-        [layoutWithMarginsView addSubview:headerView];
-    }
-    
-    if (wrapper.image == YES) {
-        coverImgView = [[UIImageView alloc] init];
-        [layoutWithMarginsView addSubview:coverImgView];
-    }
-    
-    if ([wrapper hasBody] == YES) {
-        contentView = [[UIView alloc] init];
-        [layoutWithMarginsView addSubview:contentView];
+    if ([wrapper isContentHTML] == YES) {
+        [self setupMainContainer];
+        [self addSubview:wrapper.webView];
+    } else {
+        layoutWithMarginsView = [[UIView alloc] init];
+        [layoutWithMarginsView setTranslatesAutoresizingMaskIntoConstraints: NO];
+        [layoutWithMarginsView setClipsToBounds:YES];
         
-        if (wrapper.title == YES) {
-            contentTitleView = [[UILabel alloc] init];
-            [contentView addSubview:contentTitleView];
+        if (wrapper.dismiss == YES || wrapper.headerText == YES) {
+            headerView = [[UILabel alloc] init];
+            [layoutWithMarginsView addSubview:headerView];
         }
         
-        if (wrapper.content == YES) {
-            contentTextView = [[UILabel alloc] init];
-            [contentView addSubview:contentTextView];
+        if (wrapper.image == YES) {
+            coverImgView = [[UIImageView alloc] init];
+            [layoutWithMarginsView addSubview:coverImgView];
         }
+        
+        if ([wrapper hasBody] == YES) {
+            contentView = [[UIView alloc] init];
+            [layoutWithMarginsView addSubview:contentView];
+            
+            if (wrapper.title == YES) {
+                contentTitleView = [[UILabel alloc] init];
+                [contentView addSubview:contentTitleView];
+            }
+            
+            if (wrapper.content == YES) {
+                contentTextView = [[UILabel alloc] init];
+                [contentView addSubview:contentTextView];
+            }
+        }
+        
+        if (wrapper.footer == YES) {
+            footerView = [[UIView alloc] init];
+            [layoutWithMarginsView addSubview:footerView];
+        }
+        
+        [self setupMainContainer];
+        [self setupMainContainerWithMargins];
+        [self setupHeaderContainer];
+        [self setupCoverContainer];
+        [self setupContentContainer];
+        [self setupFooterContainer];
     }
-    
-    if (wrapper.footer == YES) {
-        footerView = [[UIView alloc] init];
-        [layoutWithMarginsView addSubview:footerView];
-    }
-    
-    [self setupMainContainer];
-    [self setupMainContainerWithMargins];
-    [self setupHeaderContainer];
-    [self setupCoverContainer];
-    [self setupContentContainer];
-    [self setupFooterContainer];
     
     mainLayout = [self createLayout];
     [NSLayoutConstraint activateConstraints:constraints];
+    
+    
 }
 
 - (void) setupMainContainer
@@ -196,21 +194,33 @@
     [button setTranslatesAutoresizingMaskIntoConstraints: NO];
     button.layer.cornerRadius = settings.cornerRadius;
     
-    [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateNormal];
-    [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateSelected];
-    
-    if (@available(iOS 8.2, *)) {
-        [button.titleLabel setFont: [UIFont systemFontOfSize:buttonConfig.textSize weight:UIFontWeightLight]];
-    } else {
-        // Fallback on earlier versions
+    if (buttonConfig.unSelectedBgColor != nil) {
+        [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.unSelectedBgColor] forState:UIControlStateNormal];
     }
-    [button setTitle:buttonConfig.text forState:UIControlStateNormal];
-    [button setTitleColor:[InAppMsgViewHelper textColor: buttonConfig.textColor] forState:UIControlStateNormal];
-    [button setTitleColor:[[button titleColorForState:UIControlStateNormal] colorWithAlphaComponent:0.5] forState:UIControlStateHighlighted];
     
-    [button addTarget:self
-            action:selector
-  forControlEvents:UIControlEventTouchDown];
+    if (buttonConfig.selectedBGColor != nil) {
+        [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.selectedBGColor] forState:UIControlStateNormal];
+    }
+    
+    [button setBackgroundColor:[InAppMsgViewHelper textColor: buttonConfig.selectedBGColor] forState:UIControlStateSelected];
+    
+    if (buttonConfig.textSize != 0) {
+        if (@available(iOS 8.2, *)) {
+            [button.titleLabel setFont: [UIFont systemFontOfSize:buttonConfig.textSize weight:UIFontWeightLight]];
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+    
+    [button setTitle:buttonConfig.text forState:UIControlStateNormal];
+    
+    if (buttonConfig.textColor != nil) {
+        [button setTitleColor:[InAppMsgViewHelper textColor: buttonConfig.textColor] forState:UIControlStateNormal];
+    } else {
+        [button setTitleColor:[[button titleColorForState:UIControlStateNormal] colorWithAlphaComponent:0.5] forState:UIControlStateHighlighted];
+    }
+    
+    [button addTarget:self action:selector forControlEvents:UIControlEventTouchDown];
     
     return button;
 }

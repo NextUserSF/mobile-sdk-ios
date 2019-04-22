@@ -1,11 +1,3 @@
-//
-//  NUInAppMessage.m
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
-
 #import "NUInAppMessage.h"
 
 @implementation InAppMessage
@@ -17,7 +9,6 @@
     
     return NO;
 }
-
 
 - (NSUInteger)hash {
     return [self.ID hash];

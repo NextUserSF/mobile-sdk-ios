@@ -1,10 +1,3 @@
-//
-//  NUInAppMessage.h
-//  Pods
-//
-//  Created by Adrian Lazea on 30/08/2017.
-//
-//
 #import <Foundation/Foundation.h>
 #import "NUInAppMsgBody.h"
 #import "NUInAppMsgInteractions.h"
@@ -12,6 +5,7 @@
 
 @interface InAppMessage : NUJSONObject
 
+@property (nonatomic) NSString* storageIdentifier;
 @property (nonatomic) NSString* ID;
 @property (nonatomic) InAppMsgLayoutType type;
 @property (nonatomic) InAppMsgBody* body;

@@ -1,13 +1,5 @@
-//
-//  NUIamWorkflowManager.m
-//  Pods
-//
-//  Created by Adrian Lazea on 11/07/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
-#import "NUWorkflowManager.h"
+#import "NUInAppMsgWorkflowManager.h"
 #import "NUTrackerSession.h"
 #import "NUTask.h"
 #import "NUTaskManager.h"
@@ -18,11 +10,11 @@
 #import "NextUserManager.h"
 
 #define kIAMMessageJSONKey @"message"
-#define kIAMSHAJSONKey @"key"
 
 @interface WorkflowManager ()
 {
     NUTrackerSession* session;
+    BOOL messageConsumed;
 }
 
 @end
@@ -41,8 +33,19 @@
     self = [super init];
     if (self) {
         session = tSession;
+        messageConsumed = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:)
-                                                     name:COMPLETION_TASK_MANAGER_NOTIFICATION_NAME object:nil];
+                                                     name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidBecomeActiveNotification:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackgroundNotification:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        [self checkCaches];
     }
     
     return self;
@@ -56,12 +59,8 @@
 -(void)receiveNotification:(NSNotification *) notification
 {
     NSDictionary *userInfo = notification.userInfo;
-    NUTrackResponse* taskResponse = userInfo[COMPLETION_NOTIFICATION_OBJECT_KEY];
-    
+    NUTrackResponse* taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
     switch (taskResponse.taskType) {
-        case SESSION_INITIALIZATION:
-            [self checkCaches];
-            break;
         case TRACK_EVENT:
             [self onTrackEvent: [taskResponse trackObject]];
             break;
@@ -75,32 +74,29 @@
 
 - (void) checkCaches
 {
-    NSMutableArray<InAppMessage* > *messages = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchMessages];
-    if (messages != nil)
-    {
-        for(InAppMessage *message in messages)
+    if(messageConsumed == NO && [[[NextUserManager sharedInstance] inAppMsgUIManager] isShowing] == NO) {
+        NSString *nextIamId = [[[NextUserManager sharedInstance] inAppMsgCacheManager] getNextMessageID];
+        if (nextIamId != nil)
         {
-            [[[NextUserManager sharedInstance] inAppMsgUIManager] sendToQueue: [message ID]];
+            [[[NextUserManager sharedInstance] inAppMsgUIManager] sendToQueue: nextIamId];
+            messageConsumed = YES;
         }
     }
-    
-    NSMutableArray<NSString* >  *shaList = [[[NextUserManager sharedInstance] inAppMsgCacheManager] fetchShaList];
-    if (shaList != nil)
+
+    NSString* nextSHAKey = [[[NextUserManager sharedInstance] inAppMsgCacheManager] getNextSHAKey];
+    if (nextSHAKey != nil)
     {
         NUTaskManager* manager = [NUTaskManager manager];
-        for(NSString *sha in shaList)
-        {
-            NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:sha withSession:session];
-            [manager submitTask:task];
-        }
+        NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:nextSHAKey withSession:session];
+        [manager submitTask:task];
     }
 }
 
 - (void) onTrackEvent: (id) trackObject
 {
-    NUTaskManager* manager = [NUTaskManager manager];
-    NUTrackerTask* task = [[NUTrackerTask alloc] initForType:IAM_CHECK_EVENT withTrackObject:trackObject withSession:session];
-    [manager submitTask:task];
+//    NUTaskManager* manager = [NUTaskManager manager];
+//    NUTrackerTask* task = [[NUTrackerTask alloc] initForType:IAM_CHECK_EVENT withTrackObject:trackObject withSession:session];
+//    [manager submitTask:task];
 }
 
 - (void) onNewInAppMessage: (NUTrackResponse*) taskResponse
@@ -117,11 +113,21 @@
             if (message != nil)
             {
                 [[[NextUserManager sharedInstance] inAppMsgCacheManager] cacheMessage: message];
-                [[[NextUserManager sharedInstance] inAppMsgCacheManager] removeSha: [responseDict objectForKey: kIAMSHAJSONKey]];
-                [[[NextUserManager sharedInstance] inAppMsgUIManager] sendToQueue: [message ID]];
+                [[[NextUserManager sharedInstance] inAppMsgCacheManager] removeSha: [message storageIdentifier]];
+                [self checkCaches];
             }
         }
     }
+}
+
+- (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
+{
+    messageConsumed = NO;
+}
+
+- (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
+{
+    [self checkCaches];
 }
 
 @end

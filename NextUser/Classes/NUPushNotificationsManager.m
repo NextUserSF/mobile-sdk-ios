@@ -1,11 +1,8 @@
 #import "NUPushNotificationsManager.h"
 #import "NextUserManager.h"
 
-
 @interface NUPushNotificationsManager() <UNUserNotificationCenterDelegate>
 {
-    NUPushMessageService *pushMessageService;
-    NUAppWakeUpManager *wakeUpManager;
 }
 @end
 
@@ -14,73 +11,36 @@
 -(instancetype)init
 {
     self = [super init];
-    if (self) {
-        wakeUpManager = [NUAppWakeUpManager manager];
-        wakeUpManager.delegate = self;
-    }
     
     return self;
 }
 
-- (void)pushMessageService:(NUPushMessageService *)service didReceiveMessages:(NSArray *)messages
-{
-    // TODO: figure out scheduling logic. Schedule all messages or skip some of them if they are overlapping.
-    for (NUPushMessage *message in messages) {
-        [self scheduleLocalNotificationForMessage:message];
-    }
-}
-
-- (void)scheduleLocalNotificationForMessage:(NUPushMessage *)message
-{
-    DDLogInfo(@"Schedule local note for message: %@", message);
-    UILocalNotification *note = [self localNotificationFromPushMessage:message];
-    [[UIApplication sharedApplication] scheduleLocalNotification:note];
-}
-
-- (UILocalNotification *)localNotificationFromPushMessage:(NUPushMessage *)message
-{
-    UILocalNotification *note = [[UILocalNotification alloc] init];
-    note.timeZone = [NSTimeZone defaultTimeZone];
-    note.alertBody = message.messageText;
-    note.fireDate = message.fireDate;
-    
-    NSData *UIThemeData = [NSKeyedArchiver archivedDataWithRootObject:message.UITheme];
-    
-    NSDictionary *userInfo = @{kPushMessageLocalNoteTypeKey : @YES,
-                               kPushMessageContentURLKey : message.contentURL.absoluteString,
-                               kPushMessageUIThemeDataKey : UIThemeData};
-    note.userInfo = userInfo;
-    
-    return note;
-}
-
 - (void)submitFCMRegistrationToken:(NSString *) fcmToken
 {
+    NUTrackerSession *session = [[NextUserManager sharedInstance] getSession];
+    if (session.trackerProperties.notifications == NO) {
+        DDLogInfo(@"Notifications systemnot active");
+        
+        return;
+    }
+    
+    NSString *persistedUserToken = [session getdDeviceFCMToken];
+    if (persistedUserToken != nil && [persistedUserToken isEqualToString:fcmToken]) {
+        DDLogInfo(@"Already persisted fcm token: %@", persistedUserToken);
+        
+        return;
+    }
+    
     NURegistrationToken *deviceToken = [[NURegistrationToken alloc] init];
     deviceToken.token = fcmToken;
     deviceToken.provider = @"google";
-
-    NUTrackerSession *session = [[NextUserManager sharedInstance] getSession];
-    if (session.trackerProperties.notifications == NO) {
-        return;
-    }
-    
-    NSString *persistedUserToken = [session readStringValueForKey: USER_TOKEN_KEY];
-    BOOL tokenSubmitted = [session readBoolValueForKey:USER_TOKEN_SUBMITTED_KEY];
-    
-    if (persistedUserToken != nil && [persistedUserToken isEqualToString:fcmToken] && tokenSubmitted == YES) {
-        return;
-    }
-    
-    [session writeForKey:USER_TOKEN_KEY stringValue:fcmToken];
     [[NextUserManager sharedInstance] trackWithObject:deviceToken withType:REGISTER_DEVICE_TOKEN];
 }
 
 - (void)unregisterFCMRegistrationToken
 {
     NUTrackerSession *session = [[NextUserManager sharedInstance] getSession];
-    [session writeForKey:USER_TOKEN_KEY stringValue: nil];
-    [session writeForKey:USER_TOKEN_SUBMITTED_KEY boolValue: NO];
+    [session clearFcmToken];
     [[NextUserManager sharedInstance] trackWithObject:nil withType:UNREGISTER_DEVICE_TOKENS];
 }
 
@@ -178,66 +138,27 @@
     return UIBackgroundFetchResultNewData;
 }
 
--(void)requestLocationPersmissions
-{
-    [wakeUpManager requestLocationUsageAuthorization];
-}
-
-- (NUPushMessage *)pushMessageFromLocalNotification:(UILocalNotification *)notification
-{
-    NUPushMessage *message = [[NUPushMessage alloc] init];
-    message.messageText = notification.alertBody;
-    message.contentURL = [NSURL URLWithString:notification.userInfo[kPushMessageContentURLKey]];
-    message.UITheme = [NSKeyedUnarchiver unarchiveObjectWithData:notification.userInfo[kPushMessageUIThemeDataKey]];
-    
-    return message;
-}
-
-+ (BOOL)isNextUserLocalNotification:(UILocalNotification *)note
-{
-    return note.userInfo[kPushMessageLocalNoteTypeKey] != nil;
-}
-
-- (void)handleLocalNotification:(UILocalNotification *)notification application:(UIApplication *)application
-{
-    if ([NUPushNotificationsManager isNextUserLocalNotification:notification]) {
-        
-        DDLogInfo(@"Handle local notification. App state: %@", @(application.applicationState));
-        NUPushMessage *message = [self pushMessageFromLocalNotification:notification];
-        
-        if (application.applicationState == UIApplicationStateActive) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:NO];
-        } else if (application.applicationState == UIApplicationStateInactive ||
-                   application.applicationState == UIApplicationStateBackground) {
-            [[NUInAppMessageManager sharedManager] showPushMessage:message skipNotificationUI:YES];
-        }
-    }
-}
-
-- (void)appWakeUpManager:(NUAppWakeUpManager *)manager didWakeUpAppInBackgroundWithTaskCompletion:(void (^)(void))completion
-{
-    // fetch missed messages (history)
-    // schedule local notes
-    // call completion
-    
-    NSLog(@"Did wake up application");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSString *text = [NSString stringWithFormat:@"AS: %@, BG time: %@", @([[UIApplication sharedApplication] applicationState]), @([[UIApplication sharedApplication] backgroundTimeRemaining])];
-        
-        UILocalNotification *note = [[UILocalNotification alloc] init];
-        note.timeZone = [NSTimeZone defaultTimeZone];
-        note.alertBody = text;
-        note.fireDate = [NSDate dateWithTimeIntervalSinceNow:5];
-        
-        [[UIApplication sharedApplication] presentLocalNotificationNow:note];
-        
-        completion();
-    });
-}
-
 - (void)unsubscribeFromAppStateNotifications
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) didReceiveRemoteMessage: (NSDictionary *) data
+{
+    if ([data objectForKey: @"next_user"] != nil) {
+        NSError *errorJson = nil;
+        NSString *messageStr = [data objectForKey: @"next_user"];
+        NSData *messageData = [messageStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:messageData options:kNilOptions error:&errorJson];
+        NSString *newSha = [responseDict objectForKey: @"sha_key"];
+        if (newSha != nil)
+        {
+            [[[NextUserManager sharedInstance] inAppMsgCacheManager] addNewSha: newSha];
+            NUTaskManager *manager = [NUTaskManager manager];
+            NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:newSha withSession:[[NextUserManager sharedInstance] getSession]];
+            [manager submitTask:task];
+        }
+    }
 }
 
 @end

@@ -1,11 +1,3 @@
-//
-//  NUTrackerSession.h
-//  NextUserKit
-//
-//  Created by NextUser on 11/10/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 #import "NULogLevel.h"
 #import "NUUser.h"
@@ -28,7 +20,6 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 @property (nonatomic) NUSessionState sessionState;
 @property (nonatomic) NUUser *user;
 @property (nonatomic) NSString *trackingIdentifier;
-@property (nonatomic) NSString *instantWorkflows;
 @property (nonatomic) BOOL requestInAppMessages;
 
 
@@ -46,10 +37,8 @@ typedef NS_ENUM(NSUInteger, NUSessionState) {
 - (NSString *) checkEventPath;
 - (NSString *) getIAMPath:(NSString *) sha;
 
-- (BOOL) readBoolValueForKey: (NSString *) key;
-- (NSString *) readStringValueForKey: (NSString *) key;
-
-- (BOOL) writeForKey: (NSString *) key boolValue: (BOOL) value;
-- (BOOL) writeForKey: (NSString *) key stringValue: (NSString *) value;
+- (void) persistFCMToken:(NSString *) fcmToken;
+- (void) clearFcmToken;
+- (NSString *) getdDeviceFCMToken;
 
 @end

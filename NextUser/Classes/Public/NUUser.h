@@ -1,11 +1,3 @@
-//
-//  NSObject+NUUser.h
-//  Pods
-//
-//  Created by Adrian Lazea on 28/04/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUUserVariables.h"
 

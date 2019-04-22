@@ -1,11 +1,3 @@
-//
-//  NUTracker.m
-//  Pods
-//
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 
 #import "NUTracker.h"
@@ -13,19 +5,19 @@
 #import "NUUser.h"
 #import "NUError.h"
 #import "NUDDLog.h"
-#import "NUTracker+Tests.h"
 #import "NULogLevel.h"
 #import "NUTaskManager.h"
 #import "NUTrackerInitializationTask.h"
 #import "NUTask.h"
+#import "NextUserManager.h"
 
 
 @implementation NUTracker
 
-NSString * const COMPLETION_NU_TRACKER_NOTIFICATION_NAME = @"NUCompletionTTrackerNotification";
-NSString * const NU_TRACK_RESPONSE = @"NUTTrackResponse";
-NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
-
+NSString * const NEXTUSER_LOCAL_NOTIFICATION = @"NextUserLocalNotification";
+NSString * const NEXTUSER_LOCAL_NOTIFICATION_OBJECT = @"NextUserLocalNotificationObject";
+NSString * const NEXTUSER_LOCAL_NOTIFICATION_EVENT = @"NextUserLocalNotificationEvent";
+NSString * const NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION = @"NextUserLocalNotificationSuccessCompletion";
 
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 {
@@ -35,32 +27,24 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[[NextUserManager sharedInstance] getNotificationsManager] unsubscribeFromAppStateNotifications];
+    [[[NextUserManager sharedInstance] notificationsManager] unsubscribeFromAppStateNotifications];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
-    if ([NUPushNotificationsManager isNextUserLocalNotification:notification]) {
-        [[[NextUserManager sharedInstance] getNotificationsManager] handleLocalNotification:notification application:application];
-    }
 }
 
 #pragma mark -
 
 - (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    return [[[NextUserManager sharedInstance] getNotificationsManager] didReceiveRemoteNotification:userInfo];
+    return [[[NextUserManager sharedInstance] notificationsManager] didReceiveRemoteNotification:userInfo];
 }
 
 - (void)requestNotificationsPermissions
 {
-     [[[NextUserManager sharedInstance] getNotificationsManager] requestNotificationsPermissions];
-}
-
-- (void)requestLocationPersmissions
-{
-   [[[NextUserManager sharedInstance] getNotificationsManager] requestLocationPersmissions];
+     [[[NextUserManager sharedInstance] notificationsManager] requestNotificationsPermissions];
 }
 
 - (void)trackUser:(NUUser *)user
@@ -80,6 +64,10 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     if (userVariables == nil) {
         
         return;
+    }
+    
+    for (NSString *key in userVariables.variables.allKeys) {
+        [[[NextUserManager sharedInstance] getSession].user addVariable:key withValue:userVariables.variables[key]];
     }
     
     DDLogInfo(@"Tracking userVariables");
@@ -136,28 +124,6 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
     [self trackObject:events withType:TRACK_EVENT];
 }
 
-- (void)trackPurchase:(NUPurchase *)purchase
-{
-    if (purchase == nil) {
-        
-        return;
-    }
-        
-    DDLogInfo(@"Track purchase: %@", purchase);
-    [self trackObject:@[purchase] withType:TRACK_PURCHASE];
-}
-
-- (void)trackPurchases:(NSArray *)purchases
-{
-    if (purchases == nil || purchases.count == 0) {
-        
-        return;
-    }
-    
-    DDLogInfo(@"Track purchases: %@", purchases);
-    [self trackObject:purchases withType:TRACK_PURCHASE];
-}
-
 - (void) trackObject:(id) trackObject withType:(NUTaskType) type
 {
     [[NextUserManager sharedInstance] trackWithObject:trackObject withType:type];
@@ -166,49 +132,6 @@ NSString * const NU_TRACK_EVENT = @"NUTTrackEvent";
 + (void)releaseSharedInstance
 {
     [DDLog removeAllLoggers];
-}
-
-- (void)triggerLocalNoteWithDelay:(NSTimeInterval)delay
-{
-    NUPushMessage *message = [[NUPushMessage alloc] init];
-    
-    message.messageText = @"Jednom davno iza to sto plavo je li ti mislis o dnevnom jucer. ";
-    message.contentURL = [NSURL URLWithString:@"http://www.nextuser.com"];
-    message.UITheme = [NUIAMUITheme themeWithBackgroundColor:[UIColor redColor]
-                                                   textColor:nil
-                                                    textFont:nil];
-    message.UITheme = [NUIAMUITheme defautTheme];
-    message.fireDate = [NSDate dateWithTimeIntervalSinceNow:delay];
-    
-    [[[NextUserManager sharedInstance] getNotificationsManager] scheduleLocalNotificationForMessage:message];
-}
-
-- (void)submitFCMRegistrationToken:(NSString *) fcmToken
-{
-    [[[NextUserManager sharedInstance] getNotificationsManager] submitFCMRegistrationToken:fcmToken];
-}
-
-- (void)unregisterFCMRegistrationToken
-{
-    [[[NextUserManager sharedInstance] getNotificationsManager] unregisterFCMRegistrationToken];
-}
-
-- (void) didReceiveRemoteMessage: (NSDictionary *) data
-{
-    if ([data objectForKey: @"_nu_ri"] != nil) {
-        NSError *errorJson = nil;
-        NSString *messageStr = [data objectForKey: @"_nu_ri"];
-        NSData *messageData = [messageStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:messageData options:kNilOptions error:&errorJson];
-        NSString *newSha = [responseDict objectForKey: @"sha_key"];
-        if (newSha != nil)
-        {
-            [[[NextUserManager sharedInstance] inAppMsgCacheManager] addNewSha: newSha];
-            NUTaskManager* manager = [NUTaskManager manager];
-            NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:newSha withSession:[[NextUserManager sharedInstance] getSession]];
-            [manager submitTask:task];
-        }
-    }
 }
 
 @end

@@ -1,31 +1,10 @@
-//
-//  NUPurchaseDetails.h
-//  NextUserKit
-//
-//  Created by NextUser on 11/18/15.
-//  Copyright © 2015 NextUser. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
+#import "NUJSONObject.h"
 
-/**
- *  This class represents additional purchase information. It contains methods which add more information
- *  into the purchase (e.g. shipping cost, discount amount etc).
- *
- *  This class is being used by NUPurchase factory method when creating new purchase.
- */
-@interface NUPurchaseDetails : NSObject
+@interface NUPurchaseDetails : NUJSONObject
 
 #pragma mark - Details Factory
-/**
- * @name Details Factory
- */
 
-/**
- *  Creates an instance of purchase details.
- *
- *  @return Instance of NUPurchaseDetails object.
- */
 + (instancetype)details;
 
 #pragma mark - Details Properties

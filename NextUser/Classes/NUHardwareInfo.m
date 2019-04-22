@@ -1,19 +1,7 @@
-//
-//  NUHardwareInfo.m
-//  Pods
-//
-//  Created by Adrian Lazea on 29/08/2017.
-//
-//
-
 #import "NUHardwareInfo.h"
 
-// UIKit
 #import <UIKit/UIKit.h>
-
-// sysctl
 #import <sys/sysctl.h>
-// utsname
 #import <sys/utsname.h>
 
 @implementation NUHardwareInfo

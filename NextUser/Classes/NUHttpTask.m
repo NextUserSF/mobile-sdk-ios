@@ -1,11 +1,3 @@
-//
-//  NUHttpOperation.m
-//  Pods
-//
-//  Created by Adrian Lazea on 18/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUHttpTask.h"
 #import "AFNetworking.h"

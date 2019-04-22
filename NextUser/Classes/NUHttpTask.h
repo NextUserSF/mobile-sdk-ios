@@ -1,11 +1,3 @@
-//
-//  NUHttpOperation.h
-//  Pods
-//
-//  Created by Adrian Lazea on 18/05/2017.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "NUTask.h"
 
@@ -18,7 +10,6 @@
 @property (nonatomic) NSData  *reponseData;
 
 @end
-
 
 @interface NUHttpTask : NUConcurrentOperation
 {

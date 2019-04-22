@@ -5,18 +5,17 @@
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "Reachability.h"
-#import "NUAppWakeUpManager.h"
 
-#import "NUPushMessage.h"
-#import "NUIAMUITheme.h"
-#import "NUInAppMessageManager.h"
-#import "NUWorkflowManager.h"
+#import "NUInAppMsgWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
 #import "NUInAppMsgImageManager.h"
 #import "NUInAppMsgUIManager.h"
 #import "NUTracker.h"
 #import "NUTrackerTask.h"
 #import "NUPushNotificationsManager.h"
+#import "NUTaskManager.h"
+#import "NUDDLog.h"
+#import "NUCartManager.h"
 
 @interface NextUserManager : NSObject
 
@@ -27,14 +26,16 @@
 - (void)refreshPendingRequests;
 
 - (NUTrackerSession *) getSession;
-- (NUPushNotificationsManager *) getNotificationsManager;
+- (NUPushNotificationsManager *) notificationsManager;
 - (WorkflowManager *) workflowManager;
 - (InAppMsgCacheManager *) inAppMsgCacheManager;
 - (InAppMsgImageManager *) inAppMsgImageManager;
 - (InAppMsgUIManager *) inAppMsgUIManager;
+- (NUCartManager *) cartManager;
 
 - (NUTracker* ) getTracker;
 - (void)setLogLevel:(NSString *)logLevel;
 - (NULogLevel)logLevel;
+- (void) sendNextUserLocalNotification: (NUTaskType )event withObject:(id)object andStatus:(BOOL)status;
 
 @end

@@ -1,11 +1,3 @@
-//
-//  NULogLevel.h
-//  Pods
-//
-//  Created by Adrian Lazea on 10/05/2017.
-//
-//
-
 #ifndef NULogLevel_h
 #define NULogLevel_h
 
