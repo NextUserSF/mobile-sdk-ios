@@ -11,7 +11,7 @@
 
 + (NUPushNotificationsManager *) notifications
 {
-     return [[NextUserManager sharedInstance] notificationsManager];
+    return [[NextUserManager sharedInstance] notificationsManager];
 }
 
 + (NUCartManager *) cartManager

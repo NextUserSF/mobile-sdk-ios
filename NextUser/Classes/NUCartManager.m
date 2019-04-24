@@ -189,7 +189,7 @@
         [cartJSON removeObjectForKey: @"tracked"];
         NSError *error = nil;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:cartJSON
-                                                       options:NSJSONWritingPrettyPrinted error:&error];
+                                                           options:NSJSONWritingPrettyPrinted error:&error];
         cartStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
         NUUserVariables *userVariables = [[NUUserVariables alloc] init];
