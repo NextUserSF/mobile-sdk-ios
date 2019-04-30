@@ -26,5 +26,6 @@
 @property (nonatomic) BOOL queued;
 
 - (instancetype) initWithType:(NUTaskType) type withTrackingObject:(id) trackObj andQueued:(BOOL) queued;
+- (NSString *) taskTypeAsString;
 
 @end

@@ -122,4 +122,63 @@
     return self;
 }
 
+- (NSString *) taskTypeAsString
+{
+    switch (taskType) {
+            case APPLICATION_INITIALIZATION:
+            
+                return @"APPLICATION_INITIALIZATION";
+            case SESSION_INITIALIZATION:
+            
+                return @"SESSION_INITIALIZATION";
+            case REQUEST_IN_APP_MESSAGES:
+            
+                return @"REQUEST_IN_APP_MESSAGES";
+            case TRACK_EVENT:
+            
+                return @"TRACK_EVENT";
+            case TRACK_SCREEN:
+            
+                return @"TRACK_SCREEN";
+            case TRACK_PURCHASE:
+            
+                return @"TRACK_PURCHASE";
+            case IMAGE_DOWNLOAD:
+            
+                return @"IMAGE_DOWNLOAD";
+            case REGISTER_DEVICE_TOKEN:
+            
+                return @"REGISTER_DEVICE_TOKEN";
+            case UNREGISTER_DEVICE_TOKENS:
+            
+                return @"UNREGISTER_DEVICE_TOKENS";
+            case TRACK_USER:
+            
+                return @"TRACK_USER";
+            case TRACK_USER_VARIABLES:
+            
+                return @"TRACK_USER_VARIABLES";
+            case NEW_IAM:
+            
+                return @"NEW_IAM";
+            case IAM_CHECK_EVENT:
+            
+                return @"IAM_CHECK_EVENT";
+            case CHECK_CACHES:
+            
+                return @"CHECK_CACHES";
+            case IAM_DISMISSED:
+            
+                return @"IAM_DISMISSED";
+            case SOCIAL_SHARE:
+            
+                return @"SOCIAL_SHARE";
+            case NETWORK_AVAILABLE:
+            
+                return @"NETWORK_AVAILABLE";
+        default:
+            return @"TASK_NO_TYPE";
+    }
+}
+
 @end

@@ -44,18 +44,6 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 {
     wrapper = [InAppMsgWrapper initWithMessage: message];
     wrapper.state = PREPARING;
-    [self setImageProperties:wrapper];
-    if (wrapper.image == YES && wrapper.imageSize.height != 0 && wrapper.imageSize.width != 0) {
-        wrapper.messageImage = [[[NextUserManager sharedInstance] inAppMsgImageManager]
-                                fetchImageSync:[wrapper getCover].url toSize:wrapper.imageSize];
-        wrapper.state = READY;
-        if (wrapper.messageImage == nil) {
-            wrapper.state = FAILED;
-        }
-        completionBlock(wrapper);
-        
-        return;
-    }
     
     if ([wrapper isContentHTML] == YES) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -69,7 +57,22 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
             wrapper.webView.backgroundColor = [UIColor redColor];
             [wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
         });
+        
+        return;
     }
+    
+    if (wrapper.image == YES) {
+        [self setImageProperties:wrapper];
+        if (wrapper.imageSize.height != 0 && wrapper.imageSize.width != 0) {
+            wrapper.messageImage = [[[NextUserManager sharedInstance] inAppMsgImageManager] fetchImageSync:[wrapper getCover].url toSize:wrapper.imageSize];
+            wrapper.state = READY;
+            if (wrapper.messageImage == nil) {
+                wrapper.state = FAILED;
+            }
+        }
+    }
+    
+    completionBlock(wrapper);
 }
 
 - (void) setImageProperties:(InAppMsgWrapper* ) wrapper
@@ -149,18 +152,18 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
                     break;
                 case UNKNOWN_AUTHORITY:
                 default:
-                    DDLogVerbose(@"Unknown nextuser authority.");
+                    DDLogVerbose(@"Unknown nextuser url authority.");
                     [self onCloseAction: query];
             }
             
             return NO;
         }
     } @catch(NSException *e) {
-        DDLogVerbose(@"UIWebView shouldStartLoadWithRequest exception: %@", [e reason]);
+        DDLogError(@"UIWebView shouldStartLoadWithRequest exception: %@", [e reason]);
         
         return NO;
     } @catch(NSError *e) {
-        DDLogError(@"IWebView shouldStartLoadWithRequest error: %@", e);
+        DDLogError(@"UIWebView shouldStartLoadWithRequest error: %@", e);
         
         return NO;
     }
@@ -324,7 +327,17 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 
 -(void)trackEvent: (NSString*) eventString;
 {
-    DDLogVerbose(@"trackEvent called with params : %@", eventString);
+    DDLogVerbose(@"UIWebview Track Event called with params : %@", eventString);
+    NSArray *eventArr = [eventString componentsSeparatedByString:@","];
+    if ([eventArr count] > 0) {
+        NSMutableArray *paramsArr = [[NSMutableArray alloc] init];
+        for (int i = 1; i < [eventArr count]; i++) {
+            [paramsArr addObject:eventArr[i]];
+        }
+        NUEvent *event = [NUEvent eventWithName:eventArr.firstObject andParameters:paramsArr];
+        [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+    }
+    
 }
 
 -(NUUrlAuthority) toNUUrlAuthority:(NSString*) authority

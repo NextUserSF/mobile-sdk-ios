@@ -52,7 +52,9 @@ NSString * const COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY = @"NUTaskManagerMessa
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]initWithCapacity:2];
     [dictionary setObject:@(type) forKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY];
-    [dictionary setObject:object forKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
+    if (object != nil) {
+        [dictionary setObject:object forKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil
                                                       userInfo:dictionary];
 }

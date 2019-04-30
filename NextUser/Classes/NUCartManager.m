@@ -13,6 +13,7 @@
 {
     NUCache *nuCache;
     NUCart *cart;
+    NSOperationQueue *queue;
 }
 
 - (instancetype)init
@@ -20,16 +21,21 @@
     self = [super init];
     if (self) {
         nuCache = [[NUCache alloc] init];
+        queue = [[NSOperationQueue alloc] init];
+        [queue setMaxConcurrentOperationCount:1];
+        [queue setName:@"com.nextuser.cartQueue"];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(receiveTaskManagerNotification:)
+                                                 selector:@selector(receiveTaskManagerHttpRequestNotification:)
                                                      name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageNotification:)
+                                                     name:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidBecomeActiveNotification:)
                                                      name:UIApplicationDidBecomeActiveNotification
                                                    object:nil];
         cart = [self fetchCartFromCache];
-        [self trackCartState];
+        [self trackCartStateSelector: cart];
     }
     
     return self;
@@ -37,27 +43,86 @@
 
 - (void) setTotal: (double) total
 {
-    if (cart.items != nil && [cart.items count] > 0) {
-        cart.total = total;
-        cart.tracked = NO;
-        [self refreshCartCache];
-        [self trackCartState];
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(setTotalSelector:) object:[NSNumber numberWithDouble:total]]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on setTotal: %@", [exception reason]);
     }
 }
 
 - (void) setDetails: (NUPurchaseDetails *) details
 {
-    cart.details = details;
-    [self refreshCartCache];
-}
-
-- (NUPurchaseDetails *) getPurchaseDetails
-{
-    
-    return cart.details;
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(setDetailsSelector:) object:details]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on setDetails: %@", [exception reason]);
+    }
 }
 
 - (void) addOrUpdateItem: (NUCartItem *) item
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(addOrUpdateItemSelector:) object:item]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on addOrUpdateItem: %@", [exception reason]);
+    }
+}
+
+- (void) removeCartItemWithID: (NSString *) ID
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(removeCartItemWithIDSelector:) object:ID]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on removeCartItemWithID: %@", [exception reason]);
+    }
+}
+
+- (void) clearCart
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(clearCartSelector:) object:nil]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on clearCart: %@", [exception reason]);
+    }
+}
+
+- (void) checkout
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(checkoutSelector:) object:nil]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on checkout: %@", [exception reason]);
+    }
+}
+
+- (void) checkoutSelector:(id) fake
+{
+    if ([self isValidPurchase] == YES) {
+        [[NextUserManager sharedInstance] trackWithObject:cart withType:TRACK_PURCHASE];
+        [self clearCartSelector:nil];
+    }
+}
+
+- (void) clearCartSelector:(id) fake
+{
+    cart = [[NUCart alloc] init];
+    [self refreshCartCache];
+    [self trackCartStateSelector: cart];
+}
+
+- (void) removeCartItemWithIDSelector: (NSString *) ID
+{
+    if (cart.items != nil && [cart.items count] > 0) {
+        BOOL removed = [cart removeItemForID:ID];
+        if (removed == YES) {
+            cart.tracked = NO;
+            [self refreshCartCache];
+            [self trackCartStateSelector: cart];
+        }
+    }
+}
+
+- (void) addOrUpdateItemSelector: (NUCartItem *) item
 {
     if (item == nil) {
         
@@ -67,44 +132,35 @@
     if ([cart addOrUpdateItem:item] == YES) {
         cart.tracked = NO;
         [self refreshCartCache];
-        [self trackCartState];
+        [self trackCartStateSelector: cart];
     }
 }
 
-- (bool) removeCartItemWithID: (NSString *) ID
+- (void) setDetailsSelector: (NUPurchaseDetails *) details
+{
+    cart.details = details;
+    [self refreshCartCache];
+}
+
+- (void) setTotalSelector: (NSNumber*) total
 {
     if (cart.items != nil && [cart.items count] > 0) {
-        BOOL removed = [cart removeItemForID:ID];
-        if (removed == YES) {
-            cart.tracked = NO;
-            [self refreshCartCache];
-            [self trackCartState];
-        }
-        
-        return removed;
+        cart.total = [total doubleValue];
+        cart.tracked = NO;
+        [self refreshCartCache];
+        [self trackCartStateSelector: cart];
     }
-    
-    return NO;
 }
+
+- (NUPurchaseDetails *) getPurchaseDetails
+{
+    return cart.details;
+}
+
 - (NSArray *) getCartItems
 {
     
     return cart.items;
-}
-
-- (void) clearCart
-{
-    cart = [[NUCart alloc] init];
-    [self refreshCartCache];
-    [self trackCartState];
-}
-
-- (void) checkout
-{
-    if ([self isValidPurchase] == YES) {
-        [[NextUserManager sharedInstance] trackWithObject:cart withType:TRACK_PURCHASE];
-        [self clearCart];
-    }
 }
 
 - (BOOL) isValidPurchase
@@ -166,7 +222,17 @@
 
 - (void) trackCartState
 {
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(trackCartStateSelector:) object:cart]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on checkout: %@", [exception reason]);
+    }
+}
+
+- (void) trackCartStateSelector:(NUCart*) cart
+{
     if (cart.tracked == YES) {
+        DDLogVerbose(@"Cart already tracked.");
         
         return;
     }
@@ -191,14 +257,23 @@
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:cartJSON
                                                            options:NSJSONWritingPrettyPrinted error:&error];
         cartStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        
         NUUserVariables *userVariables = [[NUUserVariables alloc] init];
         [userVariables addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
-        [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
+        [[[NextUserManager sharedInstance] getSession].user addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
+        if ([[NextUserManager sharedInstance] validTracker] == YES) {
+            NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:TRACK_USER_VARIABLES withTrackObject:userVariables withSession:[[NextUserManager sharedInstance] getSession]];
+            id<NUTaskResponse> response = [trackTask execute:[[NUTrackResponse alloc] initWithType:TRACK_USER_VARIABLES withTrackingObject:userVariables andQueued:NO]];
+            if ([response successfull] == YES) {
+                cart.tracked = YES;
+                [self refreshCartCache];
+            } else {
+                DDLogDebug(@"Could not persist cart state.");
+            }
+        }
     }
 }
 
--(void)receiveTaskManagerNotification:(NSNotification *) notification
+-(void)receiveTaskManagerHttpRequestNotification:(NSNotification *) notification
 {
     NSDictionary *userInfo = notification.userInfo;
     id<NUTaskResponse> taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
@@ -208,19 +283,24 @@
                 NUEvent *purchaseCompletedEvent = [NUEvent eventWithName:TRACK_EVENT_PURCHASE_COMPLETED];
                 [[[NextUserManager sharedInstance] getTracker] trackEvent:purchaseCompletedEvent];
             }
-            break;
-        case TRACK_USER_VARIABLES:
-            if ([taskResponse successfull] == YES) {
-                NUTrackResponse *trackResp = (NUTrackResponse *) taskResponse;
-                NUUserVariables *userVar = (NUUserVariables *) [trackResp trackObject];
-                if ([[userVar.variables allKeys] containsObject:TRACK_VARIABLE_CART_STATE] == YES) {
-                    cart.tracked = YES;
-                    [self refreshCartCache];
-                }
-            }
             
             break;
         default:
+            break;
+    }
+}
+
+-(void)receiveMessageNotification:(NSNotification *) notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NUTaskType type = [[userInfo valueForKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY] intValue];
+    switch (type) {
+        case NETWORK_AVAILABLE:
+            [self trackCartState];
+            
+            break;
+        default:
+            
             break;
     }
 }

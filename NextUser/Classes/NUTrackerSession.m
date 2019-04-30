@@ -74,7 +74,6 @@
 - (NSString *)keychainSerivceName
 {
     NSString *serviceName = kKeychainServiceName;
-    
     NSString *appID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
     serviceName = [serviceName stringByAppendingFormat:@"_%@", appID];
     

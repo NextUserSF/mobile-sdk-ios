@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, NUTaskType) {
     CHECK_CACHES,
     IAM_DISMISSED,
     SOCIAL_SHARE,
+    NETWORK_AVAILABLE,
     TASK_NO_TYPE
 };
 

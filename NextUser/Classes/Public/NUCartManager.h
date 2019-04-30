@@ -9,10 +9,9 @@
 - (void) setDetails: (NUPurchaseDetails *) details;
 - (NUPurchaseDetails *) getPurchaseDetails;
 - (void) addOrUpdateItem: (NUCartItem *) item;
-- (bool) removeCartItemWithID: (NSString *) ID;
+- (void) removeCartItemWithID: (NSString *) ID;
 - (NSArray *) getCartItems;
 - (void) clearCart;
 - (void) checkout;
-- (void) trackCartState;
 
 @end

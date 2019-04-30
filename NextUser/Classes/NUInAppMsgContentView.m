@@ -182,7 +182,7 @@
         @throw error;
     }
     
-    if (wrapper.image == YES && (wrapper.messageImage == nil || ([wrapper.messageImage size].height == 0 && [wrapper.messageImage size].width == 0))){
+    if ([wrapper isContentHTML] == NO && wrapper.image == YES && (wrapper.messageImage == nil || ([wrapper.messageImage size].height == 0 && [wrapper.messageImage size].width == 0))){
         NSError* error = [NUError nextUserErrorWithMessage: [NSString stringWithFormat:@"Missing image"]];
         @throw error;
     }

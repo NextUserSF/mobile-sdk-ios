@@ -30,16 +30,14 @@
         _message      = message;
         _image        = body.cover != nil && [NSString lg_isEmptyString:body.cover.url] == NO;
         _content      = body.content != nil && [NSString lg_isEmptyString:body.content.text] == NO;
-        _contentHTML  = body.content != nil && body.contentHTML != nil && [NSString lg_isEmptyString:body.contentHTML.html] == NO;
+        _contentHTML  = body.contentHTML != nil && [NSString lg_isEmptyString:body.contentHTML.html] == NO;
         _title        = body.title != nil && [NSString lg_isEmptyString:body.title.text] == NO;
         _headerText   = body.header != nil && [NSString lg_isEmptyString:body.header.text] == NO;
         _dismiss      = message.showDismiss == YES;
         _footer       = body.footer != nil && [body.footer count] > 0;
         _interactions = message.interactions != nil;
         
-
-
-        if (_image == NO && (_content == NO || _title == NO)) {
+        if (_contentHTML == NO && _image == NO && (_content == NO || _title == NO)) {
             NSError* error = [NUError nextUserErrorWithMessage:
                               [NSString stringWithFormat:@"Invalid in app message configuration: %@", message.ID]];
             @throw error;

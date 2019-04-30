@@ -221,7 +221,9 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     if ([response successfull] == NO) {
         [self queueTrackObject:response.trackObject withType:response.type];
+        DDLogVerbose(@"Queing task: %@", [response taskTypeAsString]);
     } else if ([response queued] == YES) {
+        DDLogVerbose(@"Qeued task found: %@", [response taskTypeAsString]);
         [self onPendingTaskSuccess];
     }
 }
@@ -330,8 +332,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             
             return;
         }
-        [cartManager trackCartState];
         [self refreshPendingRequests];
+        [[NUTaskManager manager] dispatchMessageNotification:NETWORK_AVAILABLE withObject:nil];
     }
 }
 
@@ -366,6 +368,14 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)queueTrackObject:(id)trackObject withType:(NUTaskType) taskType
 {
+    if (taskType == TRACK_USER_VARIABLES) {
+        NUUserVariables *userVar = (NUUserVariables *) trackObject;
+        if ([[userVar.variables allKeys] containsObject:TRACK_VARIABLE_CART_STATE] == YES) {
+            
+            return;
+        }
+    }
+    
     [pendingTasksLock lock];
     if (pendingTrackRequests.count == MAX_PENDING_TASKS) {
         [pendingTrackRequests removeLastObject];
@@ -397,7 +407,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     if (pendingTrackRequests.count > 0) {
         PendingTask *pendingTask = pendingTrackRequests.lastObject;
         DDLogVerbose(@"Popped request: %@", pendingTask);
-        //[self track:pendingTask.trackingObject withType:pendingTask.taskType andQueued:YES];
+        [self track:pendingTask.trackingObject withType:pendingTask.taskType andQueued:YES];
     }
 }
 
@@ -462,4 +472,5 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     [self requestSession];
 }
+
 @end
