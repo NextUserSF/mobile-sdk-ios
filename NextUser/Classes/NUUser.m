@@ -81,8 +81,7 @@
     }
     
     if (_gender >= MALE && _gender <= FEMALE) {
-        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=",
-                                 [NSNumber numberWithInt:_gender]]];
+        [paramsArray addObject: [NSString stringWithFormat:@"%@%@", @"gender=", [NSNumber numberWithInt:(int)_gender]]];
     }
     
     return [paramsArray componentsJoinedByString:@","];

@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, NUTaskType) {
 
 @protocol NUExecutionTask <NSObject>
 - (id<NUTaskResponse>) responseInstance;
-- (id<NUTaskResponse>) execute:(id<NUTaskResponse>) responseInstance;
+- (void) execute: (id<NUTaskResponse>) responseInstance withCompletion:(void (^)(id<NUTaskResponse> responseInstance)) completionBlock;
 @end
 
 

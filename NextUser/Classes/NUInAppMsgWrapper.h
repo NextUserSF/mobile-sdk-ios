@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, DisplayState) {
 @property(nonatomic) BOOL contentHTML;
 @property(nonatomic) CGSize imageSize;
 @property(nonatomic) id<InAppMsgInteractionListener> interactionListener;
-@property(nonatomic) UIWebView *webView;
+@property(nonatomic) WKWebView *webView;
 @property(nonatomic) DisplayState state;
 
 

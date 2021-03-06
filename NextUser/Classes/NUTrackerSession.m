@@ -2,7 +2,7 @@
 #import "NUTrackerProperties.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "NUDDLog.h"
-#import "SAMKeychain.h"
+#import "NUKeychain.h"
 #import "NSString+LGUtils.h"
 #import "NULogLevel.h"
 
@@ -25,7 +25,7 @@
         _sessionState = None;
         _requestInAppMessages = YES;
         _deviceCookie = [self serializedDeviceCookie];
-        [SAMKeychain setAccessibilityType:kSecAttrAccessibleAlwaysThisDeviceOnly];
+        [NUKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
         preferences = [NSUserDefaults standardUserDefaults];
     }
     
@@ -42,7 +42,7 @@
    _deviceCookie = dCookie;
     NSAssert(_deviceCookie, @"deviceCookie can not be nil");
     NSError *error = nil;
-    [SAMKeychain setPassword:_deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    [NUKeychain setPassword:_deviceCookie forService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while setting device cookie in keychain. %@", error);
     }
@@ -51,7 +51,7 @@
 - (void)clearSerializedDeviceCookie
 {
     NSError *error = nil;
-    [SAMKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
+    [NUKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while deleting device cookie from keychain. %@", error);
     }
@@ -83,7 +83,7 @@
 - (NSString *)serializedDeviceCookie
 {
     NSError *error = nil;
-    NSString *password = [SAMKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey
+    NSString *password = [NUKeychain passwordForService:[self keychainSerivceName] account:kDeviceCookieSerializationKey
                                                   error:&error];
     if (error != nil) {
         DDLogError(@"Error while fetching device cookie from keychain. %@", error);
@@ -158,7 +158,7 @@
 - (void)persistFCMToken:(NSString *) fcmToken
 {
     NSError *error = nil;
-    [SAMKeychain setPassword:fcmToken forService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
+    [NUKeychain setPassword:fcmToken forService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while setting fcm token in keychain. %@", error);
     }
@@ -167,7 +167,7 @@
 - (void)clearFcmToken
 {
     NSError *error = nil;
-    [SAMKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
+    [NUKeychain deletePasswordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey error:&error];
     if (error != nil) {
         DDLogError(@"Error while deleting fcm token from keychain. %@", error);
     }
@@ -176,7 +176,7 @@
 - (NSString *)getdDeviceFCMToken
 {
     NSError *error = nil;
-    NSString *password = [SAMKeychain passwordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey
+    NSString *password = [NUKeychain passwordForService:[self keychainSerivceName] account:kDeviceFCMTokenSerializationKey
                                                    error:&error];
     if (error != nil) {
         DDLogError(@"Error while fetching fcm token from keychain. %@", error);

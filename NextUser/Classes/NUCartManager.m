@@ -262,13 +262,14 @@
         [[[NextUserManager sharedInstance] getSession].user addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
         if ([[NextUserManager sharedInstance] validTracker] == YES) {
             NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:TRACK_USER_VARIABLES withTrackObject:userVariables withSession:[[NextUserManager sharedInstance] getSession]];
-            id<NUTaskResponse> response = [trackTask execute:[[NUTrackResponse alloc] initWithType:TRACK_USER_VARIABLES withTrackingObject:userVariables andQueued:NO]];
-            if ([response successfull] == YES) {
-                cart.tracked = YES;
-                [self refreshCartCache];
-            } else {
-                DDLogDebug(@"Could not persist cart state.");
-            }
+            [trackTask execute:[[NUTrackResponse alloc] initWithType:TRACK_USER_VARIABLES withTrackingObject:userVariables andQueued:NO] withCompletion:^(id<NUTaskResponse> responseInstance) {
+                if (responseInstance == nil || [responseInstance successfull] == NO) {
+                    DDLogDebug(@"Could not persist cart state.");
+                } else {
+                    cart.tracked = YES;
+                    [self refreshCartCache];
+                }
+            }];
         }
     }
 }

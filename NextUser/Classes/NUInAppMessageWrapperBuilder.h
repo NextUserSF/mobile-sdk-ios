@@ -10,7 +10,7 @@ typedef void (^InAppMsgPrepareCompletionBlock)(InAppMsgWrapper* wrapper);
 -(void)trackEvent: (NSString*) eventString;
 @end
 
-@interface InAppMessageWrapperBuilder : NSObject <UIWebViewDelegate, NUJSExport>
+@interface InAppMessageWrapperBuilder : NSObject <WKUIDelegate, NUJSExport>
 
 -(instancetype)initWithCompetion: (InAppMsgPrepareCompletionBlock) completion;
 -(void) prepare:(InAppMessage* ) message;

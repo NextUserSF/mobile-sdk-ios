@@ -34,17 +34,14 @@
     return [[NUTrackResponse alloc] initWithType:taskType withTrackingObject:trackObject andQueued:_queued];
 }
 
-- (id<NUTaskResponse>) execute: (NUHttpResponse*) responseInstance
+- (void) execute: (NUHttpResponse*) responseInstance withCompletion:(void (^)(id<NUTaskResponse> responseInstance)) completionBlock
 {
     NSError *error = [self setupRequestData];
     if (error) {
-        return [self response:responseInstance withError:error];
+        @throw error;
     }
     
-    responseInstance = [super execute:responseInstance];
-    NUTrackResponse *response = (NUTrackResponse *) responseInstance;
-    
-    return response;
+    [super execute:responseInstance withCompletion:completionBlock];
 }
 
 -(NSError *) setupRequestData

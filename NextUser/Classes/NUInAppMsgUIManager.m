@@ -163,7 +163,7 @@
         case URL:
         case DEEP_LINK:
             if ([NSString lg_isEmptyString:clickConfig.value] == NO) {
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString: clickConfig.value]];
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString: clickConfig.value] options:[[NSMutableDictionary alloc] init] completionHandler:nil];
             }
             break;
         default:

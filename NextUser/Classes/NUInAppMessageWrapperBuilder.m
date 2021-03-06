@@ -48,8 +48,8 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     if ([wrapper isContentHTML] == YES) {
         dispatch_async(dispatch_get_main_queue(), ^{
             wrapper.webView = [self createWebView:wrapper];
-            wrapper.webView.delegate = self;
-            wrapper.webView.scalesPageToFit = YES;
+            wrapper.webView.UIDelegate = self;
+            //wrapper.webView.scalesPageToFit = YES;
             wrapper.webView.userInteractionEnabled = YES;
             [wrapper.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
             [wrapper.webView setClipsToBounds:YES];
@@ -102,26 +102,26 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     wrapper.imageSize = CGSizeMake(width, height);
 }
 
-- (UIWebView *) createWebView:(InAppMsgWrapper* ) wrapper
+- (WKWebView *) createWebView:(InAppMsgWrapper* ) wrapper
 {
     InAppMsgViewSettings* settings = [[[NextUserManager sharedInstance] inAppMsgUIManager] viewSettings];
     switch (wrapper.message.type) {
         case SKINNY:
             
-            return [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, settings.skinnyWidth, settings.skinnyHeight)];
+            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, settings.skinnyWidth, settings.skinnyHeight)];
         case MODAL:
             
-            return [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, settings.modalWidth, settings.modalHeight)];
+            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, settings.modalWidth, settings.modalHeight)];
         case FULL:
             
-            return [[UIWebView alloc] initWithFrame: settings.screenFrame];
+            return [[WKWebView alloc] initWithFrame: settings.screenFrame];
         default:
             
             return nil;
     }
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(WKWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     if (request == nil || request.URL == nil) {
         
@@ -283,11 +283,11 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     return [query valueForKey:key];
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webViewDidStartLoad:(WKWebView *)webView
 {
     DDLogVerbose(@"webViewDidStartLoad");
 }
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(WKWebView *)webView
 {
     DDLogVerbose(@"webViewDidFinishLoad");
     [self injectNUBridge: webView];
@@ -295,7 +295,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     wrapper.state = READY;
     completionBlock(wrapper);
 }
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
 {
     DDLogVerbose(@"didFailLoadWithError : %@", error);
     if ([wrapper state] == PREPARING) {
@@ -304,7 +304,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     }
 }
 
-- (void) injectNUBridge: (UIWebView *)webView
+- (void) injectNUBridge: (WKWebView *)webView
 {
     NSBundle* frameworkBundle = [NSBundle bundleForClass: [NextUserManager class]];
     NSString *path = [frameworkBundle pathForResource:NEXTUSER_JS_FILE ofType:@"js"];
@@ -316,10 +316,12 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
         jsCode = [NSString stringWithFormat:jsCode, @""];
     }
     
-    [webView stringByEvaluatingJavaScriptFromString:jsCode];
+    WKUserScript *jsScript =[[WKUserScript alloc] initWithSource:jsCode injectionTime:(WKUserScriptInjectionTimeAtDocumentEnd)
+                                                forMainFrameOnly:YES];
+    [webView.configuration.userContentController addUserScript:jsScript];
 }
 
--(void) loadJSContext: (UIWebView *)webView
+-(void) loadJSContext: (WKWebView *)webView
 {
     jsContext = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     jsContext[@"nu_ios"] = self;

@@ -2,6 +2,7 @@
 #import "NUInAppMsgBody.h"
 #import "NUInAppMsgInteractions.h"
 #import "NUJSONObject.h"
+#import <WebKit/WebKit.h>
 
 @interface InAppMessage : NUJSONObject
 

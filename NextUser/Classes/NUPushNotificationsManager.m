@@ -46,34 +46,25 @@
 
 -(void)requestNotificationsPermissions
 {
-    if (@available(iOS 10.0, *)) {
-        UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
 
-        UNNotificationCategory* nextuserCategory = [UNNotificationCategory
-                                                    categoryWithIdentifier:@"NextUser"
-                                                    actions:@[]
-                                                    intentIdentifiers:@[]
-                                                    options:UNNotificationCategoryOptionCustomDismissAction];
-        
-        [center setNotificationCategories:[NSSet setWithObjects:nextuserCategory, nil]];
-        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNAuthorizationOptionCarPlay;
-        [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted,
-                                                                                NSError * _Nullable error) {
-            if (granted == YES) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    center.delegate = self;
-                    [[UIApplication sharedApplication] registerForRemoteNotifications];
-                });
-            }
-        }];
-    } else {
-        UIUserNotificationType allNotificationTypes =
-        (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-    }
+    UNNotificationCategory* nextuserCategory = [UNNotificationCategory
+                                                categoryWithIdentifier:@"NextUser"
+                                                actions:@[]
+                                                intentIdentifiers:@[]
+                                                options:UNNotificationCategoryOptionCustomDismissAction];
+    
+    [center setNotificationCategories:[NSSet setWithObjects:nextuserCategory, nil]];
+    UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNAuthorizationOptionCarPlay;
+    [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted,
+                                                                            NSError * _Nullable error) {
+        if (granted == YES) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                center.delegate = self;
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            });
+        }
+    }];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification

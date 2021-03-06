@@ -7,6 +7,7 @@
 
 -(instancetype)initWithMethod:(NSString *)method withPath:(NSString *)url withParameters:(NSMutableDictionary *)parameters
 {
+    self.isAsync = YES;
     if (self = [super init]) {
         requestMethod = method;
         path = url;
@@ -31,33 +32,46 @@
     return [[AFHTTPRequestSerializer serializer] requestWithMethod: requestMethod URLString:path parameters: queryParameters error:&error];
 }
 
-- (id<NUTaskResponse>) execute: (NUHttpResponse*) responseInstance
+- (void) execute: (NUHttpResponse*) responseInstance withCompletion:(void (^)(id<NUTaskResponse> responseInstance)) completionBlock
 {
     NSError *error = nil;
     NSMutableURLRequest* request = [self buildRequestInstance: error];
     
     if (error) {
-        return[self response: responseInstance withError:error];
+        completionBlock([self response: responseInstance withError:error]);
     }
     
     DDLogVerbose(@"Request body %@", [[NSString alloc] initWithData:[request HTTPBody] encoding:NSUTF8StringEncoding]);
     
-    NSHTTPURLResponse *httpResponse;
     error = nil;
     request.timeoutInterval = 20.0;
-    responseInstance.reponseData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&httpResponse error:&error];
-    responseInstance.responseCode = (long)[httpResponse statusCode];
-    
-    if ([self successfullHttpCode:responseInstance.responseCode] == NO) {
-        DDLogVerbose(@"Host for url:%@ and params:%@ responded with code :%ld and error: %@",path, queryParameters, responseInstance.responseCode, [responseInstance.error localizedDescription]);
-        return [self response: responseInstance withError:error];
-    }
-    
-    [responseInstance setSuccessfull:YES];
-    DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters, responseInstance.
-                 responseCode);
-    
-    return responseInstance;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if (error) {
+            completionBlock([self response: responseInstance withError:error]);
+            
+            return;
+        }
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        responseInstance.responseCode = (long)[httpResponse statusCode];
+        if ([self successfullHttpCode:responseInstance.responseCode] == NO) {
+            DDLogVerbose(@"Host for url:%@ and params:%@ responded with code :%ld and error: %@",path,
+                         queryParameters, responseInstance.responseCode, [responseInstance.error localizedDescription]);
+            completionBlock([self response: responseInstance withError:error]);
+            
+            return;
+        }
+        
+        NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        responseInstance.reponseData = [requestReply dataUsingEncoding:NSUTF8StringEncoding];
+        [responseInstance setSuccessfull:YES];
+        DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters,
+                     responseInstance.responseCode);
+        completionBlock(responseInstance);
+        
+        }] resume];
 }
         
 -(BOOL)successfullHttpCode:(long) httpCode

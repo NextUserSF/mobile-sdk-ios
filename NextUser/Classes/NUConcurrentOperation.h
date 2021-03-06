@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "NUTask.h"
 
+typedef void (^nuHttpCompletionBlock)(BOOL success, NSData *responseData, NSError *error);
+
 @interface NUConcurrentOperationResponse : NSObject <NUTaskResponse>
 {
     NUTaskType taskType;
@@ -21,6 +23,8 @@
     NUTaskType taskType;
     id<NUTaskResponse> taskResponse;
 }
+
+@property (nonatomic) BOOL  isAsync;
 
 - (id<NUTaskResponse>) getTaskResponse;
 

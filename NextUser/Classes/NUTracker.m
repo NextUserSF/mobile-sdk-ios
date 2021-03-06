@@ -30,7 +30,7 @@ NSString * const NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION = @"NextUserLoca
     [[[NextUserManager sharedInstance] notificationsManager] unsubscribeFromAppStateNotifications];
 }
 
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UNNotificationRequest *)notification
 {
     DDLogInfo(@"Did receive local notification: %@", notification);
 }

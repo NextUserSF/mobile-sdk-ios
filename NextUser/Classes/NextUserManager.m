@@ -60,7 +60,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         instance = [[NextUserManager alloc] init];
         NSArray * args = [[NSProcessInfo processInfo] arguments];
         if (![args containsObject:@"disableTTY"]) {
-            [DDLog addLogger:[DDASLLogger sharedInstance]];
+            [DDLog addLogger:[DDOSLogger sharedInstance]];
         } else {
             [DDLog addLogger:[DDTTYLogger sharedInstance]];
         }
@@ -209,7 +209,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithBool:status] forKey: NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION];
-    [dictionary setValue:[NSNumber numberWithInt:event] forKey: NEXTUSER_LOCAL_NOTIFICATION_EVENT];
+    [dictionary setValue:[NSNumber numberWithInt:(int)event] forKey: NEXTUSER_LOCAL_NOTIFICATION_EVENT];
     if (object != nil) {
         [dictionary setValue: object forKey: NEXTUSER_LOCAL_NOTIFICATION_OBJECT];
     }

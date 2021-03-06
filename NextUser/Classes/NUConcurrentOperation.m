@@ -36,16 +36,27 @@
 
 -(void)main
 {
+    
     @try {
-        taskResponse = [self execute:[self responseInstance]];
+        if (_isAsync == YES) {
+            [self execute:[self responseInstance] withCompletion:^(id<NUTaskResponse> responseInstance){
+                [self completeOperation];
+                [[NUTaskManager manager] dispatchCompletionNotification:responseInstance];
+            }];
+        } else {
+            taskResponse = [self execute:[self responseInstance]];
+        }
     }
     @catch (NSException *exception) {
         DDLogInfo(@"NUOperation Exception: %@",[exception description]);
+        [self completeOperation];
         [self onExecutionException:exception];
     }
     @finally {
-        [self completeOperation];
-        [[NUTaskManager manager] dispatchCompletionNotification:taskResponse];
+        if (_isAsync == NO) {
+            [self completeOperation];
+            [[NUTaskManager manager] dispatchCompletionNotification:taskResponse];
+        }
     }
 }
 
@@ -81,10 +92,16 @@
     return [[NUConcurrentOperationResponse alloc] initWithType:TASK_NO_TYPE shouldNotifyListeners:NO];
 }
 
-//overrride
+//overrride by sync tasks
 - (id<NUTaskResponse>) execute:(id<NUTaskResponse>) responseInstance
 {
     return responseInstance;
+}
+
+//overrride by async tasks
+- (void) execute: (id<NUTaskResponse>) responseInstance withCompletion:(void (^)(id<NUTaskResponse> responseInstance)) completionBlock
+{
+    completionBlock(responseInstance);
 }
 
 //overrride
