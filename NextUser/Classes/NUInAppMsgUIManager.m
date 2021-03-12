@@ -34,8 +34,8 @@
         viewSettings = [[InAppMsgViewSettings alloc] init];
         iamPrepareGroup = dispatch_group_create();
         wrapperBuilder = [[InAppMessageWrapperBuilder alloc] initWithCompetion:^(InAppMsgWrapper *wrapper) {
-            currentWrapper = wrapper;
-            dispatch_group_leave(iamPrepareGroup);
+            self->currentWrapper = wrapper;
+            dispatch_group_leave(self->iamPrepareGroup);
         }];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageNotification:)
                                                      name:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil];
@@ -65,7 +65,7 @@
         }
         
         dispatch_group_notify(iamPrepareGroup, dispatch_get_main_queue(), ^{
-            if ([currentWrapper state] != READY) {
+            if ([self->currentWrapper state] != READY) {
                 DDLogVerbose(@"Invalid IAM preparation state :%@ ", iamID);
                 
                 return;
@@ -73,19 +73,19 @@
             
             @try {
                 DDLogVerbose(@"IAM preparation succcessful:%@", iamID);
-                currentWrapper.interactionListener = self;
+                self->currentWrapper.interactionListener = self;
                 InAppMsgContentView *contentView;
-                switch (currentWrapper.message.type) {
+                switch (self->currentWrapper.message.type) {
                     case SKINNY:
-                        contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                        contentView = [[InAppMsgSkinnyContentView alloc] initWithWrapper:self->currentWrapper withSettings:self->viewSettings];
                         
                         break;
                     case MODAL:
-                        contentView = [[InAppMsgModalContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                        contentView = [[InAppMsgModalContentView alloc] initWithWrapper:self->currentWrapper withSettings:self->viewSettings];
                         
                         break;
                     case FULL:
-                        contentView = [[InAppMsgFullContentView alloc] initWithWrapper:currentWrapper withSettings:viewSettings];
+                        contentView = [[InAppMsgFullContentView alloc] initWithWrapper:self->currentWrapper withSettings:self->viewSettings];
                         
                         break;
                     default:
@@ -94,10 +94,10 @@
                         return;
                 }
                 
-                __weak NSString *trackParams = currentWrapper.message.interactions.nuTrackingParams;
+                __weak NSString *trackParams = self->currentWrapper.message.interactions.nuTrackingParams;
                 NUPopUpLayout layout = [contentView getLayout];
                 if (UIApplication.sharedApplication.keyWindow == nil) {
-                    popup = [NUPopUpView popupWithContentView:contentView
+                    self->popup = [NUPopUpView popupWithContentView:contentView
                                                     withFrame:UIApplication.sharedApplication.keyWindow.frame
                                                      showType:NUPopUpShowTypeSlideInFromLeft
                                                   dismissType:NUPopUpDismissTypeSlideOutToRight
@@ -105,7 +105,7 @@
                                      dismissOnBackgroundTouch:NO
                                         dismissOnContentTouch:NO];
                 } else {
-                    popup = [NUPopUpView popupWithContentView:contentView
+                    self->popup = [NUPopUpView popupWithContentView:contentView
                                                      showType:NUPopUpShowTypeSlideInFromLeft
                                                   dismissType:NUPopUpDismissTypeSlideOutToRight
                                                      maskType:NUPopUpMaskTypeNone
@@ -113,22 +113,22 @@
                                         dismissOnContentTouch:NO];
                 }
                 
-                popup.didFinishShowingCompletion = ^{
+                self->popup.didFinishShowingCompletion = ^{
                     DDLogVerbose(@"Show IAM completed: %@", iamID);
                     [InternalEventTracker trackEvent:TRACK_EVENT_DISPLAYED withParams:trackParams];
                 };
                 
-                popup.didFinishDismissingCompletion = ^{
+                self->popup.didFinishDismissingCompletion = ^{
                     DDLogVerbose(@"Dismiss IAM completed.Free IAM queue: %@", iamID);
                     [InternalEventTracker trackEvent:TRACK_EVENT_DISMISSED withParams:trackParams];
                     [[NUTaskManager manager] dispatchMessageNotification:IAM_DISMISSED withObject:[message ID]];
                 };
                 
-                if (currentWrapper.message.dismissTimeout != 0) {
-                    [popup showWithLayout:layout duration: [currentWrapper.message.dismissTimeout intValue] / 1000];
+                if (self->currentWrapper.message.dismissTimeout != 0) {
+                    [self->popup showWithLayout:layout duration: [self->currentWrapper.message.dismissTimeout intValue] / 1000];
                 } else {
                     DDLogVerbose(@"Before IAM show: %@", iamID);
-                    [popup showWithLayout:layout];
+                    [self->popup showWithLayout:layout];
                 }
             } @catch(NSException *e) {
                 DDLogError(@"Exception on IAM display: %@", [e reason]);

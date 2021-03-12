@@ -281,10 +281,10 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             
             // Animate background if needed
             void (^backgroundAnimationBlock)(void) = ^(void) {
-                _backgroundView.alpha = 0.0;
+                self->_backgroundView.alpha = 0.0;
             };
             
-            if (animated && (_showType != NUPopUpShowTypeNone)) {
+            if (animated && (self->_showType != NUPopUpShowTypeNone)) {
                 // Make fade happen faster than motion. Use linear for fades.
                 [UIView animateWithDuration:0.15
                                       delay:0
@@ -300,9 +300,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 
                 [self removeFromSuperview];
                 
-                _isBeingShown = NO;
-                _isShowing = NO;
-                _isBeingDismissed = NO;
+                self->_isBeingShown = NO;
+                self->_isShowing = NO;
+                self->_isBeingDismissed = NO;
                 
                 [self didFinishDismissing];
                 
@@ -316,13 +316,13 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             
             // Animate content if needed
             if (animated) {
-                switch (_dismissType) {
+                switch (self->_dismissType) {
                     case NUPopUpDismissTypeFadeOut: {
                         [UIView animateWithDuration:0.15
                                               delay:0
                                             options:UIViewAnimationOptionCurveLinear
                                          animations:^{
-                                             _containerView.alpha = 0.0;
+                            self->_containerView.alpha = 0.0;
                                          } completion:completionBlock];
                         break;
                     }
@@ -332,8 +332,8 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             _containerView.alpha = 0.0;
-                                             _containerView.transform = CGAffineTransformMakeScale(1.1, 1.1);
+                            self->_containerView.alpha = 0.0;
+                            self->_containerView.transform = CGAffineTransformMakeScale(1.1, 1.1);
                                          } completion:completionBlock];
                         break;
                     }
@@ -343,8 +343,8 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             _containerView.alpha = 0.0;
-                                             _containerView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+                            self->_containerView.alpha = 0.0;
+                            self->_containerView.transform = CGAffineTransformMakeScale(0.8, 0.8);
                                          } completion:completionBlock];
                         break;
                     }
@@ -354,9 +354,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.y = -CGRectGetHeight(finalFrame);
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:completionBlock];
                         break;
@@ -367,9 +367,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.y = CGRectGetHeight(self.bounds);
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:completionBlock];
                         break;
@@ -380,9 +380,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.x = -CGRectGetWidth(finalFrame);
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:completionBlock];
                         break;
@@ -393,9 +393,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:kAnimationOptionCurveIOS7
                                          animations:^{
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.x = CGRectGetWidth(self.bounds);
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:completionBlock];
                         
@@ -407,7 +407,7 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:UIViewAnimationOptionCurveEaseOut
                                          animations:^(void){
-                                             _containerView.transform = CGAffineTransformMakeScale(1.1, 1.1);
+                            self->_containerView.transform = CGAffineTransformMakeScale(1.1, 1.1);
                                          }
                                          completion:^(BOOL finished){
                                              
@@ -415,8 +415,8 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                                                    delay:0
                                                                  options:UIViewAnimationOptionCurveEaseIn
                                                               animations:^(void){
-                                                                  _containerView.alpha = 0.0;
-                                                                  _containerView.transform = CGAffineTransformMakeScale(0.1, 0.1);
+                                                 self->_containerView.alpha = 0.0;
+                                                 self->_containerView.transform = CGAffineTransformMakeScale(0.1, 0.1);
                                                               }
                                                               completion:completionBlock];
                                          }];
@@ -429,9 +429,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:UIViewAnimationOptionCurveEaseOut
                                          animations:^(void){
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.y += 40.0;
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:^(BOOL finished){
                                              
@@ -439,9 +439,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                                                    delay:0
                                                                  options:UIViewAnimationOptionCurveEaseIn
                                                               animations:^(void){
-                                                                  CGRect finalFrame = _containerView.frame;
+                                                 CGRect finalFrame = self->_containerView.frame;
                                                                   finalFrame.origin.y = -CGRectGetHeight(finalFrame);
-                                                                  _containerView.frame = finalFrame;
+                                                 self->_containerView.frame = finalFrame;
                                                               }
                                                               completion:completionBlock];
                                          }];
@@ -454,9 +454,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:UIViewAnimationOptionCurveEaseOut
                                          animations:^(void){
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.y -= 40.0;
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:^(BOOL finished){
                                              
@@ -464,9 +464,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                                                    delay:0
                                                                  options:UIViewAnimationOptionCurveEaseIn
                                                               animations:^(void){
-                                                                  CGRect finalFrame = _containerView.frame;
+                                                 CGRect finalFrame = self->_containerView.frame;
                                                                   finalFrame.origin.y = CGRectGetHeight(self.bounds);
-                                                                  _containerView.frame = finalFrame;
+                                                 self->_containerView.frame = finalFrame;
                                                               }
                                                               completion:completionBlock];
                                          }];
@@ -479,9 +479,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:UIViewAnimationOptionCurveEaseOut
                                          animations:^(void){
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.x += 40.0;
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:^(BOOL finished){
                                              
@@ -489,9 +489,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                                                    delay:0
                                                                  options:UIViewAnimationOptionCurveEaseIn
                                                               animations:^(void){
-                                                                  CGRect finalFrame = _containerView.frame;
+                                                 CGRect finalFrame = self->_containerView.frame;
                                                                   finalFrame.origin.x = -CGRectGetWidth(finalFrame);
-                                                                  _containerView.frame = finalFrame;
+                                                 self->_containerView.frame = finalFrame;
                                                               }
                                                               completion:completionBlock];
                                          }];
@@ -503,9 +503,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                               delay:0
                                             options:UIViewAnimationOptionCurveEaseOut
                                          animations:^(void){
-                                             CGRect finalFrame = _containerView.frame;
+                            CGRect finalFrame = self->_containerView.frame;
                                              finalFrame.origin.x -= 40.0;
-                                             _containerView.frame = finalFrame;
+                            self->_containerView.frame = finalFrame;
                                          }
                                          completion:^(BOOL finished){
                                              
@@ -513,9 +513,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                                                                    delay:0
                                                                  options:UIViewAnimationOptionCurveEaseIn
                                                               animations:^(void){
-                                                                  CGRect finalFrame = _containerView.frame;
+                                                 CGRect finalFrame = self->_containerView.frame;
                                                                   finalFrame.origin.x = CGRectGetWidth(self.bounds);
-                                                                  _containerView.frame = finalFrame;
+                                                 self->_containerView.frame = finalFrame;
                                                               }
                                                               completion:completionBlock];
                                          }];
@@ -573,19 +573,19 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             self.alpha = 1.0;
             
             // Setup background view
-            _backgroundView.alpha = 0.0;
-            if (_maskType == NUPopUpMaskTypeDimmed) {
-                _backgroundView.backgroundColor = [UIColor colorWithRed:(0.0/255.0f) green:(0.0/255.0f) blue:(0.0/255.0f) alpha:self.dimmedMaskAlpha];
+            self->_backgroundView.alpha = 0.0;
+            if (self->_maskType == NUPopUpMaskTypeDimmed) {
+                self->_backgroundView.backgroundColor = [UIColor colorWithRed:(0.0/255.0f) green:(0.0/255.0f) blue:(0.0/255.0f) alpha:self.dimmedMaskAlpha];
             } else {
-                _backgroundView.backgroundColor = [UIColor clearColor];
+                self->_backgroundView.backgroundColor = [UIColor clearColor];
             }
             
             // Animate background if needed
             void (^backgroundAnimationBlock)(void) = ^(void) {
-                _backgroundView.alpha = 1.0;
+                self->_backgroundView.alpha = 1.0;
             };
             
-            if (_showType != NUPopUpShowTypeNone) {
+            if (self->_showType != NUPopUpShowTypeNone) {
                 // Make fade happen faster than motion. Use linear for fades.
                 [UIView animateWithDuration:0.15
                                       delay:0
@@ -607,9 +607,9 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             
             // Setup completion block
             void (^completionBlock)(BOOL) = ^(BOOL finished) {
-                _isBeingShown = NO;
-                _isShowing = YES;
-                _isBeingDismissed = NO;
+                self->_isBeingShown = NO;
+                self->_isShowing = YES;
+                self->_isBeingDismissed = NO;
                 
                 [self didFinishShowing];
                 
@@ -624,24 +624,24 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
             };
             
             // Add contentView to container
-            if (self.contentView.superview != _containerView) {
-                [_containerView addSubview:self.contentView];
+            if (self.contentView.superview != self->_containerView) {
+                [self->_containerView addSubview:self.contentView];
             }
             
             // Re-layout (this is needed if the contentView is using autoLayout)
             [self.contentView layoutIfNeeded];
             
             // Size container to match contentView
-            CGRect containerFrame = _containerView.frame;
+            CGRect containerFrame = self->_containerView.frame;
             containerFrame.size = self.contentView.frame.size;
-            _containerView.frame = containerFrame;
+            self->_containerView.frame = containerFrame;
             // Position contentView to fill it
             CGRect contentViewFrame = self.contentView.frame;
             contentViewFrame.origin = CGPointZero;
             self.contentView.frame = contentViewFrame;
             
             // Reset _containerView's constraints in case contentView is uaing autolayout.
-            [_containerView removeConstraints:_containerView.constraints];
+            [self->_containerView removeConstraints:self->_containerView.constraints];
             
             NSValue* layoutValue = [parameters valueForKey:@"layout"];
             NUPopUpLayout layout;
@@ -652,8 +652,8 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 layout.contentMargins = NUPopUpContentMarginsMake(0, 0, 0, 0);
             }
             
-            NSLayoutConstraint *marginTop = [NSLayoutConstraint constraintWithItem:_containerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeTop multiplier:1 constant:-layout.contentMargins.verticalTop];
-            NSLayoutConstraint *marginLeft = [NSLayoutConstraint constraintWithItem:_containerView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeLeft multiplier:1 constant:-layout.contentMargins.horizontalLeft];
+            NSLayoutConstraint *marginTop = [NSLayoutConstraint constraintWithItem:self->_containerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self->_contentView attribute:NSLayoutAttributeTop multiplier:1 constant:-layout.contentMargins.verticalTop];
+            NSLayoutConstraint *marginLeft = [NSLayoutConstraint constraintWithItem:self->_containerView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self->_contentView attribute:NSLayoutAttributeLeft multiplier:1 constant:-layout.contentMargins.horizontalLeft];
             [NSLayoutConstraint activateConstraints:@[marginTop, marginLeft]];
 
             
@@ -766,23 +766,23 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 }
             }
             
-            _containerView.autoresizingMask = containerAutoresizingMask;
-            [_contentView setTranslatesAutoresizingMaskIntoConstraints:NO];
+            self->_containerView.autoresizingMask = containerAutoresizingMask;
+            [self->_contentView setTranslatesAutoresizingMaskIntoConstraints:NO];
             
             // Animate content if needed
-            switch (_showType) {
+            switch (self->_showType) {
                 case NUPopUpShowTypeFadeIn: {
                     
-                    _containerView.alpha = 0.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 0.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.15
                                           delay:0
                                         options:UIViewAnimationOptionCurveLinear
                                      animations:^{
-                                         _containerView.alpha = 1.0;
+                        self->_containerView.alpha = 1.0;
                                      }
                                      completion:completionBlock];
                     break;
@@ -790,20 +790,20 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                     
                 case NUPopUpShowTypeGrowIn: {
                     
-                    _containerView.alpha = 0.0;
+                    self->_containerView.alpha = 0.0;
                     // set frame before transform here...
                     CGRect startFrame = finalContainerFrame;
-                    _containerView.frame = startFrame;
-                    _containerView.transform = CGAffineTransformMakeScale(0.85, 0.85);
+                    self->_containerView.frame = startFrame;
+                    self->_containerView.transform = CGAffineTransformMakeScale(0.85, 0.85);
                     
                     [UIView animateWithDuration:0.15
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.alpha = 1.0;
+                        self->_containerView.alpha = 1.0;
                                          // set transform before frame here...
-                                         _containerView.transform = CGAffineTransformIdentity;
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.transform = CGAffineTransformIdentity;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     
@@ -811,88 +811,88 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 }
                     
                 case NUPopUpShowTypeShrinkIn: {
-                    _containerView.alpha = 0.0;
+                    self->_containerView.alpha = 0.0;
                     // set frame before transform here...
                     CGRect startFrame = finalContainerFrame;
-                    _containerView.frame = startFrame;
-                    _containerView.transform = CGAffineTransformMakeScale(1.25, 1.25);
+                    self->_containerView.frame = startFrame;
+                    self->_containerView.transform = CGAffineTransformMakeScale(1.25, 1.25);
                     
                     [UIView animateWithDuration:0.15
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.alpha = 1.0;
+                        self->_containerView.alpha = 1.0;
                                          // set transform before frame here...
-                                         _containerView.transform = CGAffineTransformIdentity;
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.transform = CGAffineTransformIdentity;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeSlideInFromTop: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.y = -CGRectGetHeight(finalContainerFrame);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.30
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeSlideInFromBottom: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.y = CGRectGetHeight(self.bounds);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.30
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeSlideInFromLeft: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.x = -CGRectGetWidth(finalContainerFrame);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.30
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeSlideInFromRight: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.x = CGRectGetWidth(self.bounds);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.30
                                           delay:0
                                         options:kAnimationOptionCurveIOS7 // note: this curve ignores durations
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     
@@ -900,11 +900,11 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 }
                     
                 case NUPopUpShowTypeBounceIn: {
-                    _containerView.alpha = 0.0;
+                    self->_containerView.alpha = 0.0;
                     // set frame before transform here...
                     CGRect startFrame = finalContainerFrame;
-                    _containerView.frame = startFrame;
-                    _containerView.transform = CGAffineTransformMakeScale(0.1, 0.1);
+                    self->_containerView.frame = startFrame;
+                    self->_containerView.transform = CGAffineTransformMakeScale(0.1, 0.1);
                     
                     [UIView animateWithDuration:0.6
                                           delay:0.0
@@ -912,8 +912,8 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                           initialSpringVelocity:15.0
                                         options:0
                                      animations:^{
-                                         _containerView.alpha = 1.0;
-                                         _containerView.transform = CGAffineTransformIdentity;
+                        self->_containerView.alpha = 1.0;
+                        self->_containerView.transform = CGAffineTransformIdentity;
                                      }
                                      completion:completionBlock];
                     
@@ -921,11 +921,11 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                 }
                     
                 case NUPopUpShowTypeBounceInFromTop: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.y = -CGRectGetHeight(finalContainerFrame);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.6
                                           delay:0.0
@@ -933,18 +933,18 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                           initialSpringVelocity:10.0
                                         options:0
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeBounceInFromBottom: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.y = CGRectGetHeight(self.bounds);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.6
                                           delay:0.0
@@ -952,18 +952,18 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                           initialSpringVelocity:10.0
                                         options:0
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeBounceInFromLeft: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.x = -CGRectGetWidth(finalContainerFrame);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.6
                                           delay:0.0
@@ -971,18 +971,18 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                           initialSpringVelocity:10.0
                                         options:0
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;
                 }
                     
                 case NUPopUpShowTypeBounceInFromRight: {
-                    _containerView.alpha = 1.0;
-                    _containerView.transform = CGAffineTransformIdentity;
+                    self->_containerView.alpha = 1.0;
+                    self->_containerView.transform = CGAffineTransformIdentity;
                     CGRect startFrame = finalContainerFrame;
                     startFrame.origin.x = CGRectGetWidth(self.bounds);
-                    _containerView.frame = startFrame;
+                    self->_containerView.frame = startFrame;
                     
                     [UIView animateWithDuration:0.6
                                           delay:0.0
@@ -990,7 +990,7 @@ const NUPopUpLayout NUPopUpLayoutCenter = { NUPopUpHorizontalLayoutCenter,
                           initialSpringVelocity:10.0
                                         options:0
                                      animations:^{
-                                         _containerView.frame = finalContainerFrame;
+                        self->_containerView.frame = finalContainerFrame;
                                      }
                                      completion:completionBlock];
                     break;

@@ -57,8 +57,8 @@
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
         responseInstance.responseCode = (long)[httpResponse statusCode];
         if ([self successfullHttpCode:responseInstance.responseCode] == NO) {
-            DDLogVerbose(@"Host for url:%@ and params:%@ responded with code :%ld and error: %@",path,
-                         queryParameters, responseInstance.responseCode, [responseInstance.error localizedDescription]);
+            DDLogVerbose(@"Host for url:%@ and params:%@ responded with code :%ld and error: %@",self->path,
+                         self->queryParameters, responseInstance.responseCode, [responseInstance.error localizedDescription]);
             completionBlock([self response: responseInstance withError:error]);
             
             return;
@@ -67,7 +67,7 @@
         NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
         responseInstance.reponseData = [requestReply dataUsingEncoding:NSUTF8StringEncoding];
         [responseInstance setSuccessfull:YES];
-        DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",path, queryParameters,
+        DDLogVerbose(@"Host for url:%@ and params:%@ responded with:%ld",self->path, self->queryParameters,
                      responseInstance.responseCode);
         completionBlock(responseInstance);
         

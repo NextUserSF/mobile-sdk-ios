@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "NUCache.h"
+#import <UIKit/UIKit.h>
 
 @interface InAppMsgImageManager: NSObject
 

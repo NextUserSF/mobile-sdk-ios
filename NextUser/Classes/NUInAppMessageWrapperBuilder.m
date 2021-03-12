@@ -47,15 +47,15 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     
     if ([wrapper isContentHTML] == YES) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            wrapper.webView = [self createWebView:wrapper];
-            wrapper.webView.UIDelegate = self;
+            self->wrapper.webView = [self createWebView:self->wrapper];
+            self->wrapper.webView.UIDelegate = self;
             //wrapper.webView.scalesPageToFit = YES;
-            wrapper.webView.userInteractionEnabled = YES;
-            [wrapper.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
-            [wrapper.webView setClipsToBounds:YES];
-            wrapper.webView.opaque = NO;
-            wrapper.webView.backgroundColor = [UIColor redColor];
-            [wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
+            self->wrapper.webView.userInteractionEnabled = YES;
+            [self->wrapper.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
+            [self->wrapper.webView setClipsToBounds:YES];
+            self->wrapper.webView.opaque = NO;
+            self->wrapper.webView.backgroundColor = [UIColor redColor];
+            [self->wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
         });
         
         return;
