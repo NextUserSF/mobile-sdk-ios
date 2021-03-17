@@ -2,7 +2,7 @@
 #import "NUError.h"
 #import "NSString+LGUtils.h"
 #import "NUDDLog.h"
-#import "MF_Base64Additions.h"
+#import "NUBase64.h"
 #import "NUTrackerTask.h"
 #import "NUTask.h"
 #import "NUTrackerInitializationTask.h"

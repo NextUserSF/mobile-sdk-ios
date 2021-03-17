@@ -3,7 +3,6 @@
 #import "NUCart+Serialization.h"
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
-#import "Nextuser.h"
 #define TRACK_EVENT_ADD_TO_CART @"add_to_cart"
 #define TRACK_EVENT_REMOVE_FROM_CART @"remove_from_cart"
 

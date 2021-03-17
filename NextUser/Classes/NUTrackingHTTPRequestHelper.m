@@ -5,7 +5,7 @@
 #import "NUUser+Serialization.h"
 #import "NUSubscriberDevice+Serialization.h"
 #import "NUTrackerSession.h"
-#import "MF_Base64Additions.h"
+#import "NUBase64.h"
 #import "NUCart+Serialization.h"
 
 @implementation NUTrackingHTTPRequestHelper

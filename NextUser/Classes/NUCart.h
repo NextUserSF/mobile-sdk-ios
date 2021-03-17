@@ -2,6 +2,7 @@
 #import "NUJSONObject.h"
 #import "NUCartItem.h"
 #import "NUPurchaseDetails.h"
+#import "NextUserManagers.h"
 
 @interface NUCart : NUJSONObject
 

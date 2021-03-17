@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "NextUser.h"
+#import "NextUserManagers.h"
 #import "NextUserManager.h"
 
 @implementation NextUser

@@ -20,6 +20,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking', '~> 4.0'
-  s.dependency 'Base64'
   
 end
