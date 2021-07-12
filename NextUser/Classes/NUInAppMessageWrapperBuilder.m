@@ -43,8 +43,8 @@
                 self->wrapper.webView.backgroundColor = [UIColor redColor];
                 [self->wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
                 DDLogVerbose(@"contentHTML: %@", [[[message body] contentHTML] html]);
-                wrapper.state = READY;
-                completionBlock(wrapper);
+                self->wrapper.state = READY;
+                self->completionBlock(self->wrapper);
             } @catch (NSException *exception) {
                 DDLogError(@"UIWebView shouldStartLoadWithRequest exception: %@", exception);
             }

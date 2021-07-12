@@ -249,7 +249,7 @@
         
         @try {
             DDLogVerbose(@"Showing WebView...");
-            NUWebViewContainer *webViewContainer = [NUWebViewContainer initWithSettings:settings observerDelegate:self->webViewDelegate withViewSettings:viewSettings withContainerListener:self];
+            NUWebViewContainer *webViewContainer = [NUWebViewContainer initWithSettings:settings observerDelegate:self->webViewDelegate withViewSettings:self->viewSettings withContainerListener:self];
             
             __weak void (^webViewCompletionWeak)(BOOL success, NSError *error) = self->webViewCompletion;
             if (UIApplication.sharedApplication.keyWindow == nil) {
