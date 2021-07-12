@@ -14,7 +14,8 @@
     
     InAppMessage* message = [[InAppMessage alloc] init];
     
-    message.ID = [messageJSON objectForKey:@"id"] ? [messageJSON objectForKey:@"id"] : [messageJSON objectForKey:@"ID"];
+    NSString * iamID = [messageJSON objectForKey:@"id"] ? [messageJSON objectForKey:@"id"] : [messageJSON objectForKey:@"ID"];
+    message.ID = iamID;
     message.storageIdentifier = [messageJSON objectForKey:@"storageIdentifier"];
     message.type = [InAppMessageEnumTransformer toInAppMsgType: [messageJSON objectForKey:@"type"]];
     message.autoDismiss = [[messageJSON objectForKey:@"autoDismiss"] boolValue];
@@ -210,7 +211,6 @@
     
     NUCart* cart = [[NUCart alloc] init];
     cart.total = [[cartJSON objectForKey:@"total"] doubleValue];
-    cart.tracked = [[cartJSON objectForKey:@"tracked"] boolValue];
     cart.details = [self convertToPurchaseDetails:[cartJSON objectForKey:@"details"]];
     
     NSArray *itemsObjArray;

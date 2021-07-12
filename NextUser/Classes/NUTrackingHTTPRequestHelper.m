@@ -27,7 +27,7 @@
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:events.count];
     for (int i=0; i < events.count; i++) {
-        NSString *actionKey = [NSString stringWithFormat:TRACK_PARAM_A"%d", i];
+        NSString *actionKey = [NSString stringWithFormat:[TRACK_PARAM_A stringByAppendingString:@"%d"], i];
         NSString *actionValue = [events[i] httpRequestParameterRepresentation];
         
         parameters[actionKey] = actionValue;
@@ -40,7 +40,7 @@
 +(NSMutableDictionary *)trackCartParametersWithCart:(NUCart *)cart
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:1];
-    NSString *purchaseKey = [NSString stringWithFormat:TRACK_PARAM_PU"%d", 0];
+    NSString *purchaseKey = [NSString stringWithFormat:[TRACK_PARAM_PU stringByAppendingString:@"%d"], 0];
     NSString *purchaseValue = [cart httpRequestParameterRepresentation];
     parameters[purchaseKey] = purchaseValue;
     

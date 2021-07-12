@@ -134,4 +134,10 @@ NSString * const NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION = @"NextUserLoca
     [DDLog removeAllLoggers];
 }
 
+-(void) showWebView:(NUWebViewSettings *) settings withDelegate:(id<NUWebViewUIDelegate>) delegate
+     withCompletion: (void (^)(BOOL success, NSError*error))completion;
+{
+    [[[NextUserManager sharedInstance] inAppMsgUIManager] showWebView:settings withDelegate:delegate withCompletion:completion];
+}
+
 @end

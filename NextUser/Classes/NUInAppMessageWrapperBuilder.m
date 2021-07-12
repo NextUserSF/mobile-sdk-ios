@@ -2,13 +2,6 @@
 #import "NextUserManager.h"
 #import "NUSocialShare.h"
 
-typedef NS_ENUM(NSUInteger, NUUrlAuthority) {
-    CLOSE_AUTHORITY = 0,
-    CUSTOM_LINK_AUTHORITY,
-    SOCIAL_SHARE_AUTHORITY,
-    CUSTOM_EVENT_AUTHORITY,
-    UNKNOWN_AUTHORITY
-};
 
 @interface InAppMessageWrapperBuilder()
 {
@@ -20,16 +13,7 @@ typedef NS_ENUM(NSUInteger, NUUrlAuthority) {
 
 @implementation InAppMessageWrapperBuilder
 
-NSString * const NEXTUSER_JS_FILE = @"nu_html_in_app_msg_js_component";
-NSString * const NU_IN_APP_MSG_SCHEME = @"nextuser";
-NSString * const NU_URL_AUTHORITY_CLOSE = @"nuClose";
-NSString * const NU_URL_AUTHORITY_CUSTOM_LINK = @"nuCustomLink";
-NSString * const NU_URL_AUTHORITY_SOCIAL_SHARE = @"nuSocialShare";
-NSString * const NU_URL_AUTHORITY_CUSTOM_EVENT = @"nuCustomEvent";
-NSString * const QUERY_PARAM_URL = @"nuUrl";
-NSString * const QUERY_PARAM_DEEP_LINK = @"nuDeepLink";
-NSString * const QUERY_PARAM_SOCIAL_NETWORK = @"nuSocialNetwork";
-NSString * const QUERY_PARAM_EVENT = @"nuEvent";
+
 
 -(instancetype)initWithCompetion: (InAppMsgPrepareCompletionBlock) completion
 {
@@ -47,15 +31,23 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     
     if ([wrapper isContentHTML] == YES) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self->wrapper.webView = [self createWebView:self->wrapper];
-            self->wrapper.webView.UIDelegate = self;
-            //wrapper.webView.scalesPageToFit = YES;
-            self->wrapper.webView.userInteractionEnabled = YES;
-            [self->wrapper.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
-            [self->wrapper.webView setClipsToBounds:YES];
-            self->wrapper.webView.opaque = NO;
-            self->wrapper.webView.backgroundColor = [UIColor redColor];
-            [self->wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
+            
+            @try {
+                self->wrapper.webView = [self createWebView:self->wrapper];
+                self->wrapper.webView.UIDelegate = self;
+                //self->wrapper.webView.scalesPageToFit = YES;
+                self->wrapper.webView.userInteractionEnabled = YES;
+                [self->wrapper.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
+                [self->wrapper.webView setClipsToBounds:YES];
+                self->wrapper.webView.opaque = NO;
+                self->wrapper.webView.backgroundColor = [UIColor redColor];
+                [self->wrapper.webView loadHTMLString:[[[message body] contentHTML] html] baseURL:nil];
+                DDLogVerbose(@"contentHTML: %@", [[[message body] contentHTML] html]);
+                wrapper.state = READY;
+                completionBlock(wrapper);
+            } @catch (NSException *exception) {
+                DDLogError(@"UIWebView shouldStartLoadWithRequest exception: %@", exception);
+            }
         });
         
         return;
@@ -130,9 +122,9 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     
     @try {
         NSURL *url = request.URL;
-        if ([[url scheme] isEqualToString: NU_IN_APP_MSG_SCHEME]) {
-            NUUrlAuthority authority = [self toNUUrlAuthority: url.host];
-            NSMutableDictionary *query = [self getQueryDictionary:url];
+        if ([[url scheme] isEqualToString: NU_WEB_VIEW_SCHEME]) {
+            NUUrlAuthority authority = [NUWebViewHelper toNUUrlAuthority: url.host];
+            NSMutableDictionary *query = [NUWebViewHelper getQueryDictionary:url];
             switch (authority) {
                 case CLOSE_AUTHORITY:
                     [self onCloseAction: query];
@@ -140,10 +132,6 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
                     break;
                 case CUSTOM_LINK_AUTHORITY:
                     [self onUrlAction:nil fromQueryDictionary:query];
-                    
-                    break;
-                case SOCIAL_SHARE_AUTHORITY:
-                    [self onSocialShareAction: query];
                     
                     break;
                 case CUSTOM_EVENT_AUTHORITY:
@@ -171,18 +159,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     return YES;
 }
 
--(NSMutableDictionary *) getQueryDictionary:(NSURL*) url {
-    NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-    NSMutableDictionary *queryStrings = [[NSMutableDictionary alloc] init];
-    for (NSURLQueryItem *queryItem in [urlComponents queryItems]) {
-        if (queryItem.value == nil) {
-            continue;
-        }
-        [queryStrings setObject:queryItem.value forKey:queryItem.name];
-    }
-    
-    return queryStrings;
-}
+
 
 -(void) onCloseAction:(NSMutableDictionary *) query
 {
@@ -192,7 +169,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 
 -(void) onCustomEvent:(NSMutableDictionary *) query
 {
-    NUEvent *customEvent = [self buildEventFromQueryDictionary:query];
+    NUEvent *customEvent = [NUWebViewHelper buildEventFromQueryDictionary:query];
     if (customEvent != nil) {
         [[[NextUserManager sharedInstance] getTracker] trackEvent:customEvent];
     }
@@ -202,7 +179,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 {
     InAppMsgClick *click = [self buildClickConfiguration:URL fromQueryDictionary:query];
     if (url == nil) {
-        url = [self extractParameterFromQueryDictionary: query forKey:QUERY_PARAM_URL];
+        url = [NUWebViewHelper extractParameterFromQueryDictionary: query forKey:NU_PARAM_NAME_URL];
     }
     
     if (url == nil) {
@@ -216,17 +193,17 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 
 -(void) onSocialShareAction:(NSMutableDictionary *) query
 {
-    NSString *socialNetwork = [self extractParameterFromQueryDictionary:query forKey:QUERY_PARAM_SOCIAL_NETWORK];
-    NSString *deepLink = [self extractParameterFromQueryDictionary:query forKey:QUERY_PARAM_DEEP_LINK];
+    NSString *socialNetwork = [NUWebViewHelper extractParameterFromQueryDictionary:query forKey:QUERY_PARAM_SOCIAL_NETWORK];
+    NSString *deepLink = [NUWebViewHelper extractParameterFromQueryDictionary:query forKey:QUERY_PARAM_DEEP_LINK];
     if (socialNetwork != nil && deepLink != nil) {
         [self onCustomEvent:query];
         NUSocialShare *socialShareNotifObject = [[NUSocialShare alloc] init];
         socialShareNotifObject.socialNetwork = socialNetwork;
         socialShareNotifObject.deepLink = deepLink;
-        [[NextUserManager sharedInstance] sendNextUserLocalNotification:SOCIAL_SHARE withObject:socialShareNotifObject andStatus:YES];
+        [[NextUserManager sharedInstance] sendNextUserLocalNotification:ON_SOCIAL_SHARE withObject:socialShareNotifObject andStatus:YES];
     }
-    
-    NUEvent *customEvent = [self buildEventFromQueryDictionary:query];
+
+    NUEvent *customEvent = [NUWebViewHelper buildEventFromQueryDictionary:query];
     if (customEvent != nil) {
         [[[NextUserManager sharedInstance] getTracker] trackEvent:customEvent];
     }
@@ -236,7 +213,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 {
     InAppMsgClick *click = [[InAppMsgClick alloc] init];
     click.action = action;
-    NUEvent *customEvent = [self buildEventFromQueryDictionary: query];
+    NUEvent *customEvent = [NUWebViewHelper buildEventFromQueryDictionary: query];
     if (customEvent != nil) {
         NSMutableArray<NUEvent *> *events = [[NSMutableArray alloc] initWithCapacity:1];
         [events addObject:customEvent];
@@ -246,42 +223,9 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     return click;
 }
 
--(NUEvent *) buildEventFromQueryDictionary:(NSMutableDictionary *) query
-{
-    NSString * customEventStr = [self extractParameterFromQueryDictionary: query forKey:QUERY_PARAM_EVENT];
-    if (customEventStr == nil) {
-        
-        return nil;
-    }
-    
-    NSArray *eventArr = [customEventStr componentsSeparatedByString:@","];
-    if (eventArr == nil || eventArr.count <= 0) {
-        
-        return nil;
-    }
-    
-    if (eventArr.count == 1) {
-        
-        return [NUEvent eventWithName:[eventArr firstObject]];
-    }
-    
-    NSMutableArray *params = [[NSMutableArray alloc] init];
-    for (int i = 1; i < [eventArr count]; i++) {
-        [params addObject:[eventArr objectAtIndex:i]];
-    }
-    
-    return [NUEvent eventWithName:[eventArr firstObject] andParameters:params];
-}
 
--(NSString *) extractParameterFromQueryDictionary:(NSMutableDictionary *) query forKey:(NSString *) key
-{
-    if (query == nil) {
-        
-        return nil;
-    }
-    
-    return [query valueForKey:key];
-}
+
+
 
 - (void)webViewDidStartLoad:(WKWebView *)webView
 {
@@ -307,7 +251,7 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
 - (void) injectNUBridge: (WKWebView *)webView
 {
     NSBundle* frameworkBundle = [NSBundle bundleForClass: [NextUserManager class]];
-    NSString *path = [frameworkBundle pathForResource:NEXTUSER_JS_FILE ofType:@"js"];
+    NSString *path = [frameworkBundle pathForResource:NEXTUSER_JS_BRIDGE ofType:@"js"];
     NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     InAppMsgContentHtml *contentHTML = wrapper.message.body.contentHTML;
     if (contentHTML.css != nil) {
@@ -342,24 +286,21 @@ NSString * const QUERY_PARAM_EVENT = @"nuEvent";
     
 }
 
--(NUUrlAuthority) toNUUrlAuthority:(NSString*) authority
-{
-    if ([NU_URL_AUTHORITY_CLOSE isEqualToString:authority]) {
-        
-        return CLOSE_AUTHORITY;
-    } else if ([NU_URL_AUTHORITY_CUSTOM_LINK isEqualToString:authority]) {
-        
-        return CUSTOM_LINK_AUTHORITY;
-    } else if ([NU_URL_AUTHORITY_SOCIAL_SHARE isEqualToString:authority]) {
-        
-        return SOCIAL_SHARE_AUTHORITY;
-    } else if ([NU_URL_AUTHORITY_CUSTOM_EVENT isEqualToString:authority]) {
-        
-        return CUSTOM_EVENT_AUTHORITY;
-    } else {
-        
-        return UNKNOWN_AUTHORITY;
-    }
+
+- (void)sendData:(NSString *)dataObject withEvent:(NSString *)event withParams:(NSArray *)params {
+    
+}
+
+- (void)trackEvent:(NSString *)event withParams:(NSArray *)params {
+    
+}
+
+- (void)triggerClose:(NSString *)dataObject withEvent:(NSString *)event withParams:(NSArray *)params {
+    
+}
+
+- (void)triggerReload:(NSString *)url withEvent:(NSString *)event withParams:(NSArray *)params {
+
 }
 
 @end

@@ -13,7 +13,6 @@
     self = [super init];
     if (self) {
         _total = 0.0;
-        _tracked = NO;
         _items = [[NSMutableArray<NUCartItem *> alloc] init];
     }
     

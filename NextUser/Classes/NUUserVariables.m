@@ -34,7 +34,7 @@
                                       initWithCapacity: [_variables count]];
     int index = 0;
     for (id key in _variables.allKeys) {
-        NSString *userVariableTrackKey = [NSString stringWithFormat:TRACK_SUBSCRIBER_VARIABLE_PARAM"%d", index];
+        NSString *userVariableTrackKey = [NSString stringWithFormat:[TRACK_SUBSCRIBER_VARIABLE_PARAM stringByAppendingString:@"%d"], index];
         NSString *userVariableTrackValue = [NSString stringWithFormat:@"%@=%@", key,
                                             [_variables[key] URLEncodedString]];
         trackMap[userVariableTrackKey] = userVariableTrackValue;

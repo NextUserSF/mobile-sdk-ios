@@ -11,6 +11,6 @@
 - (void) submitFCMRegistrationToken:(NSString *) fcmToken;
 - (void) unregisterFCMRegistrationToken;
 - (UIBackgroundFetchResult) didReceiveRemoteNotification:(NSDictionary *)userInfo;
-- (void) didReceiveRemoteMessage: (NSDictionary *) data;
+- (void) didReceiveNotificationResponse: (UNNotificationResponse *)response;
 
 @end

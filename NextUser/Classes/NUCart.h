@@ -9,7 +9,6 @@
 @property (nonatomic) double total;
 @property (nonatomic) NSMutableArray<NUCartItem *> *items;
 @property (nonatomic) NUPurchaseDetails *details;
-@property (nonatomic) BOOL tracked;
 
 -(BOOL) addOrUpdateItem:(NUCartItem *) item;
 -(BOOL) removeItemForID:(NSString *) ID;

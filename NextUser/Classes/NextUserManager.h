@@ -6,7 +6,6 @@
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "Reachability.h"
-
 #import "NUInAppMsgWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
 #import "NUInAppMsgImageManager.h"
@@ -37,7 +36,7 @@
 - (NUTracker* ) getTracker;
 - (void)setLogLevel:(NSString *)logLevel;
 - (NULogLevel)logLevel;
-- (void) sendNextUserLocalNotification: (NUTaskType )event withObject:(id)object andStatus:(BOOL)status;
+- (void) sendNextUserLocalNotification: (NSString *)event withObject:(id)object andStatus:(BOOL)status;
 - (BOOL) validTracker;
 
 @end

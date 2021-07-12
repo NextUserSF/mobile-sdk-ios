@@ -9,6 +9,7 @@
 #import "NUSubscriberDevice.h"
 #import "NUHardwareInfo.h"
 #import "NUInternalTracker.h"
+#import "NUConstants.h"
 
 
 #define kDeviceCookieJSONKey @"device_cookie"
@@ -154,26 +155,40 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     NSDictionary *userInfo = notification.userInfo;
     id<NUTaskResponse> taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
     
-    NUTaskType surfaceType = TASK_NO_TYPE;
+    NSString* surfaceEvent = @"";
+    BOOL checkResponse = YES;
     
     switch (taskResponse.taskType) {
         case APPLICATION_INITIALIZATION:
             [self onTrackerInitialization:taskResponse];
+            checkResponse = NO;
             
             return;
         case SESSION_INITIALIZATION:
             [self onSessionInitialization:taskResponse];
-            surfaceType = SESSION_INITIALIZATION;
+            surfaceEvent = TRACKER_INITIALIZED;
+            checkResponse = NO;
             
             break;
         case TRACK_USER:
+            surfaceEvent = ON_TRACK_USER;
+            
+            break;
         case TRACK_USER_VARIABLES:
+            surfaceEvent = ON_TTRACK_USER_VARIABLES;
+            
+            break;
         case TRACK_EVENT:
+            surfaceEvent = ON_TRACK_EVENT;
+            
+            break;
         case TRACK_PURCHASE:
+            surfaceEvent = ON_TRACK_PURCHASE;
+            
+            break;
         case TRACK_SCREEN:
-            surfaceType = taskResponse.taskType;
-            [self checkRequestStatus: taskResponse];
-        
+            surfaceEvent = ON_TRACK_SCREEN;
+            
             break;
         case REGISTER_DEVICE_TOKEN:
             if ([taskResponse successfull] == YES) {
@@ -188,24 +203,27 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
                 NURegistrationToken *regToken = (NURegistrationToken *) [trackResp trackObject];
                 [session persistFCMToken: [regToken token]];
             }
-            [self checkRequestStatus: taskResponse];
             
             break;
         default:
             break;
     }
     
-    if (surfaceType != TASK_NO_TYPE) {
+    if (checkResponse == YES) {
+        [self checkRequestStatus: taskResponse];
+    }
+    
+    if ([surfaceEvent isEqualToString:@""] == NO) {
         id object = nil;
         if ([taskResponse isKindOfClass:[NUTrackResponse class]]) {
             NUTrackResponse *trackResp = (NUTrackResponse *) taskResponse;
             object = [trackResp trackObject];
         }
-        [self sendNextUserLocalNotification:surfaceType withObject:object andStatus:taskResponse.successfull];
+        [self sendNextUserLocalNotification:surfaceEvent withObject:object andStatus:taskResponse.successfull];
     }
 }
 
-- (void) sendNextUserLocalNotification: (NUTaskType )event withObject:(id)object andStatus:(BOOL)status
+- (void) sendNextUserLocalNotification: (NSString *)event withObject:(id)object andStatus:(BOOL)status
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithBool:status] forKey: NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION];

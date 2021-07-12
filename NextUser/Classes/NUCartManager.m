@@ -6,6 +6,7 @@
 #import "NUCache.h"
 #import "NUUserVariables.h"
 #import "NUInternalTracker.h"
+#import "NUConstants.h"
 
 #define CART_FILE_JSON @"cart.json"
 
@@ -14,12 +15,14 @@
     NUCache *nuCache;
     NUCart *cart;
     NSOperationQueue *queue;
+    NSUserDefaults *preferences;
 }
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
+        preferences = [NSUserDefaults standardUserDefaults];
         nuCache = [[NUCache alloc] init];
         queue = [[NSOperationQueue alloc] init];
         [queue setMaxConcurrentOperationCount:1];
@@ -28,17 +31,29 @@
                                                  selector:@selector(receiveTaskManagerHttpRequestNotification:)
                                                      name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME
                                                    object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageNotification:)
-                                                     name:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidBecomeActiveNotification:)
-                                                     name:UIApplicationDidBecomeActiveNotification
-                                                   object:nil];
         cart = [self fetchCartFromCache];
-        [self trackCartStateSelector: cart];
+        if ([self isTracked] == NO) {
+            [self trackCartStateSelector: cart];
+        }
     }
     
     return self;
+}
+
+- (BOOL) isTracked
+{
+    double lastTrackedTS = 0;
+    double lastModifiedTS = 0;
+
+    if ([self->preferences objectForKey:USER_CART_LAST_TRACKED_KEY] != nil) {
+        lastTrackedTS = [preferences doubleForKey:USER_CART_LAST_TRACKED_KEY];
+    }
+
+    if ([self->preferences objectForKey:USER_CART_LAST_MODIFIED_KEY] != nil) {
+        lastModifiedTS = [preferences doubleForKey:USER_CART_LAST_MODIFIED_KEY];
+    }
+    
+    return lastModifiedTS < lastTrackedTS ? YES: NO;
 }
 
 - (void) setTotal: (double) total
@@ -115,7 +130,6 @@
     if (cart.items != nil && [cart.items count] > 0) {
         BOOL removed = [cart removeItemForID:ID];
         if (removed == YES) {
-            cart.tracked = NO;
             [self refreshCartCache];
             [self trackCartStateSelector: cart];
         }
@@ -130,7 +144,6 @@
     }
     
     if ([cart addOrUpdateItem:item] == YES) {
-        cart.tracked = NO;
         [self refreshCartCache];
         [self trackCartStateSelector: cart];
     }
@@ -146,7 +159,6 @@
 {
     if (cart.items != nil && [cart.items count] > 0) {
         cart.total = [total doubleValue];
-        cart.tracked = NO;
         [self refreshCartCache];
         [self trackCartStateSelector: cart];
     }
@@ -210,6 +222,8 @@
                                                        options:NSJSONWritingPrettyPrinted error:&error];
         if (error == nil) {
             [nuCache writeData:json toFile:CART_FILE_JSON];
+            [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:USER_CART_LAST_MODIFIED_KEY];
+            [preferences synchronize];
         } else {
             DDLogDebug(@"Exception on json serialization of messages %@", error);
         }
@@ -222,21 +236,17 @@
 
 - (void) trackCartState
 {
-    @try {
-        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(trackCartStateSelector:) object:cart]];
-    } @catch (NSException *exception) {
-        DDLogError(@"Exception on checkout: %@", [exception reason]);
+    if ([self isTracked] == NO) {
+        @try {
+            [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(trackCartStateSelector:) object:cart]];
+        } @catch (NSException *exception) {
+            DDLogError(@"Exception on checkout: %@", [exception reason]);
+        }
     }
 }
 
 - (void) trackCartStateSelector:(NUCart*) cart
 {
-    if (cart.tracked == YES) {
-        DDLogVerbose(@"Cart already tracked.");
-        
-        return;
-    }
-    
     NSString *cartStr = nil;
     if ([cart.items count] > 0 || [self isEmptyCart] == YES) {
         NSMutableDictionary *cartJSON = [cart dictionaryReflectFromAttributes];
@@ -261,15 +271,7 @@
         [userVariables addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
         [[[NextUserManager sharedInstance] getSession].user addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
         if ([[NextUserManager sharedInstance] validTracker] == YES) {
-            NUTrackerTask *trackTask = [[NUTrackerTask alloc] initForType:TRACK_USER_VARIABLES withTrackObject:userVariables withSession:[[NextUserManager sharedInstance] getSession]];
-            [trackTask execute:[[NUTrackResponse alloc] initWithType:TRACK_USER_VARIABLES withTrackingObject:userVariables andQueued:NO] withCompletion:^(id<NUTaskResponse> responseInstance) {
-                if (responseInstance == nil || [responseInstance successfull] == NO) {
-                    DDLogDebug(@"Could not persist cart state.");
-                } else {
-                    cart.tracked = YES;
-                    [self refreshCartCache];
-                }
-            }];
+            [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
         }
     }
 }
@@ -286,29 +288,18 @@
             }
             
             break;
+        case TRACK_USER_VARIABLES:
+            if ([taskResponse successfull] == YES) {
+                NUTrackResponse *response = (NUTrackResponse *)taskResponse;
+                NUUserVariables *userVariables = (NUUserVariables *)response.trackObject;
+                if ([userVariables hasVariable:TRACK_VARIABLE_CART_STATE] == YES) {
+                    [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:USER_CART_LAST_TRACKED_KEY];
+                    [preferences synchronize];
+                }
+            }
         default:
             break;
     }
-}
-
--(void)receiveMessageNotification:(NSNotification *) notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    NUTaskType type = [[userInfo valueForKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY] intValue];
-    switch (type) {
-        case NETWORK_AVAILABLE:
-            [self trackCartState];
-            
-            break;
-        default:
-            
-            break;
-    }
-}
-
-- (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
-{
-    [self trackCartState];
 }
 
 @end
