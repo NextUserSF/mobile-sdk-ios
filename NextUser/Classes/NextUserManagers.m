@@ -19,4 +19,9 @@
     return [[NextUserManager sharedInstance] cartManager];
 }
 
++ (NUUIDisplayManager *) UIDisplayManager
+{
+    return [[NextUserManager sharedInstance] UIDisplayManager];
+}
+
 @end

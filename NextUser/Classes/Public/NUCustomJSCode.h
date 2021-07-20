@@ -4,9 +4,6 @@
 //
 //  Created by Adrian Lazea on 09.07.2021.
 //
-
-
-
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, NUCondition) {
@@ -18,8 +15,11 @@ typedef NS_ENUM(NSUInteger, NUCondition) {
 
 @interface NUCustomJSCode : NSObject
 
++(instancetype) customJSCodeWithContionString:(NSString*) conditionString;
+
 @property (nonatomic) NSString *jsCodeString;
 @property (nonatomic) NSString *pageURL;
 @property (nonatomic) NUCondition condition;
+
 
 @end

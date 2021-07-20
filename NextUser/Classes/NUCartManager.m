@@ -9,6 +9,7 @@
 #import "NUConstants.h"
 
 #define CART_FILE_JSON @"cart.json"
+#define LAST_BROWSED_FILE_JSON @"last_browsed.json"
 
 @implementation NUCartManager
 {
@@ -32,25 +33,29 @@
                                                      name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME
                                                    object:nil];
         cart = [self fetchCartFromCache];
-        if ([self isTracked] == NO) {
+        if ([self isTrackedForLastTrackedKey:USER_CART_LAST_TRACKED_KEY andForLastModifiedKey:USER_CART_LAST_MODIFIED_KEY] == NO) {
             [self trackCartStateSelector: cart];
+        }
+        
+        if ([self isTrackedForLastTrackedKey:LAST_BROWSED_LAST_TRACKED_KEY andForLastModifiedKey:LAST_BROWSED_LAST_MODIFIED_KEY] == NO) {
+            [self trackLastBrowsed:[self fetchLastBrowsedItemsFromCache]];
         }
     }
     
     return self;
 }
 
-- (BOOL) isTracked
+- (BOOL) isTrackedForLastTrackedKey:(NSString*) lastTrackedKey andForLastModifiedKey:(NSString*) lastModifiedKey
 {
     double lastTrackedTS = 0;
     double lastModifiedTS = 0;
 
-    if ([self->preferences objectForKey:USER_CART_LAST_TRACKED_KEY] != nil) {
-        lastTrackedTS = [preferences doubleForKey:USER_CART_LAST_TRACKED_KEY];
+    if ([self->preferences objectForKey:lastTrackedKey] != nil) {
+        lastTrackedTS = [preferences doubleForKey:lastTrackedKey];
     }
 
-    if ([self->preferences objectForKey:USER_CART_LAST_MODIFIED_KEY] != nil) {
-        lastModifiedTS = [preferences doubleForKey:USER_CART_LAST_MODIFIED_KEY];
+    if ([self->preferences objectForKey:lastModifiedKey] != nil) {
+        lastModifiedTS = [preferences doubleForKey:lastModifiedKey];
     }
     
     return lastModifiedTS < lastTrackedTS ? YES: NO;
@@ -74,6 +79,39 @@
     }
 }
 
+- (void) setDetails:(NSDictionary *) detailsInfo withCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            NUPurchaseDetails *details = [NUPurchaseDetails details];
+            details.currency = [detailsInfo valueForKey:@"currency"];
+            details.paymentMethod = [detailsInfo valueForKey:@"paymentMethod"];
+            details.affiliation = [detailsInfo valueForKey:@"affiliation"];
+            details.state = [detailsInfo valueForKey:@"state"];
+            details.city = [detailsInfo valueForKey:@"city"];
+            details.zip = [detailsInfo valueForKey:@"zip"];
+            
+            if ([detailsInfo valueForKey:@"discount"] != nil) {
+                details.discount = [[detailsInfo valueForKey:@"discount"] doubleValue];
+            }
+            if ([detailsInfo valueForKey:@"shipping"] != nil) {
+                details.shipping = [[detailsInfo valueForKey:@"shipping"] doubleValue];
+            }
+            if ([detailsInfo valueForKey:@"tax"] != nil) {
+                details.tax = [[detailsInfo valueForKey:@"tax"] doubleValue];
+            }
+            if ([detailsInfo valueForKey:@"incomplete"] != nil) {
+                details.incomplete = [[detailsInfo valueForKey:@"incomplete"] isEqual:@"true"] == YES ? YES : NO;
+            }
+            
+            [self setDetails:details];
+            completion(YES, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
+}
+
 - (void) addOrUpdateItem: (NUCartItem *) item
 {
     @try {
@@ -81,6 +119,35 @@
     } @catch (NSException *exception) {
         DDLogError(@"Exception on addOrUpdateItem: %@", [exception reason]);
     }
+}
+
+- (void) addOrUpdateItem:(NSDictionary *) itemInfo withCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            NUCartItem *item = [[NUCartItem alloc] init];
+            item.ID = [itemInfo valueForKey:@"ID"];
+            item.name = [itemInfo valueForKey:@"name"];
+            if (item.ID == nil || [item.ID isEqual:@""] == YES || item.name == nil || [item.name isEqual:@""] == YES) {
+                completion(NO, [NUError nextUserErrorWithMessage:@"Invalid cart item data. ID and name are mandatory fields."]);
+                
+                return;
+            }
+            item.category = [itemInfo valueForKey:@"category"];
+            item.desc = [itemInfo valueForKey:@"desc"];
+            if ([itemInfo valueForKey:@"quantity"] != nil) {
+                item.quantity = [[itemInfo valueForKey:@"quantity"] doubleValue];
+            }
+            if ([itemInfo valueForKey:@"price"] != nil) {
+                item.price = [[itemInfo valueForKey:@"price"] doubleValue];
+            }
+            
+            [self addOrUpdateItem:item];
+            completion(YES, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
 }
 
 - (void) removeCartItemWithID: (NSString *) ID
@@ -108,6 +175,47 @@
     } @catch (NSException *exception) {
         DDLogError(@"Exception on checkout: %@", [exception reason]);
     }
+}
+
+- (void) viewedProduct:(NSString*) productId
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(viewedProductSelector:) object:productId]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on viewedProduct: %@", [exception reason]);
+    }
+}
+
+- (void) viewedProductSelector:(NSString*) productId
+{
+    if (productId == nil || [productId isEqual:@""] == YES) {
+        
+        return;
+    }
+    
+    NSMutableArray<NSString*>* lastBrowsedItems = [self fetchLastBrowsedItemsFromCache];
+    if ([lastBrowsedItems count] == 5) {
+        [lastBrowsedItems removeObjectAtIndex:0];
+    }
+    
+    if ([lastBrowsedItems containsObject:productId] == YES) {
+        [lastBrowsedItems removeObject:productId];
+    }
+    
+    [lastBrowsedItems addObject:productId];
+    [self refreshLastBrowsedItemsCache: lastBrowsedItems];
+    [self trackLastBrowsed:lastBrowsedItems];
+}
+
+-(void) trackLastBrowsed:(NSMutableArray<NSString*>*) lastBrowsedItems
+{
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:lastBrowsedItems
+                                                       options:NSJSONWritingPrettyPrinted error:&error];
+    NSString* lastBrowsedStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NUUserVariables *userVariables = [[NUUserVariables alloc] init];
+    [userVariables addVariable:TRACK_VARIABLE_LAST_BROWSED withValue:lastBrowsedStr];
+    [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
 }
 
 - (void) checkoutSelector:(id) fake
@@ -213,6 +321,55 @@
     return [[NUCart alloc] init];
 }
 
+- (NSMutableArray<NSString*>*) fetchLastBrowsedItemsFromCache
+{
+    @try
+    {
+        NSError *error = nil;
+        NSData *jsonData = [nuCache readFromFile:LAST_BROWSED_FILE_JSON];
+        if (jsonData == nil || [jsonData length] == 0) {
+            
+            return [[NSMutableArray<NSString*> alloc] init];
+        }
+        
+        id object = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&error];
+        if (error != nil) {
+            DDLogError(@"Exception on fetchLastBrowsedItemsFromCache on data deserialization %@", error);
+            
+            return [[NSMutableArray<NSString*> alloc] init];
+        }
+        
+        return [NUJSONTransformer toLastBrowsedItems:object];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on fetchCartFromCache %@", [exception reason]);
+    } @catch (NUError *error) {
+        DDLogError(@"Error on fetchCartFromCache %@", error);
+    }
+    
+    return [[NSMutableArray<NSString*> alloc] init];
+}
+
+- (void) refreshLastBrowsedItemsCache:(NSMutableArray<NSString*>*) lastBrowsedItems;
+{
+    @try
+    {
+        NSError *error = nil;
+        NSData *json = [NSJSONSerialization dataWithJSONObject:lastBrowsedItems options:NSJSONWritingPrettyPrinted error:&error];
+
+        if (error == nil) {
+            [nuCache writeData:json toFile:LAST_BROWSED_FILE_JSON];
+            [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:LAST_BROWSED_LAST_MODIFIED_KEY];
+            [preferences synchronize];
+        } else {
+            DDLogDebug(@"Exception on json serialization of lastBrowsedItems %@", error);
+        }
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on internalCacheMessages %@", [exception reason]);
+    } @catch (NUError *error) {
+        DDLogError(@"Error on internalCacheMessages %@", error);
+    }
+}
+
 - (void) refreshCartCache
 {
     @try
@@ -236,7 +393,7 @@
 
 - (void) trackCartState
 {
-    if ([self isTracked] == NO) {
+    if ([self isTrackedForLastTrackedKey:USER_CART_LAST_TRACKED_KEY andForLastModifiedKey:USER_CART_LAST_MODIFIED_KEY] == NO) {
         @try {
             [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(trackCartStateSelector:) object:cart]];
         } @catch (NSException *exception) {
@@ -269,10 +426,7 @@
         cartStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NUUserVariables *userVariables = [[NUUserVariables alloc] init];
         [userVariables addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
-        [[[NextUserManager sharedInstance] getSession].user addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
-        if ([[NextUserManager sharedInstance] validTracker] == YES) {
-            [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
-        }
+        [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
     }
 }
 
@@ -294,6 +448,9 @@
                 NUUserVariables *userVariables = (NUUserVariables *)response.trackObject;
                 if ([userVariables hasVariable:TRACK_VARIABLE_CART_STATE] == YES) {
                     [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:USER_CART_LAST_TRACKED_KEY];
+                    [preferences synchronize];
+                } else if ([userVariables hasVariable:TRACK_VARIABLE_LAST_BROWSED] == YES) {
+                    [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:LAST_BROWSED_LAST_TRACKED_KEY];
                     [preferences synchronize];
                 }
             }

@@ -28,8 +28,8 @@
 - (void)webViewContainer:(UIView *)view didFinishLoadingURL:(NSURL *)URL;
 - (void)webViewContainer:(UIView *)view didFailToLoadURL:(NSURL *)URL error:(NSError *)error;
 - (void)onWebViewPageLoadingProgress: (double) progress;
-- (void)onWebViewData:(NSObject *) dataObject;
-- (void)onWebViewClose:(NSObject*) dataObject;
+- (void)onWebViewData:(NSDictionary *) dataObject;
+- (void)onWebViewClose:(NSDictionary*) dataObject;
 @end
 
 

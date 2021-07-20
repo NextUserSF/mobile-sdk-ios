@@ -4,7 +4,8 @@
 
 @interface NUEvent : NUJSONObject
 
-@property (nonatomic, readonly) NSString *eventName;
+@property (nonatomic) NSString *eventName;
+@property (nonatomic) NSMutableArray *parameters;
 
 + (instancetype)eventWithName:(NSString *)eventName;
 + (instancetype)eventWithName:(NSString *)eventName andParameters:(NSMutableArray *) parameters;

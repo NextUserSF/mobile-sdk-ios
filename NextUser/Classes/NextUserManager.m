@@ -10,7 +10,7 @@
 #import "NUHardwareInfo.h"
 #import "NUInternalTracker.h"
 #import "NUConstants.h"
-
+#import "NUJSONObject.h"
 
 #define kDeviceCookieJSONKey @"device_cookie"
 #define kSessionCookieJSONKey @"session_cookie"
@@ -32,9 +32,8 @@ const int MAX_PENDING_TASKS = 100;
     NUTracker* tracker;
     NUTrackerSession *session;
     Reachability *reachability;
-    WorkflowManager* workflowManager;
     InAppMsgCacheManager* inAppMessageCacheManager;
-    InAppMsgUIManager* inAppMsgUIManager;
+    NUUIDisplayManager* UIDisplayManager;
     InAppMsgImageManager* inAppMsgImageManager;
     NUPushNotificationsManager *notificationsManager;
     NUCartManager *cartManager;
@@ -43,6 +42,7 @@ const int MAX_PENDING_TASKS = 100;
     NSLock *pendingTasksLock;
     BOOL disabled;
     BOOL initializationFailed;
+    BOOL hasInternet;
 }
 
 -(void) trackSubscriberDevice;
@@ -95,6 +95,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         
         reachability = [Reachability reachabilityForInternetConnection];
         [reachability startNotifier];
+        self->hasInternet = reachability.currentReachabilityStatus != NotReachable;
     }
     
     return self;
@@ -124,11 +125,6 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return notificationsManager;
 }
 
--(WorkflowManager *) workflowManager
-{
-    return workflowManager;
-}
-
 -(InAppMsgCacheManager *) inAppMsgCacheManager
 {
     return inAppMessageCacheManager;
@@ -140,9 +136,9 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return inAppMsgImageManager;
 }
 
--(InAppMsgUIManager *) inAppMsgUIManager
+-(NUUIDisplayManager *) UIDisplayManager
 {
-    return inAppMsgUIManager;
+    return UIDisplayManager;
 }
 
 - (NUCartManager *) cartManager
@@ -166,28 +162,28 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             return;
         case SESSION_INITIALIZATION:
             [self onSessionInitialization:taskResponse];
-            surfaceEvent = TRACKER_INITIALIZED;
+            surfaceEvent = TRACKER_INITIALIZED_EVENT_NAME;
             checkResponse = NO;
             
             break;
         case TRACK_USER:
-            surfaceEvent = ON_TRACK_USER;
+            surfaceEvent = ON_TRACK_USER_EVENT_NAME;
             
             break;
         case TRACK_USER_VARIABLES:
-            surfaceEvent = ON_TTRACK_USER_VARIABLES;
+            surfaceEvent = ON_TRACK_USER_VARIABLES_EVENT_NAME;
             
             break;
         case TRACK_EVENT:
-            surfaceEvent = ON_TRACK_EVENT;
+            surfaceEvent = ON_TRACK_EVENT_EVENT_NAME;
             
             break;
         case TRACK_PURCHASE:
-            surfaceEvent = ON_TRACK_PURCHASE;
+            surfaceEvent = ON_TRACK_PURCHASE_EVENT_NAME;
             
             break;
         case TRACK_SCREEN:
-            surfaceEvent = ON_TRACK_SCREEN;
+            surfaceEvent = ON_TRACK_SCREEN_EVENT_NAME;
             
             break;
         case REGISTER_DEVICE_TOKEN:
@@ -227,9 +223,9 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[NSNumber numberWithBool:status] forKey: NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION];
-    [dictionary setValue:[NSNumber numberWithInt:(int)event] forKey: NEXTUSER_LOCAL_NOTIFICATION_EVENT];
+    [dictionary setValue:event forKey: NEXTUSER_LOCAL_NOTIFICATION_EVENT];
     if (object != nil) {
-        [dictionary setValue: object forKey: NEXTUSER_LOCAL_NOTIFICATION_OBJECT];
+        [dictionary setValue:object  forKey: NEXTUSER_LOCAL_NOTIFICATION_OBJECT];
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:NEXTUSER_LOCAL_NOTIFICATION object:nil userInfo:dictionary];
@@ -252,6 +248,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         session = response.session;
         [self setLogLevel: [session logLevel]];
         initializationFailed = NO;
+        [self initManagers];
         [self requestSession];
     } else {
         initializationFailed = YES;
@@ -265,10 +262,9 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         
         NSError *errorJson=nil;
         NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:response.reponseData options:kNilOptions error:&errorJson];
-        
         DDLogVerbose(@"Start tracker session response: %@", responseDict);
         session.sessionCookie = responseDict[kSessionCookieJSONKey];
-        
+    
         if (![session sessionCookie]) {
             [session setSessionState: Failed];
             DDLogError(@"Setup tracker error: %@", @"Server Error.");
@@ -278,19 +274,10 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         }
         
         initializationFailed = NO;
-        
         [session setDeviceCookie: responseDict[kDeviceCookieJSONKey]];
         [session setSessionState: Initialized];
         [self trackSubscriberDevice];
-        
-        cartManager = [[NUCartManager alloc] init];
-        
-        if (session.requestInAppMessages == YES) {
-            [self initInAppMsgSessionManagers];
-        }
-        
         [self popNextPendingTask];
-        
     } else {
         DDLogError(@"Setup tracker error: %@", response.error);
         [session setSessionState: Failed];
@@ -316,7 +303,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     [self trackWithObject:subDevice withType:TRACK_USER_DEVICE];
 }
 
--(void) initInAppMsgSessionManagers
+-(void) initManagers
 {
     if (inAppMessageCacheManager == nil) {
         inAppMessageCacheManager = [[InAppMsgCacheManager alloc] init];
@@ -326,12 +313,12 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         inAppMsgImageManager = [[InAppMsgImageManager alloc] init];
     }
     
-    if (inAppMsgUIManager == nil) {
-        inAppMsgUIManager = [[InAppMsgUIManager alloc] init];
+    if (UIDisplayManager == nil) {
+        UIDisplayManager = [[NUUIDisplayManager alloc] init];
     }
     
-    if (workflowManager == nil) {
-        workflowManager = [WorkflowManager initWithSession:session];
+    if (cartManager == nil) {
+        cartManager = [[NUCartManager alloc] init];
     }
 }
 
@@ -344,7 +331,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)reachabilityChanged: (NSNotification*) notification
 {
-    if(reachability.currentReachabilityStatus != NotReachable) {
+    if (reachability.currentReachabilityStatus != NotReachable) {
+        self->hasInternet = YES;
         if ([self validTracker] == NO) {
             [self requestSession];
             
@@ -352,7 +340,14 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         }
         [self refreshPendingRequests];
         [[NUTaskManager manager] dispatchMessageNotification:NETWORK_AVAILABLE withObject:nil];
+    } else {
+        self->hasInternet = NO;
     }
+}
+
+- (BOOL) hasInternetConnection
+{
+    return self->hasInternet;
 }
 
 -(BOOL)trackWithObject:(id)trackObject withType:(NUTaskType) taskType
@@ -386,18 +381,11 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)queueTrackObject:(id)trackObject withType:(NUTaskType) taskType
 {
-    if (taskType == TRACK_USER_VARIABLES) {
-        NUUserVariables *userVar = (NUUserVariables *) trackObject;
-        if ([[userVar.variables allKeys] containsObject:TRACK_VARIABLE_CART_STATE] == YES) {
-            
-            return;
-        }
-    }
-    
     [pendingTasksLock lock];
     if (pendingTrackRequests.count == MAX_PENDING_TASKS) {
         [pendingTrackRequests removeLastObject];
     }
+    
     PendingTask *pendingTask = [PendingTask alloc];
     pendingTask.trackingObject = trackObject;
     pendingTask.taskType = taskType;

@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "NUInAppMsgUIManager.h"
+#import "NUUIDisplayManager.h"
 #import "NextUserManager.h"
 #import "NUInAppMessageWrapperBuilder.h"
 #import "NUInAppMsgSkinnyContentView.h"
@@ -11,8 +11,12 @@
 #import "NUInternalTracker.h"
 #import "NUTaskManager.h"
 #import "NUError.h"
+#import "NUJSONTransformer.h"
+#import "NUWebViewContainer.h"
 
-@interface InAppMsgUIManager()
+#define kIAMMessageJSONKey @"message"
+
+@interface NUUIDisplayManager() <InAppMsgInteractionListener, NUWebViewContainerListener>
 {
     NSOperationQueue *queue;
     InAppMsgViewSettings *viewSettings;
@@ -20,18 +24,20 @@
     NUPopUpView *popup;
     InAppMsgWrapper* currentWrapper;
     dispatch_group_t iamPrepareGroup;
-    void (^webViewCompletion)(BOOL success, NSError *error);
     id<NUWebViewUIDelegate> webViewDelegate;
     UIProgressView *progressView;
+    NUTrackerSession *session;
 }
 @end
 
-@implementation InAppMsgUIManager
+@implementation NUUIDisplayManager
 
--(instancetype)init
+
+-(instancetype) init
 {
     self = [super init];
     if (self) {
+        self->session = [[NextUserManager sharedInstance] getSession];
         queue = [[NSOperationQueue alloc] init];
         [queue setMaxConcurrentOperationCount:1];
         [queue setName:@"com.nextuser.iamsDisplayQueue"];
@@ -43,9 +49,60 @@
         }];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageNotification:)
                                                      name:COMPLETION_TASK_MANAGER_MESSAGE_NOTIFICATION_NAME object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:)
+                                                     name:COMPLETION_TASK_MANAGER_HTTP_REQUEST_NOTIFICATION_NAME object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidBecomeActiveNotification:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackgroundNotification:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        [self checkCaches];
     }
     
     return self;
+}
+
+- (void) checkCaches
+{
+    if([self isShowing] == NO) {
+        NSString *nextIamId = [[[NextUserManager sharedInstance] inAppMsgCacheManager] getNextMessageID];
+        if (nextIamId != nil)
+        {
+            [self sendToQueue: nextIamId];
+        }
+    }
+
+    NSString* nextSHAKey = [[[NextUserManager sharedInstance] inAppMsgCacheManager] getNextSHAKey];
+    if (nextSHAKey != nil) {
+        NUTaskManager* manager = [NUTaskManager manager];
+        NUTrackerTask* task = [[NUTrackerTask alloc] initForType:NEW_IAM withTrackObject:nextSHAKey withSession: self->session];
+        [manager submitTask:task];
+    }
+}
+
+- (void) onNewInAppMessage: (NUTrackResponse*) taskResponse
+{
+    if ([taskResponse successfull] == YES)
+    {
+        NSError *errorJson=nil;
+        NSDictionary* responseDict = [NSJSONSerialization JSONObjectWithData:taskResponse.reponseData options:kNilOptions error:&errorJson];
+        NSData *inAppMsgData = [[responseDict objectForKey: kIAMMessageJSONKey] dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary* inAppMsgDict = [NSJSONSerialization JSONObjectWithData:inAppMsgData options:NSJSONReadingMutableContainers error:&errorJson];
+        if (inAppMsgDict != nil)
+        {
+            InAppMessage *message = [NUJSONTransformer toInAppMessage: inAppMsgDict];
+            if (message != nil)
+            {
+                [[[NextUserManager sharedInstance] inAppMsgCacheManager] cacheMessage: message];
+                [[[NextUserManager sharedInstance] inAppMsgCacheManager] removeSha: [message storageIdentifier]];
+                [self checkCaches];
+            }
+        }
+    }
 }
 
 -(void) sendToQueue:(NSString *) iamID
@@ -56,7 +113,6 @@
         DDLogError(@"Exception on sendToQueue for iamID: %@%@", iamID, [exception reason]);
     }
 }
-
 
 -(void) displayIAMOperationSelector:(NSString *) iamID
 {
@@ -150,6 +206,176 @@
     }
 }
 
+-(BOOL) isShowing
+{
+    return currentWrapper != nil;
+}
+
+- (void) onIamDismissed:(NSDictionary *)userInfo
+{
+    NSString *messageID = [userInfo objectForKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
+    [[[NextUserManager sharedInstance] inAppMsgCacheManager] onMessageDismissed: messageID];
+    currentWrapper = nil;
+}
+
+-(void) sendWebViewToQueue:(NUWebViewSettings *) settings
+{
+    @try {
+        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayWebViewOperationSelector:) object:settings]];
+    } @catch (NSException *exception) {
+        DDLogError(@"Exception on sendWebViewToQueue for iamID: %@",[exception reason]);
+    }
+}
+
+-(void) displayWebViewOperationSelector:(NUWebViewSettings *) settings
+{
+    
+    dispatch_async( dispatch_get_main_queue(), ^{
+        
+        @try {
+            DDLogVerbose(@"Showing WebView...");
+        
+            
+            NUWebViewContainer *webViewContainer = [NUWebViewContainer initWithSettings:settings observerDelegate:self->webViewDelegate withViewSettings:self->viewSettings withContainerListener:self];
+            
+            if (UIApplication.sharedApplication.keyWindow == nil) {
+                self->popup = [NUPopUpView popupWithContentView:webViewContainer
+                                                withFrame:UIApplication.sharedApplication.keyWindow.frame
+                                                 showType:NUPopUpShowTypeSlideInFromLeft
+                                              dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                 maskType:NUPopUpMaskTypeNone
+                                 dismissOnBackgroundTouch:NO
+                                    dismissOnContentTouch:NO];
+            } else {
+                self->popup = [NUPopUpView popupWithContentView:webViewContainer
+                                                 showType:NUPopUpShowTypeSlideInFromLeft
+                                              dismissType:NUPopUpDismissTypeSlideOutToRight
+                                                 maskType:NUPopUpMaskTypeDimmed
+                                 dismissOnBackgroundTouch:NO
+                                    dismissOnContentTouch:NO];
+            }
+            
+            self->popup.didFinishShowingCompletion = ^{
+                DDLogVerbose(@"Show Web View completed");
+            };
+            
+            self->popup.didFinishDismissingCompletion = ^{
+                DDLogVerbose(@"Dismiss Web View completed");
+            };
+            
+            [self->popup showWithLayout: [webViewContainer getFrameLayout]];
+            
+        } @catch(NSException *e) {
+            DDLogError(@"Exception on Web View display: %@", [e reason]);
+        } @catch(NSError *e) {
+            DDLogError(@"Error on Web View display: %@", e);
+        }
+    });
+}
+
+#pragma mark - Observer selectors
+-(void) setSession:(NUTrackerSession*) tSession
+{
+    session = tSession;
+}
+
+-(void)receiveNotification:(NSNotification *) notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NUTrackResponse* taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
+    switch (taskResponse.taskType) {
+        case NEW_IAM:
+            [self onNewInAppMessage: taskResponse];
+            break;
+        default:
+            break;
+    }
+}
+
+-(void)receiveMessageNotification:(NSNotification *) notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NUTaskType type = [[userInfo valueForKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY] intValue];
+    switch (type) {
+        case IAM_DISMISSED:
+            [self onIamDismissed:userInfo];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)applicationDidEnterBackgroundNotification:(NSNotification *)notification
+{
+    
+}
+
+- (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
+{
+    [self checkCaches];
+}
+
+#pragma mark - interface impl methods
+
+
+
+-(InAppMsgViewSettings *) viewSettings
+{
+    return viewSettings;
+}
+
+-(void) showNextInAppMessage
+{
+    [self checkCaches];
+}
+
+-(void) showWebView:(NUWebViewSettings *) settings withDelegate:(id<NUWebViewUIDelegate>) delegate
+     withCompletion:(void (^)(BOOL success, NSError *error)) completion
+{
+    if (self->webViewDelegate != nil) {
+        DDLogVerbose(@"Another Web View is already showing!");
+        
+        return;
+    }
+    
+    self->webViewDelegate = delegate;
+    [self displayWebViewOperationSelector: settings];
+    completion(YES, nil);
+}
+
+-(void) showWebViewWithDictionary:(NSDictionary *) settingsInfo withDelegate:(id<NUWebViewUIDelegate>) delegate
+     withCompletion: (void (^)(BOOL success, NSError*error))completion
+{
+    @try {
+        NUWebViewSettings *settings = [[NUWebViewSettings alloc] init];
+        settings.url = [settingsInfo valueForKey:@"url"];
+        settings.firstLoadJs = [settingsInfo valueForKey:@"firstLoadJs"];
+        settings.enableNavigation = [[settingsInfo valueForKey:@"enableNavigation"] boolValue];
+        settings.overrideOnLoading = [[settingsInfo valueForKey:@"overrideOnLoading"] boolValue];
+        settings.suppressBrowserJSAlerts = [[settingsInfo valueForKey:@"suppressBrowserJSAlerts"] boolValue];
+        settings.httpHeadersExtra = [settingsInfo valueForKey:@"httpHeadersExtra"];
+        if ([settingsInfo valueForKey:@"customJSCodes"] != nil) {
+            NSArray *customJsCodesArrray = [settingsInfo valueForKey:@"customJSCodes"];
+            if ([customJsCodesArrray count] > 0) {
+                NSMutableArray<NUCustomJSCode *> *jsCodes = [[NSMutableArray<NUCustomJSCode *> alloc] initWithCapacity:[customJsCodesArrray count]];
+                for (NSDictionary *jsCodeDict in customJsCodesArrray) {
+                    NSString *conditionStr = [jsCodeDict valueForKey:@"condition"];
+                    NUCustomJSCode *jsCode = [NUCustomJSCode customJSCodeWithContionString: conditionStr];
+                    jsCode.jsCodeString = [jsCodeDict valueForKey:@"jsCodeString"];
+                    jsCode.pageURL = [jsCodeDict valueForKey:@"pageURL"];
+                    [jsCodes addObject:jsCode];
+                }
+                settings.customJSCodes = jsCodes;
+            }
+        }
+        [self showWebView:settings withDelegate:delegate withCompletion:completion];
+    } @catch (NSException *exception) {
+        completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+    }
+}
+
+#pragma mark - InAppMsgInteractionListener methods
+
 - (void) onInteract:(InAppMsgClick *) clickConfig
 {
     DDLogVerbose(@"Interacted with IAM");
@@ -178,116 +404,15 @@
     }
     [popup dismiss:YES];
 }
+#pragma mark - NUWebViewContainerListener methods
 
 - (void) onClose
 {
     DDLogVerbose(@"Closing Web View");
-    self->webViewCompletion = nil;
     self->webViewDelegate = nil;
     [self->progressView removeFromSuperview];
     [popup dismiss:YES];
 }
 
--(InAppMsgViewSettings *) viewSettings
-{
-    return viewSettings;
-}
-
--(BOOL) isShowing
-{
-    return currentWrapper != nil;
-}
-
--(void)receiveMessageNotification:(NSNotification *) notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    NUTaskType type = [[userInfo valueForKey:COMPLETION_MESSAGE_NOTIFICATION_TYPE_KEY] intValue];
-    switch (type) {
-        case IAM_DISMISSED:
-            [self onIamDismissed:userInfo];
-            break;
-        default:
-            break;
-    }
-}
-
-- (void) onIamDismissed:(NSDictionary *)userInfo
-{
-    NSString *messageID = [userInfo objectForKey:COMPLETION_MESSAGE_NOTIFICATION_OBJECT_KEY];
-    [[[NextUserManager sharedInstance] inAppMsgCacheManager] onMessageDismissed: messageID];
-    currentWrapper = nil;
-}
-
--(void) showWebView:(NUWebViewSettings *) settings withDelegate:(id<NUWebViewUIDelegate>) delegate
-     withCompletion:(void (^)(BOOL success, NSError *error)) completion
-{
-    if (self->webViewDelegate != nil) {
-        DDLogVerbose(@"Another Web View is already showing!");
-        
-        return;
-    }
-    
-    self->webViewDelegate = delegate;
-    self->webViewCompletion = completion;
-    [self displayWebViewOperationSelector: settings];
-}
-
-
--(void) sendWebViewToQueue:(NUWebViewSettings *) settings
-{
-    @try {
-        [queue addOperation:[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayWebViewOperationSelector:) object:settings]];
-    } @catch (NSException *exception) {
-        DDLogError(@"Exception on sendWebViewToQueue for iamID: %@",[exception reason]);
-    }
-}
-
--(void) displayWebViewOperationSelector:(NUWebViewSettings *) settings
-{
-    
-    dispatch_async( dispatch_get_main_queue(), ^{
-        
-        @try {
-            DDLogVerbose(@"Showing WebView...");
-            NUWebViewContainer *webViewContainer = [NUWebViewContainer initWithSettings:settings observerDelegate:self->webViewDelegate withViewSettings:self->viewSettings withContainerListener:self];
-            
-            __weak void (^webViewCompletionWeak)(BOOL success, NSError *error) = self->webViewCompletion;
-            if (UIApplication.sharedApplication.keyWindow == nil) {
-                self->popup = [NUPopUpView popupWithContentView:webViewContainer
-                                                withFrame:UIApplication.sharedApplication.keyWindow.frame
-                                                 showType:NUPopUpShowTypeSlideInFromLeft
-                                              dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                 maskType:NUPopUpMaskTypeNone
-                                 dismissOnBackgroundTouch:NO
-                                    dismissOnContentTouch:NO];
-            } else {
-                self->popup = [NUPopUpView popupWithContentView:webViewContainer
-                                                 showType:NUPopUpShowTypeSlideInFromLeft
-                                              dismissType:NUPopUpDismissTypeSlideOutToRight
-                                                 maskType:NUPopUpMaskTypeDimmed
-                                 dismissOnBackgroundTouch:NO
-                                    dismissOnContentTouch:NO];
-            }
-            
-            self->popup.didFinishShowingCompletion = ^{
-                DDLogVerbose(@"Show Web View completed");
-                webViewCompletionWeak(true, nil);
-            };
-            
-            self->popup.didFinishDismissingCompletion = ^{
-                DDLogVerbose(@"Dismiss Web View completed");
-            };
-            
-            [self->popup showWithLayout: [webViewContainer getFrameLayout]];
-            
-        } @catch(NSException *e) {
-            DDLogError(@"Exception on Web View display: %@", [e reason]);
-            self->webViewCompletion(false, [NUError nextUserErrorWithMessage: e.reason]);
-        } @catch(NSError *e) {
-            DDLogError(@"Error on Web View display: %@", e);
-            self->webViewCompletion(false, e);
-        }
-    });
-}
 
 @end

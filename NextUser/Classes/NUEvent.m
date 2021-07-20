@@ -1,13 +1,6 @@
 #import "NUEvent+Serialization.h"
 #import "NSString+LGUtils.h"
 
-@interface NUEvent ()
-
-@property (nonatomic) NSString *eventName;
-@property (nonatomic) NSMutableArray *params;
-
-@end
-
 @implementation NUEvent
 
 + (instancetype)eventWithName:(NSString *)eventName
@@ -20,7 +13,14 @@
 + (instancetype)eventWithName:(NSString *)eventName andParameters:(NSMutableArray *) parameters
 {
     NUEvent *event = [[NUEvent alloc] initWithName:eventName];
-    event.params = parameters;
+    event.parameters = [NSMutableArray arrayWithCapacity:10];
+    for (int i=0; i<10; i++) {
+        if ([parameters count] > 0 && [parameters count] > i) {
+            [event.parameters addObject:parameters[i]];
+        } else {
+            [event.parameters addObject:[NSNull null]];
+        }
+    }
     
     return event;
 }
@@ -35,9 +35,9 @@
     
     if (self = [super init]) {
         _eventName = [eventName copy];
-        _params = [NSMutableArray arrayWithCapacity:10];
+        _parameters = [NSMutableArray arrayWithCapacity:10];
         for (int i=0; i<10; i++) {
-            [_params addObject:[NSNull null]];
+            [_parameters addObject:[NSNull null]];
         }
     }
     
@@ -103,7 +103,7 @@
         parameterValue = value;
     }
     
-    _params[index] = parameterValue;
+    _parameters[index] = parameterValue;
 }
 
 #pragma mark - Trackable
@@ -118,8 +118,8 @@
 + (NSString *)serializedActionStringFromAction:(NUEvent *)event
 {
     NSString *eventValue = [self URLParameterValueFromString:event.eventName];
-    if (event.params.count > 0) {
-        NSString *eventParametersString = [self serializedActionParametersStringWithActionParameters:event.params];
+    if (event.parameters.count > 0) {
+        NSString *eventParametersString = [self serializedActionParametersStringWithActionParameters:event.parameters];
         if (eventParametersString.length > 0) {
             eventValue = [eventValue stringByAppendingFormat:@",%@", eventParametersString];
         }

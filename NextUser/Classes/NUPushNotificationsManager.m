@@ -22,7 +22,7 @@
 {
     NUTrackerSession *session = [[NextUserManager sharedInstance] getSession];
     if (session.trackerProperties.notifications == NO) {
-        DDLogInfo(@"Notifications systemnot active");
+        DDLogInfo(@"NextUser otifications system not active. Please contact support for enabling notifications." );
         
         return;
     }
@@ -40,11 +40,35 @@
     [[NextUserManager sharedInstance] trackWithObject:deviceToken withType:REGISTER_DEVICE_TOKEN];
 }
 
+- (void) submitFCMRegistrationToken:(NSString *) fcmToken withCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            [self submitFCMRegistrationToken:fcmToken];
+            completion(true, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
+}
+
 - (void)unregisterFCMRegistrationToken
 {
     NUTrackerSession *session = [[NextUserManager sharedInstance] getSession];
     [session clearFcmToken];
     [[NextUserManager sharedInstance] trackWithObject:nil withType:UNREGISTER_DEVICE_TOKENS];
+}
+
+- (void) unregisterFCMRegistrationTokenWithCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            [self unregisterFCMRegistrationToken];
+            completion(true, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
 }
 
 -(void)requestNotificationsPermissions
@@ -67,6 +91,8 @@
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
             });
         }
+        
+        
     }];
 }
 
@@ -80,26 +106,30 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0) __WATCHOS_AVAILABLE(3.0) __TVOS_PROHIBITED
 {
-    [self didReceiveNotificationResponse: response];
+    [self didReceiveNotificationResponse:response];
     completionHandler();
 }
 
 - (void) didReceiveNotificationResponse: (UNNotificationResponse *)response
 {
-    NSDictionary *userInfo = [[[[response notification] request] content] userInfo];
+    [self didReceiveNotificationResponseWithInfo:[[[[response notification] request] content] userInfo] andActionIdentifier:response.actionIdentifier];
+}
+
+- (void) didReceiveNotificationResponseWithInfo: (NSDictionary *)userInfo andActionIdentifier:(NSString *) actionIdentifier
+{
     if ([self isNextUserNotification:userInfo]) {
-        DDLogInfo(@"didReceiveNotificationResponse %@", response);
+        DDLogInfo(@"didReceiveNotificationResponse %@", userInfo);
         NSArray *eventsArray = nil;
         
-        if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
+        if ([actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
             //track dismiss
             eventsArray = userInfo[@"acme_dismissed"];
-            DDLogInfo(@"The user dismissed the notification without taking action %@", response);
+            DDLogInfo(@"The user dismissed the notification without taking action %@", userInfo);
         }
-        else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+        else if ([actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
             //track clicked
             eventsArray = userInfo[@"acme_clicked"];
-            DDLogInfo(@"The user launched the app %@", response);
+            DDLogInfo(@"The user launched the app %@", userInfo);
         }
         
         if (eventsArray != nil) {
@@ -107,6 +137,18 @@
             [[NextUserManager sharedInstance] trackWithObject:trackEvents withType:TRACK_EVENT];
         }
     }
+}
+
+- (void) didReceiveNotificationResponseWithInfo: (NSDictionary *)userInfo andActionIdentifier:(NSString *) actionIdentifier withCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            [self didReceiveNotificationResponseWithInfo:userInfo andActionIdentifier:actionIdentifier];
+            completion(YES, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
 }
 
 -(NSMutableArray<NUEvent *> *) extractTrackingEvent:(NSArray *) eventsArray
@@ -155,6 +197,18 @@
     }
     
     return UIBackgroundFetchResultNewData;
+}
+
+- (void) didReceiveRemoteNotification:(NSDictionary *)userInfo withCompletion:(void (^)(BOOL success, NSError*error))completion
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @try {
+            [self didReceiveRemoteNotification:userInfo];
+            completion(YES, nil);
+        } @catch (NSException *exception) {
+            completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
+        }
+    });
 }
 
 - (BOOL) isNextUserNotification:(NSDictionary *) userInfo

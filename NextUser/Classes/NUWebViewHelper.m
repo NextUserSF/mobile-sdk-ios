@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "NUWebViewHelper.h"
+#import "NUUIDisplayManager.h"
 
 @implementation NUWebViewHelper:NSObject
 

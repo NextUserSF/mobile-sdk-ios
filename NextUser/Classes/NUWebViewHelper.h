@@ -9,10 +9,6 @@
 #import "NUEvent.h"
 #import "NUConstants.h"
 
-@protocol NUWebViewContainerListener <NSObject>
-- (void) onClose;
-@end
-
 typedef NS_ENUM(NSUInteger, NUUrlAuthority) {
     CLOSE_AUTHORITY = 0,
     RELOAD_AUTHORITY,
@@ -27,4 +23,8 @@ typedef NS_ENUM(NSUInteger, NUUrlAuthority) {
 +(NSMutableDictionary *) getQueryDictionary:(NSURL*) url;
 +(NUEvent *) buildEventFromQueryDictionary:(NSDictionary *) query;
 +(id) extractParameterFromQueryDictionary:(NSDictionary *) query forKey:(NSString *) key;
+@end
+
+@protocol NUWebViewContainerListener <NSObject>
+- (void) onClose;
 @end

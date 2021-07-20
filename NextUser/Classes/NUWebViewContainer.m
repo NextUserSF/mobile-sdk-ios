@@ -15,24 +15,16 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 @interface NUWebViewContainer()
 {
-    WKWebView* webView;
     BOOL webViewFirstLoad;
     id<NUWebViewContainerListener> containerListener;
     UIProgressView *progressView;
+    UISwipeGestureRecognizer *swipeRightGestureRecognizer;
 }
 
 @end
 
-@implementation NUWebViewContainer : UIView
+@implementation NUWebViewContainer
 
-- (id)init
-{
-    if (self = [super init]) {
-        
-    }
-    
-    return self;
-}
 
 +(instancetype)initWithSettings:(NUWebViewSettings *) settings observerDelegate: (id<NUWebViewUIDelegate>) delegate withViewSettings:(InAppMsgViewSettings *) viewSettings withContainerListener: (id<NUWebViewContainerListener>) listener
 {
@@ -43,26 +35,26 @@ static void *NUWebViewContext = &NUWebViewContext;
         instance->_delegate = delegate;
         instance->containerListener = listener;
         [instance build:viewSettings];
-        instance->webView = [[WKWebView alloc] initWithFrame:viewSettings.screenFrame configuration:[instance buildWebViewConfiguration]];
-        [instance->webView setFrame: instance.bounds];
-        [instance->webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-        [instance->webView setNavigationDelegate:instance];
-        [instance->webView setUIDelegate:instance];
-        instance->webView.allowsBackForwardNavigationGestures=YES;
-        [instance->webView setMultipleTouchEnabled:YES];
-        [instance->webView setAutoresizesSubviews:YES];
-        instance->webView.userInteractionEnabled = YES;
-        [instance->webView setTranslatesAutoresizingMaskIntoConstraints: NO];
-        [instance->webView setClipsToBounds:YES];
-        [instance->webView.scrollView setAlwaysBounceVertical:YES];
-        instance->webView.opaque=NO;
-        [instance addSubview: instance->webView];
-        [instance->webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(URL)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
-        [instance->webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
-        UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:instance action:@selector(doSwipeRight:)];
-        [swipeRight setDirection:UISwipeGestureRecognizerDirectionRight];
-        [instance->webView addGestureRecognizer:swipeRight];
-        swipeRight = nil;
+        instance.webView = [[WKWebView alloc] initWithFrame:viewSettings.screenFrame configuration:[instance buildWebViewConfiguration]];
+        [instance.webView setFrame: instance.bounds];
+        [instance.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+        [instance.webView setNavigationDelegate:instance];
+        [instance.webView setUIDelegate:instance];
+        instance.webView.allowsBackForwardNavigationGestures=YES;
+        [instance.webView setMultipleTouchEnabled:YES];
+        [instance.webView setAutoresizesSubviews:YES];
+        instance.webView.userInteractionEnabled = YES;
+        [instance.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
+        [instance.webView setClipsToBounds:YES];
+        [instance.webView.scrollView setAlwaysBounceVertical:YES];
+        instance.webView.opaque=NO;
+        instance->swipeRightGestureRecognizer = [[UISwipeGestureRecognizer alloc] init];
+        [instance->swipeRightGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+        [instance.webView addGestureRecognizer:instance->swipeRightGestureRecognizer];
+        instance->swipeRightGestureRecognizer.delegate = instance;
+        [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(URL)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
+        [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
+        [instance addSubview: instance.webView];
         if (instance.webViewSettings.overrideOnLoading == NO) {
             instance->progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
             [instance->progressView setFrame:CGRectMake(viewSettings.frameMargin, (viewSettings.screenHeight -viewSettings.statusBarHeight)/2, viewSettings.screenWidth-2*viewSettings.frameMargin, viewSettings.screenHeight)];
@@ -70,10 +62,26 @@ static void *NUWebViewContext = &NUWebViewContext;
             [instance addSubview: instance->progressView];
         }
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:settings.url]];
-        [instance->webView loadRequest:request];
+        [instance.webView loadRequest:request];
+        DDLogVerbose(@"canGoBackStart:%@", [instance.webView canGoBack] ? @"Yes" : @"No");
+        
     }
     
     return instance;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+   
+    return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer isEqual:self->swipeRightGestureRecognizer]) {
+        [self doSwipeRight:nil];
+    }
+    
+    return YES;
 }
 
 -(NUPopUpLayout) getFrameLayout
@@ -171,7 +179,7 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 -(void) injectJSCode:(NSString*) loadJSCode {
     if (loadJSCode != nil && [loadJSCode isEqual:@""] == NO) {
-        [webView evaluateJavaScript:loadJSCode
+        [self.webView evaluateJavaScript:loadJSCode
                   completionHandler:^(NSString *result, NSError *error) {
             if (error != nil) {
                 DDLogError(@"Error on loading custom js code：%@", error.localizedDescription);
@@ -184,21 +192,21 @@ static void *NUWebViewContext = &NUWebViewContext;
     }
 }
 
--(void) onCloseAction: (NSDictionary *) query
+-(void) onCloseAction: (NSDictionary *) closeObj
 {
     if([self.delegate respondsToSelector:@selector(onWebViewClose:)]) {
-        [self.delegate onWebViewClose: query];
-    }
-    
-    if (query != nil) {
-        NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary:query];
-        if (event != nil) {
-            [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
-        }
+        [self.delegate onWebViewClose: closeObj];
     }
     
     [containerListener onClose];
     [self clearWebViewCookies];
+    
+    if (closeObj != nil) {
+        NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary:closeObj];
+        if (event != nil) {
+            [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+        }
+    }
 }
 
 -(void) onReloadAction: (NSDictionary *) query
@@ -210,23 +218,24 @@ static void *NUWebViewContext = &NUWebViewContext;
         }
     }
     
-    [self->webView reload];
+    [self.webView reload];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:NSStringFromSelector(@selector(estimatedProgress))] && object == self->webView) {
+    if ([keyPath isEqualToString:NSStringFromSelector(@selector(estimatedProgress))] && object == self.webView) {
         
         if([self.delegate respondsToSelector:@selector(onWebViewPageLoadingProgress:)]) {
-            [self.delegate onWebViewPageLoadingProgress: webView.estimatedProgress];
+            [self becomeFirstResponder];
+            [self.delegate onWebViewPageLoadingProgress: self.webView.estimatedProgress];
         }
         
         if (self.webViewSettings.overrideOnLoading == NO) {
             [self->progressView setAlpha:1.0f];
-            BOOL animated = self->webView.estimatedProgress > self->progressView.progress;
-            [self->progressView setProgress:self->webView.estimatedProgress animated:animated];
+            BOOL animated = self.webView.estimatedProgress > self->progressView.progress;
+            [self->progressView setProgress:self.webView.estimatedProgress animated:animated];
             // Once complete, fade out UIProgressView
-            if(self->webView.estimatedProgress >= 1.0f) {
+            if(self.webView.estimatedProgress >= 0.8f) {
                 [UIView animateWithDuration:0.3f delay:0.3f options:UIViewAnimationOptionCurveEaseOut animations:^{
                     [self->progressView setAlpha:0.0f];
                 } completion:^(BOOL finished) {
@@ -234,10 +243,24 @@ static void *NUWebViewContext = &NUWebViewContext;
                 }];
             }
         }
-    } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(URL))] && object == self->webView) {
+    } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(URL))] && object == self.webView) {
+        if ([[self gestureRecognizers] count] < 0) {
+            [self onCloseAction:nil];
+        }
+        if ([[NextUserManager sharedInstance] hasInternetConnection] == NO) {
+            if([self.delegate respondsToSelector:@selector(webViewContainer:didFailToLoadURL:error:)]) {
+                [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:[NUError nextUserErrorWithMessage:@"No Internet Connection. Closing webview."]];
+            }
+            [self onCloseAction:nil];
+        
+            return;
+        }
+        
         NSURL *newURL = [change valueForKey:@"new"];
-        NSString *customJSCode = [self buildCustomJS:self->webViewFirstLoad forUrl:newURL.absoluteString];
-        [self injectJSCode:customJSCode];
+        if (newURL != nil && [newURL isKindOfClass:[NSNull class]] == NO) {
+            NSString *customJSCode = [self buildCustomJS:self->webViewFirstLoad forUrl:newURL.absoluteString];
+            [self injectJSCode:customJSCode];
+        }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -245,7 +268,9 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 -(void)doSwipeRight:(id)sender
 {
-    if ([self->webView canGoBack] == NO) {
+    
+    
+    if ([self.webView canGoBack] == NO) {
         [self onCloseAction:nil];
     }
 }
@@ -289,32 +314,50 @@ static void *NUWebViewContext = &NUWebViewContext;
     }
     
     if ([message.name isEqual:@"nuBridgeTriggerCloseHandler"]) {
-        NSDictionary * reloadObjVal = message.body;
-        [self onCloseAction:reloadObjVal];
+        if ( message.body != nil && [message.body isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dataObjectDictionary = message.body;
+            if ([dataObjectDictionary valueForKey:@"track_event"] != nil) {
+                NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: [dataObjectDictionary valueForKey:@"track_event"]];
+                if (event != nil) {
+                    [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+                }
+            }
+            [self onCloseAction:[dataObjectDictionary valueForKey:@"data"]];
+        }
         
         return;
     }
     
     
     if ([message.name isEqual:@"nuBridgeTrackEventHandler"]) {
-        NUEvent *event = [NUWebViewHelper buildEventFromQueryDictionary:message.body];
-        if (event != nil) {
-            [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+        if ( message.body != nil && [message.body isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dataObjectDictionary = message.body;
+            if ([dataObjectDictionary valueForKey:@"track_event"] != nil) {
+                NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: [dataObjectDictionary valueForKey:@"track_event"]];
+                if (event != nil) {
+                    [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+                }
+            }
         }
         
         return;
     }
     
     if ([message.name isEqual:@"nuBridgeSendDataHandler"]) {
-        if ( message.body != nil) {
-            NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: message.body];
-            if (event != nil) {
-                [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+        if ( message.body != nil && [message.body isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dataObjectDictionary = message.body;
+            if ([dataObjectDictionary valueForKey:@"track_event"] != nil) {
+                NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: [dataObjectDictionary valueForKey:@"track_event"]];
+                if (event != nil) {
+                    [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
+                }
+            }
+            
+            if([self.delegate respondsToSelector:@selector(onWebViewData:)] && [dataObjectDictionary valueForKey:@"data"] != nil) {
+                [self.delegate onWebViewData: [dataObjectDictionary valueForKey:@"data"]];
             }
         }
-        if([self.delegate respondsToSelector:@selector(onWebViewData:)]) {
-            [self.delegate onWebViewData: message.body];
-        }
+        
         return;
     }
 }
@@ -374,7 +417,6 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 {
     NSURL *url = navigationAction.request.URL;
     NSString* urlString = navigationAction.request.URL.absoluteString;
-    
     if ([[url scheme] isEqualToString: NU_WEB_VIEW_SCHEME]) {
         decisionHandler(WKNavigationActionPolicyCancel);
         @try {
@@ -430,25 +472,39 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     decisionHandler(WKNavigationActionPolicyAllow);
 }
 
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
+    NSInteger statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
+    NSLog(@"statusCode:%ld", statusCode);
+    if (statusCode/100 == 4 || statusCode/100 == 5) {
+        NSLog(@"webview error:%@", navigationResponse.response);
+        if([self.delegate respondsToSelector:@selector(webViewContainer:didFailToLoadURL:error:)]) {
+            [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:[NUError nextUserErrorWithMessage:[NSHTTPURLResponse localizedStringForStatusCode:statusCode]]];
+            [self onCloseAction:nil];
+        }
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
-    if(webView == self->webView) {
+    if(webView == self.webView) {
         if([self.delegate respondsToSelector:@selector(webViewContainer:didStartLoadingURL:)]) {
-            [self.delegate webViewContainer:self didStartLoadingURL:self->webView.URL];
+            [self.delegate webViewContainer:self didStartLoadingURL:self.webView.URL];
         }
     }
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-    if(webView == self->webView) {
+    if(webView == self.webView) {
+        
         if (self.webViewSettings.firstLoadJs != nil && self->webViewFirstLoad == YES) {
             DDLogVerbose(@"loading first js: %@", self.webViewSettings.firstLoadJs);
             [self injectJSCode:self.webViewSettings.firstLoadJs];
             self->webViewFirstLoad = NO;
         }
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFinishLoadingURL:)]) {
-            [self.delegate webViewContainer:self didFinishLoadingURL:self->webView.URL];
+            [self.delegate webViewContainer:self didFinishLoadingURL:self.webView.URL];
         }
     }
 }
@@ -456,9 +512,9 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation
       withError:(NSError *)error
 {
-    if(webView == self->webView) {
+    if(webView == self.webView) {
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFailToLoadURL:error:)]) {
-            [self.delegate webViewContainer:self didFailToLoadURL:self->webView.URL error:error];
+            [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:error];
         }
     }
     [self onCloseAction:nil];
@@ -467,9 +523,9 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation
       withError:(NSError *)error
 {
-    if(webView == self->webView) {
+    if(webView == self.webView) {
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFailToLoadURL:error:)]) {
-            [self.delegate webViewContainer:self didFailToLoadURL:self->webView.URL error:error];
+            [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:error];
         }
     }
     [self onCloseAction:nil];
@@ -478,10 +534,11 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 #pragma mark - Dealloc
 
 - (void)dealloc {
-    [self->webView setNavigationDelegate:nil];
-    [self->webView setUIDelegate:nil];
-    [self->webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
-    [self->webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(URL))];
+    [self.webView setNavigationDelegate:nil];
+    [self.webView setUIDelegate:nil];
+    [self.webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
+    [self.webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(URL))];
+    self.webView = nil;
 }
 
 @end

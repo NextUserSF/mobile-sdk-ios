@@ -40,7 +40,7 @@
         NSArray<InAppMessage* >* localMessages = [self fetchMessages];
         if (localMessages != nil && [localMessages count] > 0)
         {
-            return [[localMessages lastObject] ID];
+            return [[localMessages firstObject] ID];
         }
         
         return nil;
@@ -177,7 +177,7 @@
         NSMutableArray<NSString* >* shaList = [self fetchShaList];
         if (shaList != nil && [shaList count] > 0)
         {
-            return [shaList lastObject];
+            return [shaList firstObject];
         }
         
         return nil;

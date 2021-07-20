@@ -15,8 +15,9 @@
 #import "NUWebViewHelper.h"
 #import "NUInAppMessageUIView.h"
 
-@interface NUWebViewContainer : UIView <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
+@interface NUWebViewContainer : UIView <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler,UIGestureRecognizerDelegate>
 
+@property (nonatomic, strong)WKWebView *webView;
 @property (nonatomic) NUWebViewSettings *webViewSettings;
 @property (nonatomic) id<NUWebViewUIDelegate> delegate;
 

@@ -78,6 +78,21 @@
     return messages;
 }
 
++ (NSMutableArray<NSString*> *) toLastBrowsedItems:(id)arrayJSON
+{
+    NSMutableArray<NSString* >* items;
+    if (arrayJSON != nil && [arrayJSON isKindOfClass:[NSArray class]])
+    {
+        items = [[NSMutableArray<NSString*> alloc] init];
+        for(NSString* prodId in arrayJSON)
+        {
+            [items addObject:prodId];
+        }
+    }
+    
+    return items;
+}
+
 
 + (InAppMsgText*) convertToInMessageText:(id) object
 {

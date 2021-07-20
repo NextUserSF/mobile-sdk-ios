@@ -13,24 +13,49 @@ typedef NS_ENUM(NSUInteger, NUTrackedAction) {
     NU_USER_VARIABLES
 };
 
-extern NSString * const NEXTUSER_LOCAL_NOTIFICATION;
-extern NSString * const NEXTUSER_LOCAL_NOTIFICATION_OBJECT;
-extern NSString * const NEXTUSER_LOCAL_NOTIFICATION_EVENT;
-extern NSString * const NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION;
+#define NEXTUSER_LOCAL_NOTIFICATION @"NextUserLocalNotification"
+#define NEXTUSER_LOCAL_NOTIFICATION_OBJECT @"NextUserLocalNotificationObject"
+#define NEXTUSER_LOCAL_NOTIFICATION_EVENT @"NextUserLocalNotificationEvent"
+#define NEXTUSER_LOCAL_NOTIFICATION_SUCCESS_COMPLETION @"NextUserLocalNotificationSuccessCompletion"
+#define TRACKER_INITIALIZED_EVENT_NAME @"onTrackerInitialized"
+#define ON_TRACK_EVENT_EVENT_NAME @"onTrackEvent"
+#define ON_TRACK_SCREEN_EVENT_NAME @"onTrackPage"
+#define ON_TRACK_PURCHASE_EVENT_NAME @"onTrackPurchase"
+#define ON_TRACK_USER_EVENT_NAME @"onTrackUser"
+#define ON_TRACK_USER_VARIABLES_EVENT_NAME @"onTrackUserVariables"
+#define ON_SOCIAL_SHARE_EVENT_NAME @"onSocialShare"
+
 
 @interface NUTracker : NSObject
 
+@property (nonatomic) BOOL enabled;
+
 - (void)initializeWithApplication: (UIApplication *)application withLaunchOptions:(NSDictionary *)launchOptions;
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UNNotificationRequest *)notificationRequest;
+
 - (void)trackUser:(NUUser *)user;
-- (void)setUser:(NUUser *)user;
+- (void)trackUser:(NSDictionary *) user withCompletion:(void (^)(BOOL success, NSError*error))completion;
+
 - (NSString *)currentUserIdentifier;
+
 - (void)trackUserVariables:(NUUserVariables *)userVariables;
+- (void)trackUserVariables:(NSDictionary *) userVariables withCompletion:(void (^)(BOOL success, NSError*error))completion;
+
 - (void)trackScreenWithName:(NSString *)screenName;
+
 - (void)trackEvent:(NUEvent *)event;
+- (void)trackEvent:(NSDictionary *) event withCompletion:(void (^)(BOOL success, NSError*error))completion;
+
 - (void)trackEvents:(NSArray<NUEvent *> *)events;
--(void) showWebView:(NUWebViewSettings *) settings withDelegate:(id<NUWebViewUIDelegate>) delegate
-     withCompletion: (void (^)(BOOL success, NSError*error))completion;
+- (void)trackEvents:(NSArray<NSDictionary *> *) events withCompletion:(void (^)(BOOL success, NSError*error))completion;
+
+- (void)trackViewedProduct:(NSString*) productId;
+- (void)trackViewedProduct:(NSString*) productId withCompletion:(void (^)(BOOL success, NSError*error))completion;
+
+- (BOOL) hasSession;
+
+- (void) disable;
+- (void) enable;
 
 @end
 

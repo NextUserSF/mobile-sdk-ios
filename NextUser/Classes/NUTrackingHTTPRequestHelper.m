@@ -19,17 +19,26 @@
 }
 
 
-+(NSMutableDictionary *)trackEventsParametersWithEvents:(NSArray<NUEvent*> *) events
++(NSMutableDictionary *)trackEventsParametersWithEvents:(id) events
 {
-    if (events.count > 10) {
-        events = [events subarrayWithRange:NSMakeRange(0, 10)];
-    }
-    
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:events.count];
-    for (int i=0; i < events.count; i++) {
-        NSString *actionKey = [NSString stringWithFormat:[TRACK_PARAM_A stringByAppendingString:@"%d"], i];
-        NSString *actionValue = [events[i] httpRequestParameterRepresentation];
-        
+    NSMutableDictionary *parameters;
+    if ([events isKindOfClass:[NSArray class]]) {
+        NSArray<NUEvent*>* eventsArray = (NSArray<NUEvent*>*) events;
+        if (eventsArray.count > 10) {
+            eventsArray = [eventsArray subarrayWithRange:NSMakeRange(0, 10)];
+        }
+        parameters = [NSMutableDictionary dictionaryWithCapacity:eventsArray.count];
+        for (int i=0; i < eventsArray.count; i++) {
+            NSString *actionKey = [NSString stringWithFormat:[TRACK_PARAM_A stringByAppendingString:@"%d"], i];
+            NSString *actionValue = [events[i] httpRequestParameterRepresentation];
+            
+            parameters[actionKey] = actionValue;
+        }
+    } else {
+        NUEvent* event = (NUEvent*) events;
+        parameters = [NSMutableDictionary dictionaryWithCapacity:1];
+        NSString *actionKey = [NSString stringWithFormat:[TRACK_PARAM_A stringByAppendingString:@"%d"], 0];
+        NSString *actionValue = [event httpRequestParameterRepresentation];
         parameters[actionKey] = actionValue;
     }
     

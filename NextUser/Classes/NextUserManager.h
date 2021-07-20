@@ -6,10 +6,8 @@
 #import "NUTrackerSession.h"
 #import "NUTrackingHTTPRequestHelper.h"
 #import "Reachability.h"
-#import "NUInAppMsgWorkflowManager.h"
 #import "NUInAppMsgCacheManager.h"
 #import "NUInAppMsgImageManager.h"
-#import "NUInAppMsgUIManager.h"
 #import "NUTracker.h"
 #import "NUTrackerTask.h"
 #import "NUPushNotificationsManager.h"
@@ -27,10 +25,9 @@
 
 - (NUTrackerSession *) getSession;
 - (NUPushNotificationsManager *) notificationsManager;
-- (WorkflowManager *) workflowManager;
 - (InAppMsgCacheManager *) inAppMsgCacheManager;
 - (InAppMsgImageManager *) inAppMsgImageManager;
-- (InAppMsgUIManager *) inAppMsgUIManager;
+- (NUUIDisplayManager *) UIDisplayManager;
 - (NUCartManager *) cartManager;
 
 - (NUTracker* ) getTracker;
@@ -38,5 +35,6 @@
 - (NULogLevel)logLevel;
 - (void) sendNextUserLocalNotification: (NSString *)event withObject:(id)object andStatus:(BOOL)status;
 - (BOOL) validTracker;
+- (BOOL) hasInternetConnection;
 
 @end

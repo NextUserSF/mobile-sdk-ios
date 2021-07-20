@@ -22,12 +22,17 @@
             if ([value isKindOfClass:[NUJSONObject class]]) {
                 val = (NUJSONObject*) value;
                 val = [val dictionaryReflectFromAttributes];
-            } else if ([value isKindOfClass:[NSArray<NUJSONObject*> class]]) {
-                NSArray<NUJSONObject*>* valArray = (NSArray<NUJSONObject*>*) value;
-                val = [NSMutableArray arrayWithCapacity:[valArray count]];
-                for (NUJSONObject* v in valArray)
-                {
-                    [val addObject: [v dictionaryReflectFromAttributes]];
+            } else if ([value isKindOfClass:[NSArray class]]) {
+                NSArray *valArray = (NSArray *) value;
+                if ([self.class array:valArray containsType:[NUJSONObject class]]) {
+                    NSArray<NUJSONObject*>* valArray = (NSArray<NUJSONObject*>*) value;
+                    val = [NSMutableArray arrayWithCapacity:[valArray count]];
+                    for (NUJSONObject* v in valArray)
+                    {
+                        [val addObject: [v dictionaryReflectFromAttributes]];
+                    }
+                } else {
+                    val = value;
                 }
             } else {
                 val = value;
@@ -43,4 +48,11 @@
     }
 }
 
++ (BOOL) array:(NSArray *) array containsType:(Class) clazz
+{
+    NSPredicate *p = [NSPredicate predicateWithFormat:@"self != nil && self isKindOfClass: %@", clazz];
+    NSArray *filtered = [array filteredArrayUsingPredicate:p];
+    
+    return filtered.count == array.count;
+}
 @end

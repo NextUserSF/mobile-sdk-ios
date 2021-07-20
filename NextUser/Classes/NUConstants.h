@@ -11,9 +11,6 @@
 
 //Web View Related
 extern NSString * const NEXTUSER_JS_BRIDGE;
-extern NSString * const NU_WEB_VIEW_SCHEME;
-extern NSString * const NU_URL_AUTHORITY_CLOSE;
-extern NSString * const NU_URL_AUTHORITY_RELOAD;
 extern NSString * const NU_PARAM_NAME_URL;
 extern NSString * const NU_PARAM_NAME_EVENT;
 extern NSString * const NU_PARAM_NAME_PARAMETERS;
@@ -22,15 +19,8 @@ extern NSString * const QUERY_PARAM_SOCIAL_NETWORK;
 extern NSString * const QUERY_PARAM_DEEP_LINK;
 extern NSString * const USER_CART_LAST_MODIFIED_KEY;
 extern NSString * const USER_CART_LAST_TRACKED_KEY;
-
-//External Events
-extern NSString * const TRACKER_INITIALIZED;
-extern NSString * const ON_TRACK_EVENT;
-extern NSString * const ON_TRACK_SCREEN;
-extern NSString * const ON_TRACK_PURCHASE;
-extern NSString * const ON_TRACK_USER;
-extern NSString * const ON_TTRACK_USER_VARIABLES;
-extern NSString * const ON_SOCIAL_SHARE;
+extern NSString * const LAST_BROWSED_LAST_MODIFIED_KEY;
+extern NSString * const LAST_BROWSED_LAST_TRACKED_KEY;
 
 //Internal
 extern NSString * const TRACK_PARAM_NUTMS;
@@ -74,6 +64,16 @@ extern NSString * const USER_TOKEN_KEY;
 extern NSString * const USER_TOKEN_SUBMITTED_KEY;
 extern NSString * const TRACK_VARIABLE_CART_STATE;
 extern NSString * const TRACKING_SOURCE_NAME;
+extern NSString * const TRACK_EVENT_DISPLAYED;
+extern NSString * const TRACK_EVENT_CLICKED;
+extern NSString * const TRACK_EVENT_DISMISSED;
+extern NSString * const TRACK_EVENT_DELIVERD;
+extern NSString * const TRACK_EVENT_PURCHASE_COMPLETED;
+extern NSString * const TRACK_EVENT_IOS_SUBSCRIBED;
+extern NSString * const TRACK_EVENT_VIEWED_PRODUCT;
+extern NSString * const TRACK_VARIABLE_LAST_BROWSED;
+
+
 
 //tracker version
 extern NSString * const TRACKER_VERSION;

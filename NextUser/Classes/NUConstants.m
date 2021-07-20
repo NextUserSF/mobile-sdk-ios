@@ -11,9 +11,6 @@
 
 //webview
 NSString * const NEXTUSER_JS_BRIDGE = @"nextuser_js_bridge";
-NSString * const NU_WEB_VIEW_SCHEME = @"nextuser";
-NSString * const NU_URL_AUTHORITY_CLOSE = @"close";
-NSString * const NU_URL_AUTHORITY_RELOAD = @"reload";
 NSString * const NU_PARAM_NAME_URL = @"url";
 NSString * const NU_PARAM_NAME_EVENT = @"event";
 NSString * const NU_PARAM_NAME_PARAMETERS = @"parameters";
@@ -22,15 +19,8 @@ NSString * const QUERY_PARAM_SOCIAL_NETWORK = @"social_network";
 NSString * const QUERY_PARAM_DEEP_LINK = @"deep_link";
 NSString * const USER_CART_LAST_MODIFIED_KEY= @"user_cart_last_modified";
 NSString * const USER_CART_LAST_TRACKED_KEY= @"user_cart_last_tracked";
-
-//external
-NSString * const TRACKER_INITIALIZED = @"onTrackerInitialized";
-NSString * const ON_TRACK_EVENT = @"onTrackEvent";
-NSString * const ON_TRACK_SCREEN = @"onTrackPage";
-NSString * const ON_TRACK_PURCHASE = @"onTrackPurchase";
-NSString * const ON_TRACK_USER = @"onTrackUser";
-NSString * const ON_TTRACK_USER_VARIABLES = @"onTrackUserVariables";
-NSString * const ON_SOCIAL_SHARE = @"onSocialShareEvent";
+NSString * const LAST_BROWSED_LAST_MODIFIED_KEY= @"last_browsed_last_modified";
+NSString * const LAST_BROWSED_LAST_TRACKED_KEY= @"last_browsed_last_tracked";
 
 //internal
 NSString * const TRACK_PARAM_NUTMS = @"nutm_s";
@@ -73,7 +63,16 @@ NSString * const IAMS_REQUEST_ENDPOINT = @"/m_wf.js";
 NSString * const USER_TOKEN_KEY = @"user_token_key";
 NSString * const USER_TOKEN_SUBMITTED_KEY = @"user_token_submitted_key";
 NSString * const TRACK_VARIABLE_CART_STATE = @"cart_state";
-NSString * const TRACKING_SOURCE_NAME =  @"nu.ios";
+NSString * const TRACK_VARIABLE_LAST_BROWSED  = @"last_browsed";
+NSString * const TRACKING_SOURCE_NAME = @"nu.ios";
+NSString * const TRACK_EVENT_DISPLAYED = @"_displayed";
+NSString * const TRACK_EVENT_CLICKED = @"_clicked";
+NSString * const TRACK_EVENT_DISMISSED = @"_dismissed";
+NSString * const TRACK_EVENT_DELIVERD = @"_delivered";
+NSString * const TRACK_EVENT_PURCHASE_COMPLETED = @"purchase_completed";
+NSString * const TRACK_EVENT_IOS_SUBSCRIBED = @"ios_subscribed";
+NSString * const TRACK_EVENT_VIEWED_PRODUCT = @"product_view";
+
 
 //tracker version
 NSString * const TRACKER_VERSION = @"1.2.4";

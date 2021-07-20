@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "NUUserVariables.h"
+#import "NUJSONObject.h"
 
 typedef NS_ENUM(NSUInteger, NUUserGender) {
     MALE = 0,
@@ -9,7 +10,7 @@ typedef NS_ENUM(NSUInteger, NUUserGender) {
 /**
  *  This class creates an user instance
  */
-@interface NUUser : NSObject
+@interface NUUser : NUJSONObject
 
 /**
  *  Creates an instance of user.

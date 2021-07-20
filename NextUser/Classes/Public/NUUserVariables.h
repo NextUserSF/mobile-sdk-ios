@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "NUJSONObject.h"
 
-@interface NUUserVariables : NSObject
+@interface NUUserVariables : NUJSONObject
 
 @property (nonatomic) NSMutableDictionary *variables;
 

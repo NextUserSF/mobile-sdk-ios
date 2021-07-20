@@ -1,6 +1,8 @@
 #import "NUInAppMessageWrapperBuilder.h"
 #import "NextUserManager.h"
 #import "NUSocialShare.h"
+#import "NUInAppMsgViewSettings.h"
+#import "NUUIDisplayManager.h"
 
 
 @interface InAppMessageWrapperBuilder()
@@ -8,6 +10,8 @@
     InAppMsgPrepareCompletionBlock completionBlock;
     InAppMsgWrapper* wrapper;
     JSContext *jsContext;
+    InAppMsgViewSettings *viewSettings;
+    
 }
 @end
 
@@ -19,6 +23,7 @@
 {
     if (self = [super init]) {
         completionBlock = completion;
+        viewSettings = [[InAppMsgViewSettings alloc] init];
     }
     
     return self;
@@ -71,21 +76,20 @@
 {
     CGFloat width = 0;
     CGFloat height = 0;
-    InAppMsgViewSettings* settings = [[[NextUserManager sharedInstance] inAppMsgUIManager] viewSettings];
     switch (wrapper.message.type) {
         case SKINNY:
-            width  = [wrapper hasBody] == NO ? settings.skinnyLargeImgWidth : settings.skinnySmallImgWidth;
-            height = settings.skinnyViewHeight;
+            width  = [wrapper hasBody] == NO ? self->viewSettings.skinnyLargeImgWidth : self->viewSettings.skinnySmallImgWidth;
+            height = self->viewSettings.skinnyViewHeight;
             
             break;
         case MODAL:
-            width  = settings.modalViewWidth;
-            height = [wrapper isSingleImage] == YES ? settings.modalHeight : settings.modalMediumViewHeight;
+            width  = self->viewSettings.modalViewWidth;
+            height = [wrapper isSingleImage] == YES ? self->viewSettings.modalHeight : self->viewSettings.modalMediumViewHeight;
             
             break;
         case FULL:
-            width  = settings.screenWidth;
-            height = [wrapper hasBody] == YES ? settings.fullSmallImageHeight : settings.screenHeight;
+            width  = self->viewSettings.screenWidth;
+            height = [wrapper hasBody] == YES ? self->viewSettings.fullSmallImageHeight : self->viewSettings.screenHeight;
             
             break;
         default:
@@ -96,17 +100,16 @@
 
 - (WKWebView *) createWebView:(InAppMsgWrapper* ) wrapper
 {
-    InAppMsgViewSettings* settings = [[[NextUserManager sharedInstance] inAppMsgUIManager] viewSettings];
     switch (wrapper.message.type) {
         case SKINNY:
             
-            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, settings.skinnyWidth, settings.skinnyHeight)];
+            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self->viewSettings.skinnyWidth, self->viewSettings.skinnyHeight)];
         case MODAL:
             
-            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, settings.modalWidth, settings.modalHeight)];
+            return [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self->viewSettings.modalWidth, self->viewSettings.modalHeight)];
         case FULL:
             
-            return [[WKWebView alloc] initWithFrame: settings.screenFrame];
+            return [[WKWebView alloc] initWithFrame: self->viewSettings.screenFrame];
         default:
             
             return nil;
@@ -200,7 +203,7 @@
         NUSocialShare *socialShareNotifObject = [[NUSocialShare alloc] init];
         socialShareNotifObject.socialNetwork = socialNetwork;
         socialShareNotifObject.deepLink = deepLink;
-        [[NextUserManager sharedInstance] sendNextUserLocalNotification:ON_SOCIAL_SHARE withObject:socialShareNotifObject andStatus:YES];
+        [[NextUserManager sharedInstance] sendNextUserLocalNotification:ON_SOCIAL_SHARE_EVENT_NAME withObject:socialShareNotifObject andStatus:YES];
     }
 
     NUEvent *customEvent = [NUWebViewHelper buildEventFromQueryDictionary:query];
