@@ -474,9 +474,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
     NSInteger statusCode = ((NSHTTPURLResponse *)navigationResponse.response).statusCode;
-    NSLog(@"statusCode:%ld", statusCode);
-    if (statusCode/100 == 4 || statusCode/100 == 5) {
-        NSLog(@"webview error:%@", navigationResponse.response);
+    if (statusCode != 0 && (statusCode/100 == 4 || statusCode/100 == 5)) {
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFailToLoadURL:error:)]) {
             [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:[NUError nextUserErrorWithMessage:[NSHTTPURLResponse localizedStringForStatusCode:statusCode]]];
             [self onCloseAction:nil];
