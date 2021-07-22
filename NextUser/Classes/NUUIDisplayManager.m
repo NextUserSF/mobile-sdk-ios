@@ -352,6 +352,8 @@
         settings.firstLoadJs = [settingsInfo valueForKey:@"firstLoadJs"];
         settings.enableNavigation = [[settingsInfo valueForKey:@"enableNavigation"] boolValue];
         settings.overrideOnLoading = [[settingsInfo valueForKey:@"overrideOnLoading"] boolValue];
+        settings.spinnerMessage = [settingsInfo valueForKey:@"spinnerMessage"];
+        settings.dimmedBackgroundSpinner = [[settingsInfo valueForKey:@"dimmedBackgroundSpinner"] boolValue];
         settings.suppressBrowserJSAlerts = [[settingsInfo valueForKey:@"suppressBrowserJSAlerts"] boolValue];
         settings.httpHeadersExtra = [settingsInfo valueForKey:@"httpHeadersExtra"];
         if ([settingsInfo valueForKey:@"customJSCodes"] != nil) {

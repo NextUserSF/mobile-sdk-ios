@@ -1,14 +1,8 @@
-//
-//  NUWebViewContainer.m
-//  NextUser
-//
-//  Created by Adrian Lazea on 10.07.2021.
-//
-
 #import <Foundation/Foundation.h>
 #import "NUWebViewContainer.h"
 #import "NextUserManager.h"
 #import "NUDDLog.h"
+#import "NUProgressDialog.h"
 
 
 static void *NUWebViewContext = &NUWebViewContext;
@@ -17,7 +11,7 @@ static void *NUWebViewContext = &NUWebViewContext;
 {
     BOOL webViewFirstLoad;
     id<NUWebViewContainerListener> containerListener;
-    UIProgressView *progressView;
+    NUProgressDialog *progressDialog;
     UISwipeGestureRecognizer *swipeRightGestureRecognizer;
 }
 
@@ -55,19 +49,27 @@ static void *NUWebViewContext = &NUWebViewContext;
         [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(URL)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
         [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
         [instance addSubview: instance.webView];
-        if (instance.webViewSettings.overrideOnLoading == NO) {
-            instance->progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-            [instance->progressView setFrame:CGRectMake(viewSettings.frameMargin, (viewSettings.screenHeight -viewSettings.statusBarHeight)/2, viewSettings.screenWidth-2*viewSettings.frameMargin, viewSettings.screenHeight)];
-            instance->progressView.progress = 0.0;
-            [instance addSubview: instance->progressView];
-        }
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:settings.url]];
         [instance.webView loadRequest:request];
-        DDLogVerbose(@"canGoBackStart:%@", [instance.webView canGoBack] ? @"Yes" : @"No");
-        
     }
     
     return instance;
+}
+
+-(void) showProgressDialog
+{
+    if (self->progressDialog) {
+        [self->progressDialog hide:YES];
+        self->progressDialog = nil;
+    }
+
+    self->progressDialog = nil;
+    self->progressDialog = [NUProgressDialog showDialogAddedTo:self animated:YES];
+    if (self.webViewSettings.spinnerMessage) {
+        self->progressDialog.labelText = self.webViewSettings.spinnerMessage;
+    }
+    self->progressDialog.mode = NUProgressDialogModeIndeterminate;
+    self->progressDialog.dimBackground = self.webViewSettings.dimmedBackgroundSpinner;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -103,7 +105,6 @@ static void *NUWebViewContext = &NUWebViewContext;
 {
     
     NSString *jsBridge = [self jsScriptFromAssets:NEXTUSER_JS_BRIDGE];
-    DDLogVerbose(@"NEXTUSER_JS_BRIDGE : %@ ", jsBridge);
     WKUserScript *jsScript =[[WKUserScript alloc] initWithSource:jsBridge injectionTime:(WKUserScriptInjectionTimeAtDocumentStart)
                                                 forMainFrameOnly:NO];
     WKUserContentController *wkUController = [WKUserContentController new];
@@ -129,7 +130,6 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 - (NSString *)buildCustomJS:(BOOL)firstLoad forUrl:(NSString *) url
 {
-    DDLogVerbose(@"injectCustomJS for url ：%@", url);
     if (self.webViewSettings == nil || (firstLoad == YES && [url isEqual:self.webViewSettings.url])) {
         
         return nil;
@@ -172,7 +172,6 @@ static void *NUWebViewContext = &NUWebViewContext;
             }
         }
     }
-    DDLogVerbose(@"loadJSCode ：%@", loadJSCode);
     
     return loadJSCode;
 }
@@ -186,8 +185,6 @@ static void *NUWebViewContext = &NUWebViewContext;
                           
                 return;
             }
-            
-            DDLogVerbose(@"Loaded Custom js code with result：%@", result);
         }];
     }
 }
@@ -224,23 +221,22 @@ static void *NUWebViewContext = &NUWebViewContext;
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(estimatedProgress))] && object == self.webView) {
-        
         if([self.delegate respondsToSelector:@selector(onWebViewPageLoadingProgress:)]) {
             [self becomeFirstResponder];
             [self.delegate onWebViewPageLoadingProgress: self.webView.estimatedProgress];
         }
         
         if (self.webViewSettings.overrideOnLoading == NO) {
-            [self->progressView setAlpha:1.0f];
-            BOOL animated = self.webView.estimatedProgress > self->progressView.progress;
-            [self->progressView setProgress:self.webView.estimatedProgress animated:animated];
-            // Once complete, fade out UIProgressView
+            
             if(self.webView.estimatedProgress >= 0.8f) {
-                [UIView animateWithDuration:0.3f delay:0.3f options:UIViewAnimationOptionCurveEaseOut animations:^{
-                    [self->progressView setAlpha:0.0f];
-                } completion:^(BOOL finished) {
-                    [self->progressView setProgress:0.0f animated:NO];
-                }];
+                if (self->progressDialog != nil) {
+                    [self->progressDialog hide:YES];
+                    self->progressDialog = nil;
+                }
+            } else if (self->progressDialog == nil) {
+                [self showProgressDialog];
+            } else if ([self->progressDialog isHidden] == YES) {
+                [self->progressDialog show:YES];
             }
         }
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(URL))] && object == self.webView) {
@@ -268,8 +264,6 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 -(void)doSwipeRight:(id)sender
 {
-    
-    
     if ([self.webView canGoBack] == NO) {
         [self onCloseAction:nil];
     }
@@ -495,9 +489,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if(webView == self.webView) {
-        
         if (self.webViewSettings.firstLoadJs != nil && self->webViewFirstLoad == YES) {
-            DDLogVerbose(@"loading first js: %@", self.webViewSettings.firstLoadJs);
             [self injectJSCode:self.webViewSettings.firstLoadJs];
             self->webViewFirstLoad = NO;
         }

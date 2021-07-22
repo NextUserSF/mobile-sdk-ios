@@ -16,7 +16,12 @@
 @property (nonatomic) NSString *url;
 @property (nonatomic) NSString *firstLoadJs;
 @property (nonatomic) BOOL enableNavigation;
+
+
 @property (nonatomic) BOOL overrideOnLoading;
+@property (nonatomic) BOOL dimmedBackgroundSpinner;
+@property (nonatomic) NSString *spinnerMessage;
+
 @property (nonatomic) BOOL suppressBrowserJSAlerts;
 @property NSDictionary<NSString *, NSString *> *httpHeadersExtra;
 @property NSArray<NUCustomJSCode *> *customJSCodes;
