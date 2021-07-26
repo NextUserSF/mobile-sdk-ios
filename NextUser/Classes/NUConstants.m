@@ -75,6 +75,6 @@ NSString * const TRACK_EVENT_VIEWED_PRODUCT = @"product_view";
 
 
 //tracker version
-NSString * const TRACKER_VERSION = @"2.0.0";
+NSString * const TRACKER_VERSION = @"2.0.1";
 
 @end
