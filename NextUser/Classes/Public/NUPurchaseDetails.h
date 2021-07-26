@@ -44,17 +44,17 @@
 @property (nonatomic) NSString *paymentMethod;
 
 /**
- *  Site's purchase ID or similar.
- */
-@property (nonatomic) NSString *affiliation;
-
-/**
- *  Shipping address, state.
- */
-@property (nonatomic) NSString *state;
-
-/**
  *  Shipping address, city.
+
+ /**
+  *  Site's purchase ID or similar.
+  */
+ @property (nonatomic) NSString *affiliation;
+
+ /**
+  *  Shipping address, state.
+  */
+ @property (nonatomic) NSString *state;
  */
 @property (nonatomic) NSString *city;
 
