@@ -18,10 +18,9 @@
 #define ON_WEB_VIEW_START_LOADING_EVENT_NAME @"onWebViewStartLoading"
 #define ON_WEB_VIEW_LOADING_PROGRESS_EVENT_NAME @"onWebViewLoadingProgress"
 #define ON_WEB_VIEW_FINISH_LOADING_EVENT_NAME @"onWebViewFinishedLoading"
-#define ON_WEB_VIEW_LOADING_ERROR_EVENT_NAME @"onWebViewLoadingError"
+#define ON_WEB_VIEW_LOADING_ERROR_EVENT_NAME @"onWebViewError"
 #define ON_WEB_VIEW_DATA_SENT_EVENT_NAME @"onWebViewDataSent"
 #define ON_WEB_VIEW_CLOSE_EVENT_NAME @"onWebViewClose"
-
 
 @interface NUUIDisplayManager : NSObject 
 

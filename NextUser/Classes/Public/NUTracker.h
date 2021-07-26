@@ -4,15 +4,6 @@
 #import <UserNotifications/UserNotifications.h>
 #import "NUWebViewSettings.h"
 
-typedef NS_ENUM(NSUInteger, NUTrackedAction) {
-    NU_SESSION = 0,
-    NU_EVENT,
-    NU_SCREEN,
-    NU_PURCHASE,
-    NU_USER,
-    NU_USER_VARIABLES
-};
-
 #define NEXTUSER_LOCAL_NOTIFICATION @"NextUserLocalNotification"
 #define NEXTUSER_LOCAL_NOTIFICATION_OBJECT @"NextUserLocalNotificationObject"
 #define NEXTUSER_LOCAL_NOTIFICATION_EVENT @"NextUserLocalNotificationEvent"
@@ -23,8 +14,7 @@ typedef NS_ENUM(NSUInteger, NUTrackedAction) {
 #define ON_TRACK_PURCHASE_EVENT_NAME @"onTrackPurchase"
 #define ON_TRACK_USER_EVENT_NAME @"onTrackUser"
 #define ON_TRACK_USER_VARIABLES_EVENT_NAME @"onTrackUserVariables"
-#define ON_SOCIAL_SHARE_EVENT_NAME @"onSocialShare"
-
+#define ON_SOCIAL_SHARE_EVENT_NAME @"onSocialShareEvent"
 
 @interface NUTracker : NSObject
 

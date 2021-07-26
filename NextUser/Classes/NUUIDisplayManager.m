@@ -363,13 +363,14 @@
                 for (NSDictionary *jsCodeDict in customJsCodesArrray) {
                     NSString *conditionStr = [jsCodeDict valueForKey:@"condition"];
                     NUCustomJSCode *jsCode = [NUCustomJSCode customJSCodeWithContionString: conditionStr];
-                    jsCode.jsCodeString = [jsCodeDict valueForKey:@"jsCodeString"];
+                    jsCode.jsCodeString = [jsCodeDict valueForKey:@"jsCode"];
                     jsCode.pageURL = [jsCodeDict valueForKey:@"pageURL"];
                     [jsCodes addObject:jsCode];
                 }
                 settings.customJSCodes = jsCodes;
             }
         }
+        
         [self showWebView:settings withDelegate:delegate withCompletion:completion];
     } @catch (NSException *exception) {
         completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);

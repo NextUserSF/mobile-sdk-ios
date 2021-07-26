@@ -54,12 +54,12 @@
         return nil;
     }
     
-    if ([eventInfo valueForKey:@"event"] == nil || [[eventInfo valueForKey:@"event"] isEqual:@""] == YES) {
+    if ([eventInfo valueForKey:@"eventName"] == nil || [[eventInfo valueForKey:@"eventName"] isEqual:@""] == YES) {
         
         return nil;
     }
     
-    return [NUEvent eventWithName:[eventInfo valueForKey:@"event"] andParameters:[eventInfo valueForKey:@"parameters"]];
+    return [NUEvent eventWithName:[eventInfo valueForKey:@"eventName"] andParameters:[eventInfo valueForKey:@"parameters"]];
 }
 
 -(BOOL) isEnabled
@@ -140,6 +140,7 @@
             }
             
             [self trackUser:nuUser];
+            
             completion(YES, nil);
         } @catch (NSException *exception) {
             completion(NO, [NUError nextUserErrorWithMessage: exception.reason]);

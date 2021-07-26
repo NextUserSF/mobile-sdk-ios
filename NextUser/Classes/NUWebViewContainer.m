@@ -326,11 +326,9 @@ static void *NUWebViewContext = &NUWebViewContext;
     if ([message.name isEqual:@"nuBridgeTrackEventHandler"]) {
         if ( message.body != nil && [message.body isKindOfClass:[NSDictionary class]]) {
             NSDictionary *dataObjectDictionary = message.body;
-            if ([dataObjectDictionary valueForKey:@"track_event"] != nil) {
-                NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: [dataObjectDictionary valueForKey:@"track_event"]];
-                if (event != nil) {
-                    [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
-                }
+            NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary: dataObjectDictionary];
+            if (event != nil) {
+                [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
             }
         }
         

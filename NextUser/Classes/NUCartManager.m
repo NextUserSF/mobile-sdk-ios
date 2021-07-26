@@ -105,6 +105,7 @@
             }
             
             [self setDetails:details];
+            
             completion(YES, nil);
         } @catch (NSException *exception) {
             completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
@@ -126,7 +127,7 @@
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {
             NUCartItem *item = [[NUCartItem alloc] init];
-            item.ID = [itemInfo valueForKey:@"ID"];
+            item.ID = [itemInfo valueForKey:@"id"];
             item.name = [itemInfo valueForKey:@"name"];
             if (item.ID == nil || [item.ID isEqual:@""] == YES || item.name == nil || [item.name isEqual:@""] == YES) {
                 completion(NO, [NUError nextUserErrorWithMessage:@"Invalid cart item data. ID and name are mandatory fields."]);
@@ -134,7 +135,7 @@
                 return;
             }
             item.category = [itemInfo valueForKey:@"category"];
-            item.desc = [itemInfo valueForKey:@"desc"];
+            item.desc = [itemInfo valueForKey:@"description"];
             if ([itemInfo valueForKey:@"quantity"] != nil) {
                 item.quantity = [[itemInfo valueForKey:@"quantity"] doubleValue];
             }
@@ -143,6 +144,7 @@
             }
             
             [self addOrUpdateItem:item];
+            
             completion(YES, nil);
         } @catch (NSException *exception) {
             completion(NO, [NUError nextUserErrorWithMessage:exception.reason]);
