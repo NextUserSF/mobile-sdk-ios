@@ -1,5 +1,6 @@
 #import "NUObjectPropertyStatusUtils.h"
 #import "NSString+LGUtils.h"
+#define allTrim( object ) [object stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet] ]
 
 @implementation NUObjectPropertyStatusUtils
 
@@ -25,7 +26,7 @@
 
 + (BOOL)isStringValueSet:(NSString *)stringValue
 {
-    return stringValue != nil;
+    return ![stringValue isEqual:[NSNull null]]  && [allTrim(stringValue) length] != 0;
 }
 
 + (NSString *)toURLEncodedString:(NSString *)toEncode

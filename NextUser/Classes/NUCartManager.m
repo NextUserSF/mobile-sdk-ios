@@ -17,7 +17,6 @@
     NUCart *cart;
     NSOperationQueue *queue;
     NSUserDefaults *preferences;
-    dispatch_semaphore_t operationSemaphore;
 }
 
 - (instancetype)init
@@ -224,9 +223,7 @@
 - (void) checkoutSelector:(id) fake
 {
     if ([self isValidPurchase] == YES) {
-        operationSemaphore = dispatch_semaphore_create(0);
         [[NextUserManager sharedInstance] trackWithObject:cart withType:TRACK_PURCHASE];
-        dispatch_semaphore_wait(operationSemaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
@@ -410,7 +407,6 @@
 {
     NSString *cartStr = nil;
     if ([cart.items count] > 0 || [self isEmptyCart] == YES) {
-        operationSemaphore = dispatch_semaphore_create(0);
         NSMutableDictionary *cartJSON = [cart dictionaryReflectFromAttributes];
         NSMutableArray *cartItemsJSON = [cartJSON valueForKey:@"items"];
         if (cartItemsJSON != nil && [cartItemsJSON count] > 0) {
@@ -432,7 +428,6 @@
         NUUserVariables *userVariables = [[NUUserVariables alloc] init];
         [userVariables addVariable:TRACK_VARIABLE_CART_STATE withValue:cartStr];
         [[[NextUserManager sharedInstance] getTracker] trackUserVariables:userVariables];
-        dispatch_semaphore_wait(operationSemaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
@@ -442,10 +437,6 @@
     id<NUTaskResponse> taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
     switch (taskResponse.taskType) {
         case TRACK_PURCHASE:
-            if (operationSemaphore != nil) {
-                dispatch_semaphore_signal(operationSemaphore);
-            }
-            
             if ([taskResponse successfull] == YES) {
                 NUEvent *purchaseCompletedEvent = [NUEvent eventWithName:TRACK_EVENT_PURCHASE_COMPLETED];
                 [[[NextUserManager sharedInstance] getTracker] trackEvent:purchaseCompletedEvent];
@@ -460,9 +451,6 @@
                 if ([taskResponse successfull] == YES) {
                     [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:USER_CART_LAST_TRACKED_KEY];
                     [preferences synchronize];
-                }
-                if (operationSemaphore != nil) {
-                    dispatch_semaphore_signal(operationSemaphore);
                 }
             } else if ([userVariables hasVariable:TRACK_VARIABLE_LAST_BROWSED] == YES) {
                 if ([taskResponse successfull] == YES) {
