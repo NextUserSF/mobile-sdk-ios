@@ -13,6 +13,7 @@ static void *NUWebViewContext = &NUWebViewContext;
     id<NUWebViewContainerListener> containerListener;
     NUProgressDialog *progressDialog;
     UISwipeGestureRecognizer *swipeRightGestureRecognizer;
+    NSArray<WKBackForwardListItem *> *firstLoadBackItems;
 }
 
 @end
@@ -229,6 +230,9 @@ static void *NUWebViewContext = &NUWebViewContext;
         if (self.webViewSettings.overrideOnLoading == NO) {
             
             if(self.webView.estimatedProgress >= 0.8f) {
+                if (self ->webViewFirstLoad == YES) {
+                    self->firstLoadBackItems = self.webView.backForwardList.backList;
+                }
                 if (self->progressDialog != nil) {
                     [self->progressDialog hide:YES];
                     self->progressDialog = nil;
@@ -264,7 +268,13 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 -(void)doSwipeRight:(id)sender
 {
-    if ([self.webView canGoBack] == NO) {
+    bool canGoBackDoubleCheck = YES;
+    NSArray<WKBackForwardListItem *> *currentBackItems = self.webView.backForwardList.backList;
+    if ([self->firstLoadBackItems count] > 0 && [currentBackItems count] == [self->firstLoadBackItems count]) {
+        canGoBackDoubleCheck = NO;
+    }
+    
+    if ([self.webView canGoBack] == NO || canGoBackDoubleCheck == NO) {
         [self onCloseAction:nil];
     }
 }
