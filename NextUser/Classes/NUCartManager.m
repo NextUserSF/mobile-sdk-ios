@@ -224,6 +224,8 @@
 {
     if ([self isValidPurchase] == YES) {
         [[NextUserManager sharedInstance] trackWithObject:cart withType:TRACK_PURCHASE];
+        cart = [[NUCart alloc] init];
+        [self refreshCartCache];
     }
 }
 
@@ -436,24 +438,23 @@
     NSDictionary *userInfo = notification.userInfo;
     id<NUTaskResponse> taskResponse = userInfo[COMPLETION_HTTP_REQUEST_NOTIFICATION_OBJECT_KEY];
     switch (taskResponse.taskType) {
-        case TRACK_PURCHASE:
+        case TRACK_PURCHASE: {
             if ([taskResponse successfull] == YES) {
                 NUEvent *purchaseCompletedEvent = [NUEvent eventWithName:TRACK_EVENT_PURCHASE_COMPLETED];
                 [[[NextUserManager sharedInstance] getTracker] trackEvent:purchaseCompletedEvent];
-                [self clearCartSelector:nil];
             }
-            
+            NUCart *cart = [self fetchCartFromCache];
+            [self trackCartStateSelector:cart];
+        }
             break;
         case TRACK_USER_VARIABLES: {
             NUTrackResponse *response = (NUTrackResponse*)taskResponse;
             NUUserVariables *userVariables = (NUUserVariables*) response.trackObject;
-            if ([userVariables hasVariable:TRACK_VARIABLE_CART_STATE] == YES) {
-                if ([taskResponse successfull] == YES) {
+            if ([taskResponse successfull] == YES) {
+                if ([userVariables hasVariable:TRACK_VARIABLE_CART_STATE] == YES) {
                     [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:USER_CART_LAST_TRACKED_KEY];
                     [preferences synchronize];
-                }
-            } else if ([userVariables hasVariable:TRACK_VARIABLE_LAST_BROWSED] == YES) {
-                if ([taskResponse successfull] == YES) {
+                } else if ([userVariables hasVariable:TRACK_VARIABLE_LAST_BROWSED] == YES) {
                     [preferences setDouble:[[NSDate date] timeIntervalSince1970] forKey:LAST_BROWSED_LAST_TRACKED_KEY];
                     [preferences synchronize];
                 }
