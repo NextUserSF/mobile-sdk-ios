@@ -4,6 +4,7 @@
 #import "NUDDLog.h"
 #import "NUProgressDialog.h"
 
+#define    TOOLBAR_HEIGHT 44.0
 
 static void *NUWebViewContext = &NUWebViewContext;
 
@@ -20,7 +21,6 @@ static void *NUWebViewContext = &NUWebViewContext;
 
 @implementation NUWebViewContainer
 
-
 +(instancetype)initWithSettings:(NUWebViewSettings *) settings observerDelegate: (id<NUWebViewUIDelegate>) delegate withViewSettings:(InAppMsgViewSettings *) viewSettings withContainerListener: (id<NUWebViewContainerListener>) listener
 {
     NUWebViewContainer *instance = [[NUWebViewContainer alloc] init];
@@ -30,31 +30,129 @@ static void *NUWebViewContext = &NUWebViewContext;
         instance->_delegate = delegate;
         instance->containerListener = listener;
         [instance build:viewSettings];
-        instance.webView = [[WKWebView alloc] initWithFrame:viewSettings.screenFrame configuration:[instance buildWebViewConfiguration]];
-        [instance.webView setFrame: instance.bounds];
-        [instance.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+        instance.backgroundColor = [UIColor clearColor];
+        
+        if (settings.enableNavigationToolbar == YES) {
+            UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            
+            UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+            fixedSpaceButton.width = 20;
+            
+            
+            if (settings.hideCloseButton == NO) {
+                instance.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                     target:instance action:@selector(close)];
+                instance.closeButton.enabled = YES;
+            }
+            
+            if (settings.hideNavigationButtons == NO) {
+                NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
+                instance.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:instance action:@selector(goForward:)];
+                instance.forwardButton.enabled = YES;
+                instance.forwardButton.imageInsets = UIEdgeInsetsZero;
+                if (settings.navigationButtonColor != nil) { // Set button color if user sets it in options
+                  instance.forwardButton.tintColor = [instance colorFromHexString:settings.navigationButtonColor];
+                }
+
+                NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
+                instance.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:instance action:@selector(goBack:)];
+                instance.backButton.enabled = YES;
+                instance.backButton.imageInsets = UIEdgeInsetsZero;
+                if (settings.navigationButtonColor != nil) { // Set button color if user sets it in options
+                    instance.backButton.tintColor = [instance colorFromHexString:settings.navigationButtonColor];
+                }
+            }
+            
+            float toolbarY = viewSettings.screenFrame.size.height - TOOLBAR_HEIGHT - viewSettings.statusBarHeight;
+            CGRect toolbarFrame = CGRectMake(0.0, toolbarY, viewSettings.screenFrame.size.width, TOOLBAR_HEIGHT);
+            if (instance.closeButton != nil || instance.backButton != nil) {
+                instance.toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
+                instance.toolbar.alpha = 1.000;
+                instance.toolbar.autoresizesSubviews = YES;
+                instance.toolbar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+                instance.toolbar.barStyle = UIBarStyleBlackOpaque;
+                instance.toolbar.clearsContextBeforeDrawing = NO;
+                instance.toolbar.clipsToBounds = NO;
+                instance.toolbar.contentMode = UIViewContentModeScaleToFill;
+                instance.toolbar.hidden = NO;
+                instance.toolbar.multipleTouchEnabled = NO;
+                instance.toolbar.opaque = NO;
+                instance.toolbar.userInteractionEnabled = YES;
+               
+                if (settings.toolbarColor != nil) { // Set toolbar color if user sets it in options
+                    instance.toolbar.barTintColor = [instance colorFromHexString:settings.toolbarColor];
+                }
+                if (!settings.toolbarTranslucent) { // Set toolbar translucent to no if user sets it in options
+                    instance.toolbar.translucent = NO;
+                }
+            }
+        
+            if (instance.toolbar != nil) {
+                if (instance.closeButton != nil && instance.backButton != nil) {
+                    [instance.toolbar setItems:@[fixedSpaceButton, instance.backButton, flexibleSpaceButton, instance.closeButton, flexibleSpaceButton, instance.forwardButton, fixedSpaceButton]];
+                } else if (instance.backButton != nil)  {
+                    [instance.toolbar setItems:@[instance.backButton, instance.forwardButton]];
+                } else {
+                    [instance.toolbar setItems:@[instance.closeButton]];
+                }
+                [instance.toolbar updateConstraintsIfNeeded];
+                [instance.toolbar setNeedsUpdateConstraints];
+                instance.toolbar.hidden = YES;
+                [instance addSubview:instance.toolbar];
+            }
+        }
+        
+        CGRect webViewBounds = viewSettings.screenFrame;
+        if (instance.toolbar != nil) {
+            webViewBounds = CGRectMake(0.0, 0.0, viewSettings.screenFrame.size.width, viewSettings.screenFrame.size.height - TOOLBAR_HEIGHT - viewSettings.statusBarHeight);
+        }
+        
+        instance.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:[instance buildWebViewConfiguration]];
+        [instance.webView setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin];
+        //[instance.webView setFrame: instance.bounds];
         [instance.webView setNavigationDelegate:instance];
         [instance.webView setUIDelegate:instance];
         instance.webView.allowsBackForwardNavigationGestures=YES;
         [instance.webView setMultipleTouchEnabled:YES];
         [instance.webView setAutoresizesSubviews:YES];
         instance.webView.userInteractionEnabled = YES;
-        [instance.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
         [instance.webView setClipsToBounds:YES];
         [instance.webView.scrollView setAlwaysBounceVertical:YES];
+        instance.webView.clearsContextBeforeDrawing = YES;
+        instance.webView.contentMode = UIViewContentModeScaleToFill;
+        instance.webView.userInteractionEnabled = YES;
+        instance.webView.allowsLinkPreview = NO;
+        [instance.webView setTranslatesAutoresizingMaskIntoConstraints: NO];
+        
+        
         instance.webView.opaque=NO;
-        instance->swipeRightGestureRecognizer = [[UISwipeGestureRecognizer alloc] init];
-        [instance->swipeRightGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
-        [instance.webView addGestureRecognizer:instance->swipeRightGestureRecognizer];
-        instance->swipeRightGestureRecognizer.delegate = instance;
+        if (settings.enableSwipeNavigation == YES) {
+            instance->swipeRightGestureRecognizer = [[UISwipeGestureRecognizer alloc] init];
+            [instance->swipeRightGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+            [instance.webView addGestureRecognizer:instance->swipeRightGestureRecognizer];
+            instance->swipeRightGestureRecognizer.delegate = instance;
+        }
+        
         [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(URL)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
         [instance.webView addObserver:instance forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:NSKeyValueObservingOptionNew context:NUWebViewContext];
+    
         [instance addSubview: instance.webView];
+        [instance sendSubviewToBack:instance.webView];
+        instance.webView.hidden = YES;
+        
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:settings.url]];
         [instance.webView loadRequest:request];
     }
     
     return instance;
+}
+
+- (UIColor *)colorFromHexString:(NSString *)hexString {
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner scanHexInt:&rgbValue];
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
 -(void) showProgressDialog
@@ -195,9 +293,8 @@ static void *NUWebViewContext = &NUWebViewContext;
     if([self.delegate respondsToSelector:@selector(onWebViewClose:)]) {
         [self.delegate onWebViewClose: closeObj];
     }
-    
     [containerListener onClose];
-    [self clearWebViewCookies];
+    //[self clearWebViewCookies];
     
     if (closeObj != nil) {
         NUEvent * event = [NUWebViewHelper buildEventFromQueryDictionary:closeObj];
@@ -205,6 +302,12 @@ static void *NUWebViewContext = &NUWebViewContext;
             [[[NextUserManager sharedInstance] getTracker] trackEvent:event];
         }
     }
+}
+
+- (void)close
+{
+    [containerListener onClose];
+    //[self clearWebViewCookies];
 }
 
 -(void) onReloadAction: (NSDictionary *) query
@@ -277,6 +380,16 @@ static void *NUWebViewContext = &NUWebViewContext;
     if ([self.webView canGoBack] == NO || canGoBackDoubleCheck == NO) {
         [self onCloseAction:nil];
     }
+}
+
+- (void)goBack:(id)sender
+{
+    [self.webView goBack];
+}
+
+- (void)goForward:(id)sender
+{
+    [self.webView goForward];
 }
 
 - (UIViewController *)currentTopViewController
@@ -500,6 +613,10 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
         if (self.webViewSettings.firstLoadJs != nil && self->webViewFirstLoad == YES) {
             [self injectJSCode:self.webViewSettings.firstLoadJs];
             self->webViewFirstLoad = NO;
+            self->_webView.hidden = NO;
+            if (self->_toolbar != nil) {
+                self->_toolbar.hidden = NO;
+            }
         }
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFinishLoadingURL:)]) {
             [self.delegate webViewContainer:self didFinishLoadingURL:self.webView.URL];
@@ -515,6 +632,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
             [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:error];
         }
     }
+    self.isError = YES;
     [self onCloseAction:nil];
 }
 
@@ -526,6 +644,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
             [self.delegate webViewContainer:self didFailToLoadURL:self.webView.URL error:error];
         }
     }
+    self.isError = YES;
     [self onCloseAction:nil];
 }
 
@@ -537,6 +656,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     [self.webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress))];
     [self.webView removeObserver:self forKeyPath:NSStringFromSelector(@selector(URL))];
     self.webView = nil;
+    self.toolbar = nil;
 }
 
 @end

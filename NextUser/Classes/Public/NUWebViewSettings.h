@@ -26,6 +26,16 @@
 @property NSDictionary<NSString *, NSString *> *httpHeadersExtra;
 @property NSArray<NUCustomJSCode *> *customJSCodes;
 
+@property (nonatomic, assign) BOOL enableNavigationToolbar;
+@property (nonatomic, copy) NSString* closeButtonCaption;
+@property (nonatomic, copy) NSString* closeButtonColor;
+@property (nonatomic, copy) NSString* toolbarColor;
+@property (nonatomic, assign) BOOL toolbarTranslucent;
+@property (nonatomic, assign) BOOL hideNavigationButtons;
+@property (nonatomic, assign) BOOL hideCloseButton;
+@property (nonatomic, assign) BOOL enableSwipeNavigation;
+@property (nonatomic, copy) NSString* navigationButtonColor;
+
 @end
 
 @protocol NUWebViewUIDelegate <NSObject>

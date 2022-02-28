@@ -255,8 +255,12 @@
                                     dismissOnContentTouch:NO];
             }
             
+            __weak NUPopUpView *popupWeak = self->popup;
             self->popup.didFinishShowingCompletion = ^{
                 DDLogVerbose(@"Show Web View completed");
+                if (webViewContainer.isError == YES) {
+                    [popupWeak dismiss:YES];
+                }
             };
             
             self->popup.didFinishDismissingCompletion = ^{
@@ -349,6 +353,8 @@
     @try {
         NUWebViewSettings *settings = [[NUWebViewSettings alloc] init];
         settings.url = [settingsInfo valueForKey:@"url"];
+        settings.url = [settings.url stringByTrimmingCharactersInSet:
+                        [NSCharacterSet whitespaceAndNewlineCharacterSet]];
         settings.firstLoadJs = [settingsInfo valueForKey:@"firstLoadJs"];
         settings.enableNavigation = [[settingsInfo valueForKey:@"enableNavigation"] boolValue];
         settings.overrideOnLoading = [[settingsInfo valueForKey:@"overrideOnLoading"] boolValue];
@@ -356,6 +362,16 @@
         settings.dimmedBackgroundSpinner = [[settingsInfo valueForKey:@"dimmedBackgroundSpinner"] boolValue];
         settings.suppressBrowserJSAlerts = [[settingsInfo valueForKey:@"suppressBrowserJSAlerts"] boolValue];
         settings.httpHeadersExtra = [settingsInfo valueForKey:@"httpHeadersExtra"];
+        settings.enableNavigationToolbar = [[settingsInfo valueForKey:@"enableNavigationToolbar"] boolValue];
+        settings.closeButtonCaption = [settingsInfo valueForKey:@"closeButtonCaption"];
+        settings.closeButtonColor = [settingsInfo valueForKey:@"closeButtonColor"];
+        settings.toolbarColor = [settingsInfo valueForKey:@"toolbarColor"];
+        settings.navigationButtonColor = [settingsInfo valueForKey:@"navigationButtonColor"];
+        settings.toolbarTranslucent = [[settingsInfo valueForKey:@"toolbarTranslucent"] boolValue];
+        settings.hideNavigationButtons = [[settingsInfo valueForKey:@"hideNavigationButtons"] boolValue];
+        settings.hideCloseButton = [[settingsInfo valueForKey:@"hideCloseButton"] boolValue];
+        settings.enableSwipeNavigation = [[settingsInfo valueForKey:@"enableSwipeNavigation"] boolValue];
+        
         if ([settingsInfo valueForKey:@"customJSCodes"] != nil) {
             NSArray *customJsCodesArrray = [settingsInfo valueForKey:@"customJSCodes"];
             if ([customJsCodesArrray count] > 0) {
