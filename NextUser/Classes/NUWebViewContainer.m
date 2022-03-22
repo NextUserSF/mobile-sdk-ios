@@ -331,7 +331,6 @@ static void *NUWebViewContext = &NUWebViewContext;
         }
         
         if (self.webViewSettings.overrideOnLoading == NO) {
-            
             if(self.webView.estimatedProgress >= 0.8f) {
                 if (self ->webViewFirstLoad == YES) {
                     self->firstLoadBackItems = self.webView.backForwardList.backList;
@@ -340,10 +339,22 @@ static void *NUWebViewContext = &NUWebViewContext;
                     [self->progressDialog hide:YES];
                     self->progressDialog = nil;
                 }
+                self->_webView.hidden = NO;
+                if (self->_toolbar != nil) {
+                    self->_toolbar.hidden = NO;
+                }
             } else if (self->progressDialog == nil) {
                 [self showProgressDialog];
             } else if ([self->progressDialog isHidden] == YES) {
                 [self->progressDialog show:YES];
+            }
+        } else if(self.webView.estimatedProgress >= 0.8f) {
+            if (self ->webViewFirstLoad == YES) {
+                self->firstLoadBackItems = self.webView.backForwardList.backList;
+            }
+            self->_webView.hidden = NO;
+            if (self->_toolbar != nil) {
+                self->_toolbar.hidden = NO;
             }
         }
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(URL))] && object == self.webView) {
@@ -440,6 +451,8 @@ static void *NUWebViewContext = &NUWebViewContext;
                 }
             }
             [self onCloseAction:[dataObjectDictionary valueForKey:@"data"]];
+        } else {
+            [self onCloseAction:nil];
         }
         
         return;
@@ -612,12 +625,13 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
     if(webView == self.webView) {
         if (self.webViewSettings.firstLoadJs != nil && self->webViewFirstLoad == YES) {
             [self injectJSCode:self.webViewSettings.firstLoadJs];
-            self->webViewFirstLoad = NO;
-            self->_webView.hidden = NO;
-            if (self->_toolbar != nil) {
-                self->_toolbar.hidden = NO;
-            }
         }
+        
+        if (self->webViewFirstLoad == YES) {
+            self->webViewFirstLoad = NO;
+            
+        }
+        
         if([self.delegate respondsToSelector:@selector(webViewContainer:didFinishLoadingURL:)]) {
             [self.delegate webViewContainer:self didFinishLoadingURL:self.webView.URL];
         }
