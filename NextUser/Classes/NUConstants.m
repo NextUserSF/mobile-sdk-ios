@@ -12,7 +12,7 @@
 //webview
 NSString * const NEXTUSER_JS_BRIDGE = @"nextuser_js_bridge";
 NSString * const NU_PARAM_NAME_URL = @"url";
-NSString * const NU_PARAM_NAME_EVENT = @"event";
+NSString * const NU_PARAM_NAME_EVENT = @"eventName";
 NSString * const NU_PARAM_NAME_PARAMETERS = @"parameters";
 NSString * const NU_PARAM_NAME_DATA = @"data";
 NSString * const QUERY_PARAM_SOCIAL_NETWORK = @"social_network";
