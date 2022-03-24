@@ -3,6 +3,7 @@
 #import "NextUserManager.h"
 #import "NUDDLog.h"
 #import "NUProgressDialog.h"
+#import "NUObjectPropertyStatusUtils.h"
 
 #define    TOOLBAR_HEIGHT 44.0
 
@@ -40,8 +41,16 @@ static void *NUWebViewContext = &NUWebViewContext;
             
             
             if (settings.hideCloseButton == NO) {
-                instance.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                     target:instance action:@selector(close)];
+                if ([NUObjectPropertyStatusUtils isStringValueSet:settings.closeButtonCaption]) {
+                    instance.closeButton = [[UIBarButtonItem alloc] initWithTitle:settings.closeButtonCaption style:UIBarButtonItemStyleDone target:instance action:@selector(close)];
+                } else {
+                    instance.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                         target:instance action:@selector(close)];
+                }
+                if ([NUObjectPropertyStatusUtils isStringValueSet:settings.closeButtonColor]) {
+                    instance.closeButton.tintColor = [instance colorFromHexString:settings.closeButtonColor];
+                }
+                
                 instance.closeButton.enabled = YES;
             }
             
@@ -50,15 +59,14 @@ static void *NUWebViewContext = &NUWebViewContext;
                 instance.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:instance action:@selector(goForward:)];
                 instance.forwardButton.enabled = YES;
                 instance.forwardButton.imageInsets = UIEdgeInsetsZero;
-                if (settings.navigationButtonColor != nil) { // Set button color if user sets it in options
-                  instance.forwardButton.tintColor = [instance colorFromHexString:settings.navigationButtonColor];
-                }
 
                 NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
                 instance.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:instance action:@selector(goBack:)];
                 instance.backButton.enabled = YES;
                 instance.backButton.imageInsets = UIEdgeInsetsZero;
-                if (settings.navigationButtonColor != nil) { // Set button color if user sets it in options
+
+                if ([NUObjectPropertyStatusUtils isStringValueSet:settings.navigationButtonColor]) {
+                    instance.forwardButton.tintColor = [instance colorFromHexString:settings.navigationButtonColor];
                     instance.backButton.tintColor = [instance colorFromHexString:settings.navigationButtonColor];
                 }
             }
@@ -78,22 +86,19 @@ static void *NUWebViewContext = &NUWebViewContext;
                 instance.toolbar.multipleTouchEnabled = NO;
                 instance.toolbar.opaque = NO;
                 instance.toolbar.userInteractionEnabled = YES;
-               
-                if (settings.toolbarColor != nil) { // Set toolbar color if user sets it in options
+                if ([NUObjectPropertyStatusUtils isStringValueSet:settings.toolbarColor]) {
                     instance.toolbar.barTintColor = [instance colorFromHexString:settings.toolbarColor];
                 }
-                if (!settings.toolbarTranslucent) { // Set toolbar translucent to no if user sets it in options
-                    instance.toolbar.translucent = NO;
-                }
+                instance.toolbar.translucent = settings.toolbarTranslucent;
             }
         
             if (instance.toolbar != nil) {
                 if (instance.closeButton != nil && instance.backButton != nil) {
                     [instance.toolbar setItems:@[fixedSpaceButton, instance.backButton, flexibleSpaceButton, instance.closeButton, flexibleSpaceButton, instance.forwardButton, fixedSpaceButton]];
                 } else if (instance.backButton != nil)  {
-                    [instance.toolbar setItems:@[instance.backButton, instance.forwardButton]];
+                    [instance.toolbar setItems:@[fixedSpaceButton, instance.backButton, flexibleSpaceButton,  flexibleSpaceButton, instance.forwardButton, fixedSpaceButton]];
                 } else {
-                    [instance.toolbar setItems:@[instance.closeButton]];
+                    [instance.toolbar setItems:@[fixedSpaceButton, flexibleSpaceButton, instance.closeButton, flexibleSpaceButton, fixedSpaceButton]];
                 }
                 [instance.toolbar updateConstraintsIfNeeded];
                 [instance.toolbar setNeedsUpdateConstraints];
@@ -164,7 +169,7 @@ static void *NUWebViewContext = &NUWebViewContext;
 
     self->progressDialog = nil;
     self->progressDialog = [NUProgressDialog showDialogAddedTo:self animated:YES];
-    if (self.webViewSettings.spinnerMessage) {
+    if ([NUObjectPropertyStatusUtils isStringValueSet:self.webViewSettings.spinnerMessage]) {
         self->progressDialog.labelText = self.webViewSettings.spinnerMessage;
     }
     self->progressDialog.mode = NUProgressDialogModeIndeterminate;
@@ -623,7 +628,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if(webView == self.webView) {
-        if (self.webViewSettings.firstLoadJs != nil && self->webViewFirstLoad == YES) {
+        if ([NUObjectPropertyStatusUtils isStringValueSet:self.webViewSettings.firstLoadJs] && self->webViewFirstLoad == YES) {
             [self injectJSCode:self.webViewSettings.firstLoadJs];
         }
         
